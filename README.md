@@ -41,4 +41,4 @@ git clone https://github.com/yourusername/clinic-management-system.git
 cd clinic-management-system
 ```
 ## 📜 License
-This project is licensed under the MIT License – see the [LICENSE]() file for details.
+This project is licensed under the MIT License – see the [LICENSE]("https://github.com/DilanSriyantha/clinic-management-system/blob/main/LICENSE") file for details.
