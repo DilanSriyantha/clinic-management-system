@@ -1,0 +1,21 @@
+{
+  "name": "clinic-management-system",
+  "version": "1.0.0",
+  "description": "A comprehensive software clinic management system.",
+  "main": "main.js",
+  "scripts": {
+    "start-electron": "electron .",
+    "start-java": "java -jar backend/out/artifacts/backend/backend.jar",
+    "start-vite": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run start-electron\" \"npm run start-vite\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TDDSriyantha",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^34.1.1"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
