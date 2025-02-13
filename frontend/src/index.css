@@ -1,3 +1,26 @@
+/* Hide scrollbar by default */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+/* Fully transparent scrollbar track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Scrollbar thumb (hidden by default) */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Show scrollbar thumb when hovering over the scrollable area */
+:hover::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.7);
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

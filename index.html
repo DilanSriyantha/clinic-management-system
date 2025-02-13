@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Clinic Management System</title>
+    <style>
+        html {
+            background-color: #f2f5f9;
+            font-style: italic;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #808080;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        body div {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    Hello World!
-    <div id="content"></div>
+    <div>
+        <span>Initializing...</span>
+    </div>
 </body>
-<script>
-    const content = document.getElementById("content");
-
-    async function getUser() {
-        const user = await fetch("http://127.0.0.1:8080/api/user/get");
-        if(user){
-            content.innerHTML = user;
-        }
-    }
-    getUser();
-</script>
 </html>

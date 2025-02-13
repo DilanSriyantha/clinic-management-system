@@ -1,5 +1,8 @@
 node_modules
 
+dist/
+frontend/dist/
+
 backend/out
 backend/target/
 !backend/.mvn/wrapper/maven-wrapper.jar

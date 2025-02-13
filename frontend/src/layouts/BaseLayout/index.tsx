@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { FC, ReactNode } from "react";
 import { Outlet } from "react-router";
 import PropTypes from "prop-types";
