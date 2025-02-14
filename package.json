@@ -4,7 +4,7 @@
   "description": "Clinic Management System",
   "main": "main.js",
   "scripts": {
-    "build": "electron-builder build",
+    "build": "cd frontend && npm run build && cd .. && electron-builder build",
     "start-electron": "electron .",
     "start-java": "java -jar backend/out/artifacts/backend_jar/backend.jar",
     "start-vite": "cd frontend && npm run dev",

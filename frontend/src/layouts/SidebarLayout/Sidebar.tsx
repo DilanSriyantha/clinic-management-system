@@ -21,32 +21,41 @@ import InventoryIcon from '../../assets/inventory_2_24dp_00_FILL0_wght400_GRAD0_
 import BillingIcon from '../../assets/receipt_long_24dp_00_FILL0_wght400_GRAD0_opsz24.svg'
 import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
+import { Avatar, Tooltip } from '@mui/material';
+import { NavLink } from 'react-router';
+import ProfPic from '../../assets/me.jpg';
 
 const drawerWidth = 240;
 
 const menuOptions = [
     {
         caption: "Dashboard",
+        to: "/",
         icon: <img src={DashboardIcon} />
     },
     {
         caption: "Doctor Management",
+        to: "/doctor-management",
         icon: <img src={StethoscopeIcon} />
     },
     {
         caption: "Billing & Payment",
+        to: "/billing",
         icon: <img src={BillingIcon} />
     },
     {
         caption: "Pharmacy Management",
+        to: "/pharmacy",
         icon: <img src={InventoryIcon} />
     },
     {
         caption: "Reporting & Analysis",
+        to: "/reporting",
         icon: <img src={ReportingIcon} />
     },
     {
         caption: "Backup & Restore",
+        to: "backup",
         icon: <img src={BackupIcon} />
     }
 ]
@@ -133,7 +142,7 @@ export default function Sidebar() {
     };
 
     return (
-        <Box sx={{ display: 'flex', bgcolor: "grey" }}>
+        <Box sx={{ display: 'flex' }}>
             <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
@@ -149,8 +158,23 @@ export default function Sidebar() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" sx={{ fontWeight: "bold" }} noWrap component="div">
-                        Clinic Management System (CMS)
+                        Clinic Management System (CMS) by PPAG7
                     </Typography>
+                    <Tooltip title={"Open settings"}>
+                        <Box ml={'auto'}>
+                            <IconButton sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                bgcolor: theme.colors.primary.lighter,
+                                borderRadius: 100,
+                                gap: 1
+                            }}>
+                                <Avatar sx={{ width: 24, height: 24 }} src={ProfPic} />
+                                <Typography variant='subtitle1'>Admin User</Typography>
+                            </IconButton>
+                        </Box>
+                    </Tooltip>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
@@ -163,27 +187,36 @@ export default function Sidebar() {
                 <List>
                     {menuOptions.map((obj, index) => (
                         <ListItem key={obj.caption + index} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                    textWrap: open ? "wrap" : "nowrap"
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    {
-                                        obj.icon
-                                    }
-                                </ListItemIcon>
-                                <ListItemText primary={obj.caption} sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
+                            <Tooltip title={obj.caption} placement='right-end'>
+                                <NavLink to={obj.to} style={{
+                                    color: 'inherit'
+                                }}>
+                                    {({ isActive }) => (
+                                        <ListItemButton
+                                            selected={isActive ? true : false}
+                                            sx={{
+                                                minHeight: 48,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 2.5,
+                                                textWrap: open ? "wrap" : "nowrap"
+                                            }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}
+                                            >
+                                                {
+                                                    obj.icon
+                                                }
+                                            </ListItemIcon>
+                                            <ListItemText primary={obj.caption} sx={{ opacity: open ? 1 : 0 }} />
+                                        </ListItemButton>
+                                    )}
+                                </NavLink>
+                            </Tooltip>
                         </ListItem>
                     ))}
                 </List>
