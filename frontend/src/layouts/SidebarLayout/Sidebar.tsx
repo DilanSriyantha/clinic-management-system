@@ -21,11 +21,9 @@ import InventoryIcon from '../../assets/inventory_2_24dp_00_FILL0_wght400_GRAD0_
 import BillingIcon from '../../assets/receipt_long_24dp_00_FILL0_wght400_GRAD0_opsz24.svg'
 import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
-import { Tooltip } from '@mui/material';
-import { NavLink } from 'react-router';
 import UserButton from './UserButton';
-import { PlusOne } from '@mui/icons-material';
-import CollapsedMenu from './CollapsedMenu';
+import AdvancedMenuItem from './AdvancedMenuItem';
+import { InsertDriveFile, InsertDriveFileTwoTone } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -37,14 +35,33 @@ const menuOptions = [
     },
     {
         caption: "Doctor Management",
-        to: "/doctor-management",
         icon: <img src={StethoscopeIcon} />,
         children: [
             {
                 caption: "Create Account",
                 to: "/doctor-management/create",
-                icon: <PlusOne />
-            }
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Patient Queue",
+                to: "/doctor-management/queue",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Prescription",
+                to: "/doctor-management/prescription",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Lab Requests",
+                to: "/doctor-management/lab-requests",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Patients",
+                to: "/doctor-management/patients",
+                icon: <InsertDriveFileTwoTone />
+            },
         ]
     },
     {
@@ -180,51 +197,19 @@ export default function Sidebar() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    <CollapsedMenu 
-                        caption={menuOptions[1].caption}
-                        to={menuOptions[1].to}
-                        icon={menuOptions[1].icon}
-                        children={menuOptions[1].children}
-                    />
                     {menuOptions.map((obj, index) => (
-                        <ListItem key={obj.caption + index} disablePadding sx={{ display: 'block' }}>
-                            <Tooltip title={obj.caption} placement='right-end'>
-                                <NavLink to={obj.to} style={{
-                                    color: 'inherit'
-                                }}>
-                                    {({ isActive }) => (
-                                        <ListItemButton
-                                            selected={isActive ? true : false}
-                                            sx={{
-                                                minHeight: 48,
-                                                justifyContent: open ? 'initial' : 'center',
-                                                px: 2.5,
-                                                textWrap: open ? "wrap" : "nowrap"
-                                            }}
-                                        >
-                                            <ListItemIcon
-                                                sx={{
-                                                    minWidth: 0,
-                                                    mr: open ? 3 : 'auto',
-                                                    justifyContent: 'center',
-                                                }}
-                                            >
-                                                {
-                                                    obj.icon
-                                                }
-                                            </ListItemIcon>
-                                            <ListItemText primary={obj.caption} sx={{ opacity: open ? 1 : 0 }} />
-                                        </ListItemButton>
-                                    )}
-                                </NavLink>
-                            </Tooltip>
-                        </ListItem>
+                        <AdvancedMenuItem
+                            key={index}
+                            caption={obj.caption}
+                            to={obj.to}
+                            drawerOpened={open}
+                            icon={obj.icon}
+                            openDrawer={handleDrawerOpen}
+                            children={obj.children}
+                        />
                     ))}
                 </List>
             </Drawer>
-            {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <DrawerHeader />
-            </Box> */}
         </Box>
     );
 }

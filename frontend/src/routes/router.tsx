@@ -14,6 +14,7 @@ const Loader = (Component: React.ElementType) => (props: any) => (
 
 // pages
 const Dashboard = Loader(lazy(() => import("../pages/Dashboard")));
+const CreateDoctorAccount = Loader(lazy(() => import("../pages/DoctorManagement/CreateAccount")));
 
 // routes
 const routes: RouteObject[] = [
@@ -28,6 +29,26 @@ const routes: RouteObject[] = [
             {
                 path: "/doctor-management",
                 element: <DoctorManagement />
+            },
+            {
+                path: "/doctor-management/create",
+                element: <CreateDoctorAccount />
+            },
+            {
+                path: "/doctor-management/queue",
+                element: <><Typography variant='h1'>Patient</Typography></>
+            },
+            {
+                path: "/doctor-management/prescription",
+                element: <><Typography variant='h1'>Prescription</Typography></>
+            },
+            {
+                path: "/doctor-management/lab-requests",
+                element: <><Typography variant='h1'>Lab request</Typography></>
+            },
+            {
+                path: "/doctor-management/patients",
+                element: <><Typography variant='h1'>Patients</Typography></>
             },
             {
                 path: "/billing",

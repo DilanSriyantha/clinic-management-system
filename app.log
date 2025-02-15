@@ -864,3 +864,322 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 
 2025-02-15T01:14:16.086Z - Java Backend PID:12380 Out: 2025-02-15T06:44:16.085+05:30  INFO 12004 --- [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
 
+2025-02-15T01:59:42.789Z - Java Backend PID:7900 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+
+2025-02-15T01:59:42.792Z - Java Backend PID:7900 Out:   '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T01:59:42.873Z - Java Backend PID:7900 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T01:59:42.992Z - Java Backend PID:7900 Out: 2025-02-15T07:29:42.990+05:30  INFO 5956 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 5956 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T01:59:42.994Z - Java Backend PID:7900 Out: 2025-02-15T07:29:42.993+05:30  INFO 5956 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T01:59:44.765Z - Java Backend PID:7900 Out: 2025-02-15T07:29:44.763+05:30  INFO 5956 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T01:59:44.792Z - Java Backend PID:7900 Out: 2025-02-15T07:29:44.791+05:30  INFO 5956 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T01:59:44.793Z - Java Backend PID:7900 Out: 2025-02-15T07:29:44.792+05:30  INFO 5956 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T01:59:45.010Z - Java Backend PID:7900 Out: 2025-02-15T07:29:45.009+05:30  INFO 5956 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T01:59:45.012Z - Java Backend PID:7900 Out: 2025-02-15T07:29:45.011+05:30  INFO 5956 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1918 ms
+
+2025-02-15T01:59:45.642Z - Java Backend PID:7900 Out: 2025-02-15T07:29:45.642+05:30  INFO 5956 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T01:59:45.775Z - Java Backend PID:7900 Out: 2025-02-15T07:29:45.644+05:30  INFO 5956 --- [           main] org.cms.Main                             : Started Main in 3.744 seconds (process running for 7.748)
+
+2025-02-15T02:00:07.399Z - Java Backend PID:7900 Out: 2025-02-15T07:30:07.398+05:30  INFO 5956 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T02:00:07.400Z - Java Backend PID:7900 Out: 2025-02-15T07:30:07.398+05:30  INFO 5956 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T02:00:07.401Z - Java Backend PID:7900 Out: 2025-02-15T07:30:07.399+05:30  INFO 5956 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T03:27:46.302Z - Java Backend PID:18888 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+
+2025-02-15T03:27:46.312Z - Java Backend PID:18888 Out:   '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T03:27:46.396Z - Java Backend PID:18888 Out: 2025-02-15T08:57:46.394+05:30  INFO 10056 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 10056 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T03:27:46.399Z - Java Backend PID:18888 Out: 2025-02-15T08:57:46.398+05:30  INFO 10056 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T03:27:47.631Z - Java Backend PID:18888 Out: 2025-02-15T08:57:47.631+05:30  INFO 10056 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T03:27:47.643Z - Java Backend PID:18888 Out: 2025-02-15T08:57:47.643+05:30  INFO 10056 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T03:27:47.643Z - Java Backend PID:18888 Out: 2025-02-15T08:57:47.643+05:30  INFO 10056 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T03:27:47.744Z - Java Backend PID:18888 Out: 2025-02-15T08:57:47.743+05:30  INFO 10056 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T03:27:47.746Z - Java Backend PID:18888 Out: 2025-02-15T08:57:47.745+05:30  INFO 10056 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1293 ms
+
+2025-02-15T03:27:48.191Z - Java Backend PID:18888 Out: 2025-02-15T08:57:48.191+05:30  INFO 10056 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T03:27:48.197Z - Java Backend PID:18888 Out: 2025-02-15T08:57:48.194+05:30  INFO 10056 --- [           main] org.cms.Main                             : Started Main in 2.236 seconds (process running for 2.548)
+
+2025-02-15T03:27:49.163Z - Java Backend PID:18888 Out: 2025-02-15T08:57:49.163+05:30  INFO 10056 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T03:27:49.164Z - Java Backend PID:18888 Out: 2025-02-15T08:57:49.163+05:30  INFO 10056 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T03:27:49.165Z - Java Backend PID:18888 Out: 2025-02-15T08:57:49.164+05:30  INFO 10056 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T03:28:17.372Z - Java Backend PID:11068 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+
+2025-02-15T03:28:17.374Z - Java Backend PID:11068 Out:  =========|_|==============|___/=/_/_/_/
+
+2025-02-15T03:28:17.376Z - Java Backend PID:11068 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T03:28:17.436Z - Java Backend PID:11068 Out: 2025-02-15T08:58:17.435+05:30  INFO 19388 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 19388 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T03:28:17.438Z - Java Backend PID:11068 Out: 2025-02-15T08:58:17.437+05:30  INFO 19388 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T03:28:18.500Z - Java Backend PID:11068 Out: 2025-02-15T08:58:18.499+05:30  INFO 19388 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T03:28:18.509Z - Java Backend PID:11068 Out: 2025-02-15T08:58:18.509+05:30  INFO 19388 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T03:28:18.509Z - Java Backend PID:11068 Out: 2025-02-15T08:58:18.509+05:30  INFO 19388 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T03:28:18.611Z - Java Backend PID:11068 Out: 2025-02-15T08:58:18.611+05:30  INFO 19388 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T03:28:18.613Z - Java Backend PID:11068 Out: 2025-02-15T08:58:18.612+05:30  INFO 19388 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1133 ms
+
+2025-02-15T03:28:19.091Z - Java Backend PID:11068 Out: 2025-02-15T08:58:19.090+05:30  INFO 19388 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T03:28:19.096Z - Java Backend PID:11068 Out: 2025-02-15T08:58:19.093+05:30  INFO 19388 --- [           main] org.cms.Main                             : Started Main in 2.009 seconds (process running for 2.306)
+
+2025-02-15T03:28:20.721Z - Java Backend PID:11068 Out: 2025-02-15T08:58:20.720+05:30  INFO 19388 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T03:28:20.722Z - Java Backend PID:11068 Out: 2025-02-15T08:58:20.721+05:30  INFO 19388 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T03:28:20.723Z - Java Backend PID:11068 Out: 2025-02-15T08:58:20.722+05:30  INFO 19388 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T03:37:25.090Z - Java Backend PID:20412 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T03:37:25.094Z - Java Backend PID:20412 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T03:37:25.153Z - Java Backend PID:20412 Out: 2025-02-15T09:07:25.151+05:30  INFO 19720 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 19720 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T03:37:25.154Z - Java Backend PID:20412 Out: 2025-02-15T09:07:25.154+05:30  INFO 19720 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T03:37:26.136Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.135+05:30  INFO 19720 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T03:37:26.145Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.145+05:30  INFO 19720 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T03:37:26.146Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.145+05:30  INFO 19720 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T03:37:26.248Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.248+05:30  INFO 19720 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T03:37:26.250Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.249+05:30  INFO 19720 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1054 ms
+
+2025-02-15T03:37:26.716Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.715+05:30  INFO 19720 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T03:37:26.720Z - Java Backend PID:20412 Out: 2025-02-15T09:07:26.718+05:30  INFO 19720 --- [           main] org.cms.Main                             : Started Main in 1.917 seconds (process running for 2.248)
+
+2025-02-15T03:37:41.134Z - Java Backend PID:20412 Out: 2025-02-15T09:07:41.134+05:30  INFO 19720 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T03:37:41.134Z - Java Backend PID:20412 Out: 2025-02-15T09:07:41.134+05:30  INFO 19720 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T03:37:41.135Z - Java Backend PID:20412 Out: 2025-02-15T09:07:41.135+05:30  INFO 19720 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T03:46:01.010Z - Java Backend PID:6848 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T03:46:01.015Z - Java Backend PID:6848 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T03:46:01.073Z - Java Backend PID:6848 Out: 2025-02-15T09:16:01.072+05:30  INFO 1104 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 1104 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T03:46:01.075Z - Java Backend PID:6848 Out: 2025-02-15T09:16:01.075+05:30  INFO 1104 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T03:46:02.135Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.135+05:30  INFO 1104 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T03:46:02.144Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.144+05:30  INFO 1104 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T03:46:02.145Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.145+05:30  INFO 1104 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T03:46:02.244Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.243+05:30  INFO 1104 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T03:46:02.245Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.244+05:30  INFO 1104 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1129 ms
+
+2025-02-15T03:46:02.703Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.702+05:30  INFO 1104 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T03:46:02.711Z - Java Backend PID:6848 Out: 2025-02-15T09:16:02.710+05:30  INFO 1104 --- [           main] org.cms.Main                             : Started Main in 1.982 seconds (process running for 2.284)
+
+2025-02-15T03:46:04.317Z - Java Backend PID:6848 Out: 2025-02-15T09:16:04.316+05:30  INFO 1104 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T03:46:04.318Z - Java Backend PID:6848 Out: 2025-02-15T09:16:04.317+05:30  INFO 1104 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T03:46:04.319Z - Java Backend PID:6848 Out: 2025-02-15T09:16:04.318+05:30  INFO 1104 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T04:52:47.566Z - Java Backend PID:11568 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+
+2025-02-15T04:52:47.568Z - Java Backend PID:11568 Out:  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T04:52:47.571Z - Java Backend PID:11568 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T04:52:47.634Z - Java Backend PID:11568 Out: 2025-02-15T10:22:47.632+05:30  INFO 14728 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 14728 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T04:52:47.636Z - Java Backend PID:11568 Out: 2025-02-15T10:22:47.635+05:30  INFO 14728 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T04:52:48.717Z - Java Backend PID:11568 Out: 2025-02-15T10:22:48.716+05:30  INFO 14728 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T04:52:48.727Z - Java Backend PID:11568 Out: 2025-02-15T10:22:48.726+05:30  INFO 14728 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T04:52:48.727Z - Java Backend PID:11568 Out: 2025-02-15T10:22:48.726+05:30  INFO 14728 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T04:52:48.831Z - Java Backend PID:11568 Out: 2025-02-15T10:22:48.830+05:30  INFO 14728 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T04:52:48.833Z - Java Backend PID:11568 Out: 2025-02-15T10:22:48.832+05:30  INFO 14728 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1155 ms
+
+2025-02-15T04:52:49.302Z - Java Backend PID:11568 Out: 2025-02-15T10:22:49.301+05:30  INFO 14728 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T04:52:49.307Z - Java Backend PID:11568 Out: 2025-02-15T10:22:49.304+05:30  INFO 14728 --- [           main] org.cms.Main                             : Started Main in 2.043 seconds (process running for 2.357)
+
+2025-02-15T04:52:51.004Z - Java Backend PID:11568 Out: 2025-02-15T10:22:51.003+05:30  INFO 14728 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T04:52:51.005Z - Java Backend PID:11568 Out: 2025-02-15T10:22:51.004+05:30  INFO 14728 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T04:52:51.006Z - Java Backend PID:11568 Out: 2025-02-15T10:22:51.005+05:30  INFO 14728 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T05:24:59.097Z - Java Backend PID:16000 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T05:24:59.101Z - Java Backend PID:16000 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T05:24:59.162Z - Java Backend PID:16000 Out: 2025-02-15T10:54:59.160+05:30  INFO 18556 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 18556 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T05:24:59.164Z - Java Backend PID:16000 Out: 2025-02-15T10:54:59.163+05:30  INFO 18556 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T05:25:00.300Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.300+05:30  INFO 18556 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T05:25:00.309Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.309+05:30  INFO 18556 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T05:25:00.310Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.309+05:30  INFO 18556 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T05:25:00.415Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.415+05:30  INFO 18556 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T05:25:00.417Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.417+05:30  INFO 18556 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1207 ms
+
+2025-02-15T05:25:00.867Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.867+05:30  INFO 18556 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T05:25:00.872Z - Java Backend PID:16000 Out: 2025-02-15T10:55:00.870+05:30  INFO 18556 --- [           main] org.cms.Main                             : Started Main in 2.071 seconds (process running for 2.368)
+
+2025-02-15T05:25:01.793Z - Java Backend PID:16000 Out: 2025-02-15T10:55:01.793+05:30  INFO 18556 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T05:25:01.794Z - Java Backend PID:16000 Out: 2025-02-15T10:55:01.793+05:30  INFO 18556 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T05:25:01.795Z - Java Backend PID:16000 Out: 2025-02-15T10:55:01.794+05:30  INFO 18556 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+2025-02-15T05:25:26.897Z - Java Backend PID:16728 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+2025-02-15T05:25:26.901Z - Java Backend PID:16728 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T05:25:26.964Z - Java Backend PID:16728 Out: 2025-02-15T10:55:26.962+05:30  INFO 10196 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 10196 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T05:25:26.965Z - Java Backend PID:16728 Out: 2025-02-15T10:55:26.964+05:30  INFO 10196 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T05:25:28.048Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.047+05:30  INFO 10196 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T05:25:28.057Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.057+05:30  INFO 10196 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T05:25:28.058Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.057+05:30  INFO 10196 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T05:25:28.157Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.157+05:30  INFO 10196 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T05:25:28.159Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.158+05:30  INFO 10196 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1152 ms
+
+2025-02-15T05:25:28.633Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.632+05:30  INFO 10196 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T05:25:28.638Z - Java Backend PID:16728 Out: 2025-02-15T10:55:28.634+05:30  INFO 10196 --- [           main] org.cms.Main                             : Started Main in 2.026 seconds (process running for 2.341)
+
+2025-02-15T05:25:30.250Z - Java Backend PID:16728 Out: 2025-02-15T10:55:30.249+05:30  INFO 10196 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T05:25:30.251Z - Java Backend PID:16728 Out: 2025-02-15T10:55:30.249+05:30  INFO 10196 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T05:25:30.253Z - Java Backend PID:16728 Out: 2025-02-15T10:55:30.251+05:30  INFO 10196 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+
+2025-02-15T05:27:20.257Z - Java Backend PID:5052 Out: 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+
+2025-02-15T05:27:20.259Z - Java Backend PID:5052 Out:  =========|_|==============|___/=/_/_/_/
+
+2025-02-15T05:27:20.261Z - Java Backend PID:5052 Out:  :: Spring Boot ::                (v3.2.0)
+
+
+2025-02-15T05:27:20.330Z - Java Backend PID:5052 Out: 2025-02-15T10:57:20.329+05:30  INFO 2292 --- [           main] org.cms.Main                             : Starting Main using Java 21.0.2 with PID 2292 (D:\Projects\clinic-management-system\backend\out\artifacts\backend_jar\backend.jar started by DilanSriyantha in D:\Projects\clinic-management-system)
+
+2025-02-15T05:27:20.332Z - Java Backend PID:5052 Out: 2025-02-15T10:57:20.332+05:30  INFO 2292 --- [           main] org.cms.Main                             : No active profile set, falling back to 1 default profile: "default"
+
+2025-02-15T05:27:21.324Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.323+05:30  INFO 2292 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+
+2025-02-15T05:27:21.334Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.333+05:30  INFO 2292 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+
+2025-02-15T05:27:21.334Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.334+05:30  INFO 2292 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+
+2025-02-15T05:27:21.443Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.443+05:30  INFO 2292 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+
+2025-02-15T05:27:21.445Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.445+05:30  INFO 2292 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1067 ms
+
+2025-02-15T05:27:21.911Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.912+05:30  INFO 2292 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+
+2025-02-15T05:27:21.918Z - Java Backend PID:5052 Out: 2025-02-15T10:57:21.914+05:30  INFO 2292 --- [           main] org.cms.Main                             : Started Main in 1.944 seconds (process running for 2.243)
+
+2025-02-15T05:28:00.144Z - Java Backend PID:5052 Out: 2025-02-15T10:58:00.144+05:30  INFO 2292 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+
+2025-02-15T05:28:00.145Z - Java Backend PID:5052 Out: 2025-02-15T10:58:00.144+05:30  INFO 2292 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+
+2025-02-15T05:28:00.146Z - Java Backend PID:5052 Out: 2025-02-15T10:58:00.145+05:30  INFO 2292 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+
