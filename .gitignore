@@ -30,6 +30,7 @@ frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 frontend/lerna-debug.log*
 /app.log
+*.log
 
 frontend/node_modules
 frontend/dist
