@@ -21,9 +21,11 @@ import InventoryIcon from '../../assets/inventory_2_24dp_00_FILL0_wght400_GRAD0_
 import BillingIcon from '../../assets/receipt_long_24dp_00_FILL0_wght400_GRAD0_opsz24.svg'
 import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
-import { Avatar, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { NavLink } from 'react-router';
-import ProfPic from '../../assets/me.jpg';
+import UserButton from './UserButton';
+import { PlusOne } from '@mui/icons-material';
+import CollapsedMenu from './CollapsedMenu';
 
 const drawerWidth = 240;
 
@@ -36,7 +38,14 @@ const menuOptions = [
     {
         caption: "Doctor Management",
         to: "/doctor-management",
-        icon: <img src={StethoscopeIcon} />
+        icon: <img src={StethoscopeIcon} />,
+        children: [
+            {
+                caption: "Create Account",
+                to: "/doctor-management/create",
+                icon: <PlusOne />
+            }
+        ]
     },
     {
         caption: "Billing & Payment",
@@ -160,21 +169,7 @@ export default function Sidebar() {
                     <Typography variant="h6" sx={{ fontWeight: "bold" }} noWrap component="div">
                         Clinic Management System (CMS) by PPAG7
                     </Typography>
-                    <Tooltip title={"Open settings"}>
-                        <Box ml={'auto'}>
-                            <IconButton sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                bgcolor: theme.colors.primary.lighter,
-                                borderRadius: 100,
-                                gap: 1
-                            }}>
-                                <Avatar sx={{ width: 24, height: 24 }} src={ProfPic} />
-                                <Typography variant='subtitle1'>Admin User</Typography>
-                            </IconButton>
-                        </Box>
-                    </Tooltip>
+                    <UserButton />
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
@@ -185,6 +180,12 @@ export default function Sidebar() {
                 </DrawerHeader>
                 <Divider />
                 <List>
+                    <CollapsedMenu 
+                        caption={menuOptions[1].caption}
+                        to={menuOptions[1].to}
+                        icon={menuOptions[1].icon}
+                        children={menuOptions[1].children}
+                    />
                     {menuOptions.map((obj, index) => (
                         <ListItem key={obj.caption + index} disablePadding sx={{ display: 'block' }}>
                             <Tooltip title={obj.caption} placement='right-end'>
