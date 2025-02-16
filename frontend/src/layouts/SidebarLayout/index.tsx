@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, alpha, lighten, useTheme } from '@mui/material';
+import { Box, Snackbar, alpha, lighten, useTheme } from '@mui/material';
 import { Outlet } from 'react-router';
 
 import Sidebar from './Sidebar';
