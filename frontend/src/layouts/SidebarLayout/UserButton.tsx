@@ -1,9 +1,11 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography, useTheme } from "@mui/material";
 import ProfPic from "../../assets/me.jpg";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function UserButton() {
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -13,6 +15,7 @@ function UserButton() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+        navigate("");
     };
 
     return (
