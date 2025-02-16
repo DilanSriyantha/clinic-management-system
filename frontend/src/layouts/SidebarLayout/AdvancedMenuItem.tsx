@@ -99,7 +99,7 @@ const AdvancedMenuItem: React.FC<AdvancedMenuItemProps> = (props) => {
                                 props.children?.map((item, idx) => (
                                     <NavLink key={idx} to={item.to} onClick={() => handleNavClick(item.to)} style={{ color: "inherit" }}>
                                         {({ isActive }) => (
-                                            <ListItemButton selected={isActive} key={idx} sx={{ pl: 4 }}>
+                                            <ListItemButton selected={isActive} key={idx} sx={{ pl: 4, textWrap: "wrap" }}>
                                                 {item.icon}
                                                 <ListItemText sx={{ pl: 1 }} primary={item.caption} />
                                             </ListItemButton>

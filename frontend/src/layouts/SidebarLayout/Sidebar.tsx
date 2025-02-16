@@ -11,10 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '../../assets/dashboard_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import StethoscopeIcon from '../../assets/stethoscope_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import InventoryIcon from '../../assets/inventory_2_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
@@ -23,7 +19,7 @@ import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_op
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import UserButton from './UserButton';
 import AdvancedMenuItem from './AdvancedMenuItem';
-import { InsertDriveFile, InsertDriveFileTwoTone } from '@mui/icons-material';
+import { GroupOutlined, InsertDriveFileTwoTone } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -34,14 +30,25 @@ const menuOptions = [
         icon: <img src={DashboardIcon} />
     },
     {
-        caption: "Doctor Management",
-        icon: <img src={StethoscopeIcon} />,
+        caption: "Users",
+        icon: <GroupOutlined htmlColor='#fff'/>,
         children: [
             {
                 caption: "Create Account",
-                to: "/doctor-management/create",
+                to: "/users/create",
                 icon: <InsertDriveFileTwoTone />
             },
+            {
+                caption: "Users List",
+                to: "/users/list",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
+    },
+    {
+        caption: "Doctor Management",
+        icon: <img src={StethoscopeIcon} />,
+        children: [
             {
                 caption: "Patient Queue",
                 to: "/doctor-management/queue",
