@@ -68,8 +68,6 @@ public class ClinicsController {
             if(boundIdx > clinicList.size() - 1)
                 boundIdx = clinicList.size();
 
-            System.out.println("offsetIdx=" + offsetIdx + "\nboundIdx=" + boundIdx);
-
             response.setIntHeader("X-Total-Pages", (int) Math.ceil((double)clinicList.size() / pageSize));
 
             return clinicList.subList(offsetIdx, boundIdx);

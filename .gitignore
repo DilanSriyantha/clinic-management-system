@@ -5,6 +5,7 @@ frontend/dist/
 
 #env
 .env
+frontend/.env
 
 backend/out
 backend/target/
