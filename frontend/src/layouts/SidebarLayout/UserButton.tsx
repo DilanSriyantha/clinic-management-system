@@ -15,6 +15,10 @@ function UserButton() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleLogout = () => {
+        setAnchorElUser(null);
         navigate("");
     };
 
@@ -54,7 +58,7 @@ function UserButton() {
                     <MenuItem onClick={handleCloseUserMenu}>
                         <Typography sx={{ textAlign: "center" }}>Profile</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleCloseUserMenu}>
+                    <MenuItem onClick={handleLogout}>
                         <Typography sx={{ textAlign: "center", color: theme.colors.error.light }}>Log Out</Typography>
                     </MenuItem>
                 </Menu>

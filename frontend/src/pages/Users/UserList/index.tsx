@@ -1,7 +1,7 @@
 import { alpha, Box, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { useCallback, useEffect, useState } from "react";
-import { Check, Delete, Edit, Filter } from "@mui/icons-material";
+import { Check, Delete, Edit, Filter, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 
 interface Role {
@@ -80,6 +80,10 @@ function UsersList() {
         setSelectedIds(new Set(ids));
     }, [selectedIds]);
 
+    const handleReloadClick = useCallback(() => {
+
+    }, []);
+
     interface TableToolbarProps {
         numSelected?: number;
     }
@@ -138,7 +142,7 @@ function UsersList() {
                     pt: 2,
                     pb: 2
                 }}>
-                    <Box sx={{ display: "flex", flexDirection: "column", textAlign: "start" }}>
+                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start" }}>
                         <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
                             {
                                 roles.map((item) => {
@@ -156,7 +160,16 @@ function UsersList() {
                                 })
                             }
                         </Stack>
-                    </Box>
+                        <Box 
+                            sx={{ pb: 2 }}
+                        >
+                            <Tooltip title="Reload">
+                                <IconButton onClick={handleReloadClick}>
+                                    <ReplayOutlined />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </Stack>
                     <TableToolbar numSelected={selectedIds?.size} />
                     <DataGrid
                         rows={role.value === 1 ? doc_rows : recep_rows}

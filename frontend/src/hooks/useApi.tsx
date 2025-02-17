@@ -6,7 +6,7 @@ export interface BasicResultSet {
 };
 
 interface ApiProviderType {
-    get: <T>(endpoint: string, urlParams?: Record<string, string>) => Promise<T[]>;
+    get: <T>(endpoint: string, urlParams?: Record<string, string>, getHeaders?: (headers: Headers) => void) => Promise<T[]>;
     post: <T>(endpoint: string, requestBodyJson: T) => Promise<BasicResultSet>;
     put: <T>(endpoint: string, requestBodyJson: T) => Promise<BasicResultSet>;
 };
@@ -22,7 +22,7 @@ const ApiContext = createContext<ApiProviderType>(
 export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
     const api_url = import.meta.env.VITE_API_URL;
 
-    const get = async<T = any>(endpoint: string, urlParams?: Record<string, string>): Promise<T[]> => {
+    const get = async<T = any>(endpoint: string, urlParams?: Record<string, string>, getHeaders?: (headers: Headers) => void): Promise<T[]> => {
         const url = api_url + endpoint + (urlParams ? `?${new URLSearchParams(urlParams).toString()}` : "");
         try{
             const res: Response = await fetch(url, { 
@@ -31,9 +31,13 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
                     "Content-type": "application/json;"
                 } 
             });
+
             if(!res.ok)
                 throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
-            
+
+            if(getHeaders)
+                getHeaders(res.headers);
+
             return (await res.json()) as T[];
         }catch(err){
             throw new Error(`Fetch error [useApi]: ${err instanceof Error ? err.message : "Unknown error"}`);
