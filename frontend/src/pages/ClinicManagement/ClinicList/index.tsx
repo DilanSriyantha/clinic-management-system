@@ -1,20 +1,23 @@
 import { Card, CardActionArea, CardContent, CardMedia, Container, Stack, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { useEffect, useState } from "react";
+import { useApi } from "../../../hooks/useApi";
+import { Clinic } from "../../../models/Clinic";
+import ClinicCard from "./ClinicCard";
 
 function ClinicList() {
-    const [list, setList] = useState<object[] | null>(null);
+    const [list, setList] = useState<Clinic[] | null>(null);
+    
+    const api = useApi();
 
     useEffect(() => {
         async function getList() {
-            const api = import.meta.env.VITE_API_URL;
-            try {
-                const res = await fetch(api + "/clinic-management/list");
-                if (res) {
-                    const list = await res.json();
-                    setList(list);
+            try{
+                const res = await api.get<Clinic>("/clinic-management/list");
+                if(res){
+                    setList(res);
                 }
-            } catch (err) {
+            }catch(err){
                 console.log(err);
             }
         }
@@ -34,6 +37,7 @@ function ClinicList() {
                     sx={{
                         display: "flex",
                         flexDirection: "column",
+                        p: "0 !important",
                         pt: 2,
                         pb: 2
                     }}
@@ -41,24 +45,7 @@ function ClinicList() {
                     <Stack direction="row" gap={2}>
                         {
                             list?.map((clinic, idx) => (
-                                <Card key={idx} sx={{ maxWidth: 345 }}>
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNAzLGvyz3x8qTsZMTwSICccgxgAJiDMuc7g&s"
-                                        />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            Lizard
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                                            Lizards are a widespread group of squamate reptiles, with over 6,000
-                                            species, ranging across all continents except Antarctica
-                                        </Typography>
-                                    </CardContent>
-                                    </CardActionArea>
-                                </Card>
+                                <ClinicCard key={idx} clinic={clinic} />
                             ))
                         }
                     </Stack>

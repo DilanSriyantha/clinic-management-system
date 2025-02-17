@@ -1,59 +1,60 @@
-import { Alert, Autocomplete, Box, Button, Card, Container, Snackbar, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { KeyboardEvent, ReactNode, useRef } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from "react";
 import { TimePicker } from "@mui/x-date-pickers";
-import moment from "moment";
 import AlertSnackbar, { AlertSnackbarHandles } from "../../../components/AlertSnackbar";
+import { useApi } from "../../../hooks/useApi";
+import { Clinic } from "../../../models/Clinic";
+import moment from "moment";
 
 function CreateClinic() {
-    const formRef = useRef<HTMLFormElement>(null);
     const alertRef = useRef<AlertSnackbarHandles>(null);
+    const timePickerInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = async () => {
-        if(!formRef.current)
+    const [clinicInfo, setClinicInfo] = useState<Clinic>();
+
+    const api = useApi();
+
+    const handleSubmit = useCallback(async () => {
+        if(!clinicInfo)
             return;
 
-        const formData = new FormData(formRef.current);
-        createClinicAsync(formData);
-    };
+        createClinicAsync();
+    }, [clinicInfo]);
 
-    const createClinicAsync = async (formData: FormData) => {
-        const api = import.meta.env.VITE_API_URL;
+    const createClinicAsync = useCallback(async () => {
         try{
-            const res = await fetch(api + "/clinic-management/create", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                },
-                body: JSON.stringify({
-                    caption: formData.get("caption"),
-                    description: formData.get("description"),
-                    dayOfWeek: formData.get("dayofweek"),
-                    time: formData.get("time")
-                })
-            });
-            if(res){
-                const json = await res.json();
-                console.log(json);
+            if(!clinicInfo)
+                return;
 
-                alertRef.current?.show();
+            const res = await api.post<Clinic>("/clinic-management/create", clinicInfo);
+            if(res){
+                console.log(res);
             }
         }catch(err){
             console.log(err);
-        } 
-    }
+        }
+    }, [clinicInfo]);
 
-    const handleClear = () => {
-        if(!formRef.current)
-            return;
-
-        formRef.current.reset();
-    }
+    const handleClear = useCallback(() => {
+        setClinicInfo(undefined);
+    }, [clinicInfo]);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
         if(e.key.match("Enter"))
             handleSubmit();
     }
+
+    const handleTextFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setClinicInfo({...clinicInfo, [e.target.name]: e.target.value});
+    }, [clinicInfo]);
+
+    const handleTimePickerChange = useCallback(() => {
+        if(!timePickerInputRef.current)
+            return;
+
+        setClinicInfo({...clinicInfo, [timePickerInputRef.current.name]: timePickerInputRef.current.value});
+    }, [clinicInfo]);
 
     return (
         <>
@@ -75,7 +76,6 @@ function CreateClinic() {
                         <Typography variant="subtitle2">*Please fill the information required.</Typography>
                     </Box>
                     <form
-                        ref={formRef}
                         onSubmit={handleSubmit}
                         onKeyDown={handleEnterKeyPress}
                     >
@@ -86,8 +86,8 @@ function CreateClinic() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField name="caption" label="Caption" type="text" />
-                            <TextField name="description" label="Description" type="text" />
+                            <TextField onChange={handleTextFieldChange} name="caption" label="Caption" type="text" />
+                            <TextField onChange={handleTextFieldChange} name="description" label="Description" type="text" />
                             <Autocomplete
                                 // disablePortal
                                 options={[
@@ -99,9 +99,10 @@ function CreateClinic() {
                                     { label: "Friday", value: 5 },
                                     { label: "Saturday", value: 6 }
                                 ]}
-                                renderInput={(params) => <TextField {...params} name="dayofweek" label="Day of week" />}
+                                onChange={(e, v) => setClinicInfo({...clinicInfo, ["dayOfWeek"]: v?.label})}
+                                renderInput={(params) => <TextField {...params} name="dayOfWeek" label="Day of week" />}
                             />
-                            <TimePicker name="time" label="Time" defaultValue={moment(new Date)} />
+                            <TimePicker onChange={handleTimePickerChange} inputRef={timePickerInputRef} name="time" label="Time" defaultValue={moment(new Date)} />
                         </Box>
                     </form>
                     <Box sx={{
