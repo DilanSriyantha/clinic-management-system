@@ -7,11 +7,29 @@ import java.awt.event.ActionListener;
 public class PharmacyGUI {
     private JTable table1;
     private JButton searchButton;
-    private JTextField textField1;
+    private JTextField search;
     private JButton addNewButton;
     private JButton deleteButton;
     private JButton updateButton;
     private JButton homeButton;
+    private JTextField medName;
+    private JTextField storeLoc;
+    private JTextField medId;
+    private JTextField medCompany;
+    private JTextField phnNumber;
+    private JTextField price;
+    private JTextField quantity;
+    private JTextField expDate;
+    private JButton billingButton;
+
+
+    public void initialize(){
+        JFrame frame = new JFrame("Pharmacy Management System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.pack();
+        frame.setVisible(true);
+    }
 
     public PharmacyGUI() {
         addNewButton.addActionListener(new ActionListener() {
@@ -39,6 +57,12 @@ public class PharmacyGUI {
             }
         });
         searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        billingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
