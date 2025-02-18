@@ -26,7 +26,7 @@ const drawerWidth = 240;
 const menuOptions = [
     {
         caption: "Dashboard",
-        to: "/main/dashboard",
+        to: "/",
         icon: <img src={DashboardIcon} />
     },
     {
@@ -35,12 +35,12 @@ const menuOptions = [
         children: [
             {
                 caption: "Create Account",
-                to: "/main/users/create",
+                to: "users/create",
                 icon: <InsertDriveFileTwoTone />
             },
             {
                 caption: "Users List",
-                to: "/main/users/list",
+                to: "users/list",
                 icon: <InsertDriveFileTwoTone />
             }
         ]
@@ -51,12 +51,12 @@ const menuOptions = [
         children: [
             {
                 caption: "Clinics List",
-                to: "/main/clinic-management/list",
+                to: "clinic-management/list",
                 icon: <InsertDriveFileTwoTone />
             },
             {
                 caption: "Create Clinic",
-                to: "/main/clinic-management/create",
+                to: "clinic-management/create",
                 icon: <InsertDriveFileTwoTone />
             }
         ]
@@ -67,44 +67,44 @@ const menuOptions = [
         children: [
             {
                 caption: "Patient Queue",
-                to: "/main/doctor-management/queue",
+                to: "doctor-management/queue",
                 icon: <InsertDriveFileTwoTone />
             },
             {
                 caption: "Prescription",
-                to: "/main/doctor-management/prescription",
+                to: "doctor-management/prescription",
                 icon: <InsertDriveFileTwoTone />
             },
             {
                 caption: "Lab Requests",
-                to: "/main/doctor-management/lab-requests",
+                to: "doctor-management/lab-requests",
                 icon: <InsertDriveFileTwoTone />
             },
             {
                 caption: "Patients",
-                to: "/main/doctor-management/patients",
+                to: "doctor-management/patients",
                 icon: <InsertDriveFileTwoTone />
             },
         ]
     },
     {
         caption: "Billing & Payment",
-        to: "/main/billing",
+        to: "billing",
         icon: <img src={BillingIcon} />
     },
     {
         caption: "Pharmacy Management",
-        to: "/main/pharmacy",
+        to: "pharmacy",
         icon: <img src={InventoryIcon} />
     },
     {
         caption: "Reporting & Analysis",
-        to: "/main/reporting",
+        to: "reporting",
         icon: <img src={ReportingIcon} />
     },
     {
         caption: "Backup & Restore",
-        to: "/main/backup",
+        to: "backup",
         icon: <img src={BackupIcon} />
     }
 ]

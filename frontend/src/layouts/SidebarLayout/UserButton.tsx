@@ -1,11 +1,12 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography, useTheme } from "@mui/material";
 import ProfPic from "../../assets/me.jpg";
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useCallback, useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 
 function UserButton() {
     const theme = useTheme();
-    const navigate = useNavigate();
+
+    const [user, setUser] = useAuth();
 
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -17,10 +18,10 @@ function UserButton() {
         setAnchorElUser(null);
     };
 
-    const handleLogout = () => {
+    const handleLogout = useCallback(() => {
         setAnchorElUser(null);
-        navigate("");
-    };
+        setUser(null);
+    }, [user]);
 
     return (
         <>

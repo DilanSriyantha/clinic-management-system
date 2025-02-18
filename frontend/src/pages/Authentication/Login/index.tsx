@@ -1,7 +1,8 @@
 import { MedicalServices, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, Card, Container, FormControl, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { KeyboardEvent, useCallback, useRef, useState } from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../../hooks/useAuth";
 
 function Login() {
     const formRef = useRef<HTMLFormElement>(null);
@@ -9,7 +10,7 @@ function Login() {
     const [error, setError] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    const navigate = useNavigate();
+    const [user, setUser] = useAuth();
 
     const handleLogin = useCallback(() => {
         if(!formRef.current)
@@ -23,7 +24,7 @@ function Login() {
             setError(true);
 
         if(refId === "dilan" && pw === "sriyantha")
-            navigate("/main/dashboard");
+            setUser({ id: 1, name: "Dilan", role: "Admin" });
         else
             setError(true);
     }, [error]);

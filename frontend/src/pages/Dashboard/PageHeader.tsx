@@ -1,33 +1,12 @@
 import { Avatar, Box, Skeleton, Typography, useTheme } from "@mui/material";
 import userImg from "../../assets/user.png";
-import { useEffect, useState } from "react";
-import User from "../../models/User";
+import { useAuth } from "../../hooks/useAuth";
+
 
 function PageHeader() {
     const theme = useTheme();
 
-    const [user, setUser] = useState<User>();
-
-    useEffect(() => {
-        async function getUser() {
-            try{
-                const res = await fetch("http://127.0.0.1:8080/api");
-                if(res){
-                    const _user = await res.json();
-                    setTimeout(() => {
-                        
-                        const obj = Object.assign(new User(), _user);
-                        setUser(obj);
-                    }, 1000);
-                    
-                }
-            }catch(err){
-                console.log(err);
-            }
-        }
-        
-        getUser();
-    }, []);
+    const [user, setUser] = useAuth();
 
     return (
         <Box
@@ -59,7 +38,7 @@ function PageHeader() {
                                 component="h3"
                                 gutterBottom
                             >
-                                { `Welcome, ${user.getName()}` }
+                                { `Welcome, ${user.name}` }
                             </Typography>
                             <Typography
                                 variant="subtitle2"
