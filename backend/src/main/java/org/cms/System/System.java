@@ -4,8 +4,6 @@ import org.cms.Main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class System {

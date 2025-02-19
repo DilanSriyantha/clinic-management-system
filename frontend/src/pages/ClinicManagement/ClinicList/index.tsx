@@ -2,7 +2,7 @@ import { Box, Container, IconButton, Pagination, Stack, Tooltip } from "@mui/mat
 import PageTitle from "../../../components/PageTitle";
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
 import { useApi } from "../../../hooks/useApi";
-import { Clinic } from "../../../models/Clinic";
+import { Clinic } from "../../../types/Clinic";
 import ClinicCard from "./ClinicCard";
 import SkeletonCard from "./SkeletonCard";
 import { ReplayOutlined } from "@mui/icons-material";

@@ -1,5 +1,5 @@
 import { Card, CardActionArea, CardContent, CardMedia, Chip, Stack, Typography } from "@mui/material";
-import { Clinic } from "../../../../models/Clinic";
+import { Clinic } from "../../../../types/Clinic";
 import { CalendarIcon, TimeIcon } from "@mui/x-date-pickers";
 import { Person } from "@mui/icons-material";
 

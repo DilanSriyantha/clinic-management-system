@@ -1,34 +1,42 @@
 package org.cms.ClinicManagement.Models;
 
-import java.util.UUID;
+import jakarta.persistence.*;
+import org.cms.SystemAdministration.Models.User;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.sql.Timestamp;
+
+@Entity
 public class Clinic {
-    UUID uid;
-    String caption;
-    String description;
-    String doctorUid;
-    String dayOfWeek;
-    String time;
-    int status;
-    String dateCreated;
 
-    public Clinic(UUID uid, String caption, String description, String doctorUid, String dayOfWeek, String time, int status, String dateCreated) {
-        this.uid = uid;
-        this.caption = caption;
-        this.description = description;
-        this.doctorUid = doctorUid;
-        this.dayOfWeek = dayOfWeek;
-        this.time = time;
-        this.status = status;
-        this.dateCreated = dateCreated;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String caption;
+
+    private String description;
+
+    @OneToOne
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
+    private User doctor;
+
+    private String dayOfWeek;
+
+    private String time;
+
+    private Integer status;
+
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    public Integer getId() {
+        return id;
     }
 
-    public UUID getUid() {
-        return uid;
-    }
-
-    public void setUid(UUID uid) {
-        this.uid = uid;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getCaption() {
@@ -47,12 +55,12 @@ public class Clinic {
         this.description = description;
     }
 
-    public String getDoctorUid() {
-        return doctorUid;
+    public User getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorUid(String doctorUid) {
-        this.doctorUid = doctorUid;
+    public void setDoctor(User doctor) {
+        this.doctor = doctor;
     }
 
     public String getDayOfWeek() {
@@ -71,19 +79,15 @@ public class Clinic {
         this.time = time;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public String getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(String dateCreated) {
-        this.dateCreated = dateCreated;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 }

@@ -1,37 +1,50 @@
 package org.cms.SystemAdministration.Models;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "REF_ID", columnNames = "reference_id"))
+@Getter
+@Setter
 public class User {
-    int id;
-    String name;
-    String role;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public User(int id, String name, String role) {
-        this.id = id;
-        this.name = name;
-        this.role = role;
-    }
+    private String name;
 
-    public int getId() {
-        return id;
-    }
+    private String password;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    @Column(name = "reference_id", unique = true, nullable = false)
+    private String referenceId;
 
-    public String getName() {
-        return name;
-    }
+    private String imagePath;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String birthday;
 
-    public String getRole() {
-        return role;
-    }
+    private String email;
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    private String address;
+
+    private String telephone;
+
+    private Float percentage;
+
+    private Integer status;
+
+    private Integer role;
+
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
 }

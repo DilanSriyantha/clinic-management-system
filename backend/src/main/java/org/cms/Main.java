@@ -1,5 +1,6 @@
 package org.cms;
 
+import io.micrometer.common.lang.NonNull;
 import org.cms.System.System;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,7 @@ public class Main {
     public WebMvcConfigurer configCors() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173")
                         .allowedOrigins("*")

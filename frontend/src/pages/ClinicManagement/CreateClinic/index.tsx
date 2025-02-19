@@ -4,7 +4,7 @@ import { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from "react
 import { TimePicker } from "@mui/x-date-pickers";
 import AlertSnackbar, { AlertSnackbarHandles } from "../../../components/AlertSnackbar";
 import { useApi } from "../../../hooks/useApi";
-import { Clinic } from "../../../models/Clinic";
+import { Clinic } from "../../../types/Clinic";
 import moment from "moment";
 
 function CreateClinic() {
