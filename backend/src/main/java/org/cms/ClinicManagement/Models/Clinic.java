@@ -1,9 +1,8 @@
 package org.cms.ClinicManagement.Models;
 
 import jakarta.persistence.*;
-import org.cms.SystemAdministration.Models.User;
+import org.cms.Users.Models.User;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
 

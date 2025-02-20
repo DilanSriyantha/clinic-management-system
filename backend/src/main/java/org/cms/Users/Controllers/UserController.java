@@ -1,8 +1,8 @@
-package org.cms.SystemAdministration.Controllers;
+package org.cms.Users.Controllers;
 
-import org.cms.SystemAdministration.Models.User;
-import org.cms.SystemAdministration.Repositories.UserRepository;
-import org.cms.SystemAdministration.Services.UserService;
+import org.cms.Users.Models.User;
+import org.cms.Users.Repositories.UserRepository;
+import org.cms.Users.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

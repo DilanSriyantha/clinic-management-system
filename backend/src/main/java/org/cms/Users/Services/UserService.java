@@ -1,9 +1,10 @@
-package org.cms.SystemAdministration.Services;
+package org.cms.Users.Services;
 
 import org.cms.Enums.Role;
-import org.cms.SystemAdministration.Models.User;
-import org.cms.SystemAdministration.Repositories.UserRepository;
+import org.cms.Users.Models.User;
+import org.cms.Users.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,8 @@ public class UserService {
     private UserRepository userRepository;
 
     public User create(User user) {
-        User lastUser = userRepository.findFirstByRoleOrderByCreatedAtDesc(user.getRole());
+        User lastUser = userRepository.findFirstByRoleOrderByCreatedAtDesc(user.getRole())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         int lastId = lastUser != null ? lastUser.getId() : 0;
 
         user.setReferenceId(generateReferenceId(lastId, user.getRole()));
@@ -53,7 +55,7 @@ public class UserService {
         return user;
     }
 
-    private String generateReferenceId(int lastId, int role) {
-        return Role.valueOf(role) + "_" + (lastId + 1);
+    private String generateReferenceId(int lastId, Role role) {
+        return role.name() + "_" + (lastId + 1);
     }
 }

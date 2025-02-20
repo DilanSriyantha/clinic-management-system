@@ -2,8 +2,9 @@ package org.cms.ClinicManagement.Services;
 
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
-import org.cms.SystemAdministration.Models.User;
-import org.cms.SystemAdministration.Repositories.UserRepository;
+import org.cms.Enums.Role;
+import org.cms.Users.Models.User;
+import org.cms.Users.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +23,9 @@ public class ClinicService {
         return clinicRepository.findAll(pageable);
     }
 
-    public Clinic save(Clinic clinic, int doctorId) {
-        User doctor = userRepository.findById(doctorId)
+    public Clinic save(Clinic clinic, Role role, String referenceId) {
+        User doctor = userRepository.findByRoleAndReferenceId(role, referenceId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
-
-        if(doctor.getRole() != 2)
-            throw new IllegalArgumentException("Selected user is not a doctor");
 
         clinic.setDoctor(doctor);
 

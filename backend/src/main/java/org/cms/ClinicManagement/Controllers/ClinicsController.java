@@ -3,9 +3,11 @@ package org.cms.ClinicManagement.Controllers;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.ClinicManagement.Services.ClinicService;
+import org.cms.Enums.Role;
 import org.cms.Utils.BasicResultSet;
 import org.cms.Utils.DateFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,42 +20,18 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/clinic-management")
+@RequiredArgsConstructor
 public class ClinicsController {
 
-    @Autowired
-    private ClinicRepository clinicRepository;
+    private final ClinicRepository clinicRepository;
 
-    @Autowired
-    private ClinicService clinicService;
-
-    public ClinicsController() {
-        generateClinics();
-    }
+    private final ClinicService clinicService;
 
     @PostMapping("/create")
-    public Clinic createClinic(@RequestBody Clinic clinic, @RequestParam int doctorId) {
+    public Clinic createClinic(@RequestBody Clinic clinic, @RequestParam String doctorReferenceId, @RequestParam int role) {
         clinic.setStatus(1);
 
-        return clinicService.save(clinic, doctorId);
-    }
-
-    private void generateClinics() {
-//        String[] days = new String[]{ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-//        Random random = new Random();
-//
-//        for(int i = 0; i < 100; i++){
-//            Clinic clinic = new Clinic(
-//                    uuid4.generate(),
-//                    "Clinic " + (i+1),
-//                    "Lorem ipsum lorem ipsum",
-//                    null,
-//                    days[random.nextInt(0, 7)],
-//                    "12:00 PM",
-//                    1,
-//                    "2025-01-01"
-//            );
-//            clinicList.add(clinic);
-//        }
+        return clinicService.save(clinic, Role.valueOf(role), doctorReferenceId);
     }
 
     @GetMapping("/all")
