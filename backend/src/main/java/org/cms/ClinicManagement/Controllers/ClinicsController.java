@@ -1,16 +1,11 @@
 package org.cms.ClinicManagement.Controllers;
 
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.ClinicManagement.Services.ClinicService;
 import org.cms.Enums.Role;
-import org.cms.Utils.BasicResultSet;
-import org.cms.Utils.DateFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

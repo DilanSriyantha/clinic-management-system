@@ -2,6 +2,7 @@ import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography, useTheme 
 import ProfPic from "../../assets/me.jpg";
 import { useCallback, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { deepPurple } from "@mui/material/colors";
 
 function UserButton() {
     const theme = useTheme();
@@ -35,8 +36,8 @@ function UserButton() {
                         borderRadius: 100,
                         gap: 1
                     }} onClick={handleOpenUserMenu}>
-                        <Avatar sx={{ width: 24, height: 24 }} src={ProfPic} />
-                        <Typography variant='subtitle1'>Admin User</Typography>
+                        <Avatar sx={{ width: 24, height: 24, bgcolor: deepPurple[500] }}>{user?.user.referenceId.slice(0, 1)}</Avatar>
+                        <Typography variant='subtitle1'>{user?.user.referenceId}</Typography>
                     </IconButton>
                 </Box>
             </Tooltip>

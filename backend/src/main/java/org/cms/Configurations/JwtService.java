@@ -28,11 +28,14 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
+        System.out.println("Extracted referenceId: " + extractReferenceId(token));
+        System.out.println("UserDetails referenceId: " + userDetails.getUsername());
+        System.out.println("UserDetails password: " + userDetails.getPassword());
         return (userDetails.getUsername().equals(extractReferenceId(token)) && !isTokenExpired(token));
     }
 
     public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date(System.currentTimeMillis()));
+        return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
     public String generateToken(UserDetails userDetails) {

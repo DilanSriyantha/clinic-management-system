@@ -13,5 +13,11 @@ export interface User {
     percentage: number;
     status: number;
     role: number;
+    accountNonExpired: boolean;
+    accountNonLocked: boolean;
+    authorities: any[];
+    credentialsNonExpired: boolean;
+    enabled: boolean;
     createdAt: Timestamp;
+    updatedAt: Timestamp;
 };

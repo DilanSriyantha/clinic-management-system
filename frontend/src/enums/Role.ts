@@ -1,5 +1,6 @@
 export enum Role {
-    Receptionist = 0,
-    Doctor = 1,
-    Pharmacist = 2
+    ADMIN = 0,
+    DOCTOR = 1,
+    RECEPTIONIST = 2,
+    PHARMACIST = 3
 };

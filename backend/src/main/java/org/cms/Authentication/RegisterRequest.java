@@ -29,6 +29,6 @@ public class RegisterRequest {
 
     private Float percentage;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = EnumType.ORDINAL)
     private Role role;
 }

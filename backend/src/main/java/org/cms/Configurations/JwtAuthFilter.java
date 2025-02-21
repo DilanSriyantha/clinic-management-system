@@ -35,7 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwtToken;
         final String referenceId;
 
-        if(authHeader == null) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
 
             return;
@@ -44,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         jwtToken = authHeader.substring(7);
         referenceId = jwtService.extractReferenceId(jwtToken);
 
-        if(referenceId == null && SecurityContextHolder.getContext().getAuthentication() != null) {
+        if(referenceId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
 
             return;

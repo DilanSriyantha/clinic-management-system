@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useContext } from "react";
+import { useAuth } from "./useAuth";
 
 export interface BasicResultSet {
     resultCode: number;
@@ -7,7 +8,7 @@ export interface BasicResultSet {
 
 interface ApiProviderType {
     get: <T>(endpoint: string, urlParams?: Record<string, string>, getHeaders?: (headers: Headers) => void) => Promise<T[]>;
-    post: <T>(endpoint: string, requestBodyJson: T) => Promise<BasicResultSet>;
+    post: <T, R>(endpoint: string, requestBodyJson: T) => Promise<R>;
     put: <T>(endpoint: string, requestBodyJson: T) => Promise<BasicResultSet>;
 };
 
@@ -20,17 +21,23 @@ const ApiContext = createContext<ApiProviderType>(
 );
 
 export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
+    const [user] = useAuth();
+
     const api_url = import.meta.env.VITE_API_URL;
 
     const get = async<T = any>(endpoint: string, urlParams?: Record<string, string>, getHeaders?: (headers: Headers) => void): Promise<T[]> => {
         const url = api_url + endpoint + (urlParams ? `?${new URLSearchParams(urlParams).toString()}` : "");
+        const options: RequestInit = {
+            method: "GET",
+            headers: user?.token ? {
+                "Content-type": "application/json;",
+                "Authorization": `Bearer ${user?.token}`
+            } : {
+                "Content-type": "application/json;"
+            }
+        };
         try{
-            const res: Response = await fetch(url, { 
-                method: "GET",
-                headers: {
-                    "Content-type": "application/json;"
-                } 
-            });
+            const res: Response = await fetch(url, options);
 
             if(!res.ok)
                 throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
@@ -44,35 +51,44 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         }
     };
 
-    const post = async<T = any>(endpoint: string, requestBodyJson: T): Promise<BasicResultSet> => {
+    const post = async<T = any, R = any>(endpoint: string, requestBodyJson: T): Promise<R> => {
         const url = api_url + endpoint;
+        const options: RequestInit = {
+            method: "POST",
+            body: JSON.stringify(requestBodyJson),
+            headers: user?.token ? {
+                "Content-type": "application/json;",
+                "Authorization": `Bearer ${user?.token}`
+            } : {
+                "Content-type": "application/json;"
+            }
+        };
         try{
-            const res: Response = await fetch(url, {
-                method: "POST",
-                body: JSON.stringify(requestBodyJson),
-                headers: {
-                    "Content-type": "application/json;"
-                }
-            });
+            const res: Response = await fetch(url, options);
             
             if(!res.ok)
                 throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
 
-            return (await res.json()) as BasicResultSet;
+            return (await res.json()) as R;
         }catch(err){
             throw new Error(`Fetch error [useApi]: ${err instanceof Error ? err.message : "Unknown error"}`);
         }
     };
 
     const put = async<T = any>(endpoint: string, requestBodyJson: T): Promise<BasicResultSet> => {
+        const url = api_url + endpoint;
+        const options: RequestInit = {
+            method: "PUT",
+            body: JSON.stringify(requestBodyJson),
+            headers: user?.token ? {
+                "Content-type": "application/json;",
+                "Authorization": `Bearer ${user?.token}`
+            } : {
+                "Content-type": "application/json;"
+            }
+        };
         try{
-            const res: Response = await fetch(endpoint, {
-                method: "PUT",
-                body: JSON.stringify(requestBodyJson),
-                headers: {
-                    "Content-type": "application/json;"
-                }
-            });
+            const res: Response = await fetch(url, options);
 
             if(!res.ok)
                 throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);

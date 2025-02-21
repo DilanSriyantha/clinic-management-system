@@ -1,57 +1,122 @@
-import { Autocomplete, Box, Button, Card, Chip, Container, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Chip, Container, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { DatePicker } from "@mui/x-date-pickers";
-import { FormEvent, useCallback, useRef, useState } from "react";
+import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
+import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { Check } from "@mui/icons-material";
+import { RegisterFormData } from "../../../types/RegisterFormData";
+import { isValid } from "../../../utils/Validator";
+import { Role } from "../../../enums/Role";
+import { useAuth, useAuthManager } from "../../../hooks/useAuth";
+import PasswordInputField from "../../../components/PasswordInputField";
+import { useAlert } from "../../../hooks/useAlert";
 
-interface Role {
+interface RoleItem {
     value: number;
     label: string;
 };
 
-const roles: Role[] = [
-    { value: 0, label: "Receptionist" },
-    { value: 1, label: "Doctor" },
-    { value: 2, label: "Pharmacist" },
-];
+interface SpecializationOption {
+    id: number;
+    label: string;
+};
 
-const specializationOptions = [
-    { label: "Surgeon", id: 0 },
-    { label: "Specialist", id: 1 }
-];
+const initialState: RegisterFormData = {
+    name: null,
+    birthday: null,
+    address: null,
+    email: null,
+    password: null,
+    telephone: null,
+    specialization: null,
+    percentage: 0,
+    role: Role.DOCTOR,
+};
+
+const reducer = (state: RegisterFormData, action: { type: string, payload?: any }) => {
+    switch(action.type) {
+        case "SET_FIELD":
+            return {...state, [action.payload.name]: action.payload.value};
+        case "RESET_FORM":
+            return initialState;
+        default:
+            return state;
+    };
+};
 
 function CreateAccount() {
-    const formRef = useRef<HTMLFormElement>(null);
+    const alert = useAlert();
+    const authManager = useAuthManager();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [formData, dispatch] = useReducer(reducer, initialState);
 
-    const [role, setRole] = useState<Role>(roles[0]);
+    const roles: RoleItem[] = useMemo(() => [
+        { value: Role.DOCTOR, label: Role[1] },
+        { value: Role.RECEPTIONIST, label: Role[2] },
+        { value: Role.PHARMACIST, label: Role[3] },
+    ], []);
+    
+    const specializationOptions: SpecializationOption[] = useMemo(() => [
+        { label: "Surgeon", id: 0 },
+        { label: "Specialist", id: 1 }
+    ], []);
 
-    const handleSubmit = useCallback((e: FormEvent) => {
-        if (!formRef.current)
+    const handleSubmit = useCallback(async (e?: FormEvent) => {
+        setLoading(true);
+
+        console.log(formData);
+
+        const exceptFields: string[] = (formData.role === Role.PHARMACIST || formData.role === Role.RECEPTIONIST) ? ["specialization", "percentage"] : [];
+        try{
+            
+            if(!isValid(formData, exceptFields)){
+                alert.setAlert({ message: "Please fill the required information and try again.", severity: "warning", autoHideLatency: 1000 });
+                setLoading(false); 
+                return;
+            }
+    
+            const res = await authManager.register(formData);
+            if(res){
+                console.log(res);
+                alert.setAlert({ message: "New user registered successfuly.", severity: "success", autoHideLatency: 1000 });
+            }
+        }catch(err){
+            console.log(err);
+            alert.setAlert({ message: err instanceof Error ? err.message : err!.toString(), severity: "error", autoHideLatency: 1000 });
+        }
+
+        setTimeout(() => setLoading(false), 1000);
+    }, [formData]);
+
+    const handleEnterKeyDown = useCallback((e: KeyboardEvent<HTMLFormElement>) => {
+        if(e.key.match("Enter"))
+            handleSubmit();
+    }, []);
+ 
+    const handleInput = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        dispatch({ type: "SET_FIELD", payload: { name: e.target.name, value: e.target.value } });
+    }, []);
+
+    const handleTimeInput = useCallback((value: moment.Moment | null, context: PickerChangeHandlerContext<DateValidationError>) => {
+        dispatch({ type: "SET_FIELD", payload: { name: "birthday", value: value?.format("YYYY-MM-DD") } });
+    }, []);
+
+    const handleRoleChange = useCallback((item: RoleItem) => {
+        dispatch({ type: "SET_FIELD", payload: { name: "role", value: item.value } });
+    }, []);
+
+    const handleSpecializationChange = useCallback((event: React.SyntheticEvent, value: SpecializationOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<any> | undefined) => {
+        if (!value)
             return;
 
-        const form = formRef.current;
-        const formData = new FormData(form);
-        const name = formData.get("name");
-        const bday = formData.get("birthday");
-        const addr = formData.get("address");
-        const email = formData.get("email");
-        const tel = formData.get("telephone");
-        const spec = formData.get("specialization");
-        const prof = formData.get("profit-percentage");
+        if (formData.specialization === value.label)
+            return;
 
-        alert(`${name} ${bday} ${addr} ${email} ${tel} ${spec} ${prof}`);
+        dispatch({ type: "SET_FIELD", payload: { name: "specialization", value: value.label } });
     }, []);
 
     const handleClear = useCallback((e: FormEvent) => {
         window.location.reload();
     }, []);
-
-    const handleRoleChange = useCallback((item: Role) => {
-        if (role.value === item.value)
-            return;
-
-        setRole(item);
-    }, [role]);
 
     return (
         <>
@@ -70,7 +135,7 @@ function CreateAccount() {
                         <Stack direction="row" flexWrap="wrap" pb={1} gap={1}>
                             {
                                 roles.map((item) => {
-                                    const checked = role.value === item.value;
+                                    const checked = formData.role === item.value;
                                     return (
                                         <Chip
                                             key={item.value}
@@ -92,8 +157,8 @@ function CreateAccount() {
                         <Typography variant="subtitle2">*Please fill the information required.</Typography>
                     </Box>
                     <form
-                        ref={formRef}
                         onSubmit={handleSubmit}
+                        onKeyDown={handleEnterKeyDown}
                     >
                         <Box sx={{
                             display: "flex",
@@ -102,24 +167,26 @@ function CreateAccount() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField name="name" label="Name" type="text" />
-                            <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" />
-                            <TextField name="address" label="Address" type="text" />
-                            <TextField name="email" label="E-mail" type="email" />
-                            <TextField name="telephone" label="Telephone" type="tel" />
+                            <TextField name="name" label="Name" type="text" onChange={handleInput} />
+                            <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} />
+                            <TextField name="address" label="Address" type="text" onChange={handleInput} />
+                            <TextField name="email" label="E-mail" type="email" onChange={handleInput} />
+                            <PasswordInputField onChange={handleInput} />
+                            <TextField name="telephone" label="Telephone" type="tel" onChange={handleInput} />
                             {
-                                (role.value == 1) &&
+                                (formData.role == Role.DOCTOR) &&
                                 <>
                                     <Autocomplete
                                         // disablePortal
                                         options={specializationOptions}
                                         renderInput={(params) => <TextField {...params} name="specialization" label="Specialization" />}
+                                        onChange={handleSpecializationChange}
                                     />
-                                    <TextField name="profit-percentage" label="Profit Percentage" type="number" slotProps={{
+                                    <TextField name="percentage" label="Profit Percentage" type="number" slotProps={{
                                         input: {
                                             endAdornment: <InputAdornment position="end">%</InputAdornment>
                                         }
-                                    }} />
+                                    }} onChange={handleInput} />
                                 </>
                             }
                         </Box>
@@ -130,7 +197,7 @@ function CreateAccount() {
                         justifyContent: "flex-end",
                     }}>
                         <Button variant="outlined" type="reset" onClick={handleClear}>Clear</Button>
-                        <Button variant="contained" type="submit" onClick={handleSubmit}>Submit</Button>
+                        <Button variant="contained" type="submit" loadingPosition={"start"} loading={loading} onClick={handleSubmit}>Submit</Button>
                     </Box>
                 </Container>
             </Card>

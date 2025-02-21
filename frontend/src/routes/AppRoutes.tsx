@@ -8,7 +8,8 @@ const AppRoutes = (): ReactElement | null => {
     const [user, setUser] = useAuth();
 
     const routes = useMemo(() => {
-        return user ? MainRoutes : AuthRoutes;
+        // return user ? MainRoutes : AuthRoutes;
+        return MainRoutes;
     }, [user]);
 
     return useRoutes(routes);

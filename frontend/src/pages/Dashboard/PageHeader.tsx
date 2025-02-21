@@ -38,7 +38,7 @@ function PageHeader() {
                                 component="h3"
                                 gutterBottom
                             >
-                                { `Welcome, ${user.name}` }
+                                { `Welcome, ${user.user.name}` }
                             </Typography>
                             <Typography
                                 variant="subtitle2"

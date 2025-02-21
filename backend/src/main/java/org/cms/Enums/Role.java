@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Role {
-    ADMIN(1),
-    DOCTOR(2),
-    RECEPTIONIST(3),
-    PHARMACIST(4);
+    ADMIN(0),
+    DOCTOR(1),
+    RECEPTIONIST(2),
+    PHARMACIST(3);
 
     private final int value;
     private static final Map<Integer, Role> map = new HashMap<>();

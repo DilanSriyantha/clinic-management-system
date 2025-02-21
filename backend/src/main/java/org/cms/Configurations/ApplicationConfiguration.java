@@ -23,16 +23,6 @@ public class ApplicationConfiguration {
     private final UserRepository userRepository;
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("*/**").allowedOrigins("http:127.0.0.1:5173/");
-            }
-        };
-    }
-
-    @Bean
     public UserDetailsService userDetailsService() {
         return (referenceId) -> userRepository.findByReferenceId(referenceId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
