@@ -4,7 +4,8 @@ import RouteLoader from "./RouteLoader";
 import { lazy } from "react";
 
 const Login = RouteLoader(lazy(() => import("../pages/Authentication/Login")));
- 
+const Register = RouteLoader(lazy(() => import("../pages/Authentication/Register"))); 
+
 const AuthRoutes: RouteObject[] = [
     {
         path: "/",
@@ -13,6 +14,10 @@ const AuthRoutes: RouteObject[] = [
             {
                 path: "",
                 element: <Login />
+            },
+            {
+                path: "register",
+                element: <Register />
             }
         ]
     }

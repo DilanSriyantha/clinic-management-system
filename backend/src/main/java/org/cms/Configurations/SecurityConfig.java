@@ -2,11 +2,14 @@ package org.cms.Configurations;
 
 import lombok.RequiredArgsConstructor;
 import org.cms.Enums.Role;
+import org.cms.Users.Repositories.UserRepository;
+import org.cms.Users.Services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -24,15 +27,25 @@ public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
 
+    private final UserService userService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/users/**").hasRole(Role.ADMIN.name())
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> {
+                    if(userService.hasAtLeastOneAdmin()) {
+                        System.out.println("admins > 0");
+                        auth.requestMatchers("/api/v1/auth/register").hasRole(Role.ADMIN.name());
+                        auth.requestMatchers("/api/v1/auth/authenticate").permitAll();
+                    } else {
+                        System.out.println("admins = 0");
+                        auth.requestMatchers("/api/v1/auth/**").permitAll();
+                        auth.requestMatchers("/api/v1/users/**").permitAll();
+                    }
+                    auth.anyRequest().authenticated();
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,10 +1,14 @@
 package org.cms.Users.Controllers;
 
+import org.cms.Enums.Role;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Users.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController // means the class is a controller
 @RequestMapping("/api/v1/users") // means URL's start with /api/v1/users (after application path)
@@ -24,6 +28,11 @@ public class UserController {
     @GetMapping(path = "/all")
     public @ResponseBody Iterable<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @GetMapping(path = "/byRole")
+    public @ResponseBody Iterable<User> getUsersByRole(@RequestParam String role) {
+        return userRepository.findAllByRole(Role.valueOf(role));
     }
 
     @DeleteMapping(path = "/delete")

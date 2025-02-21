@@ -2,7 +2,10 @@ import { Box, Stack, Snackbar, Alert } from "@mui/material";
 import { createContext, ReactNode, useContext, useState } from "react";
 
 interface AlertContextType {
-    setAlert: (alert: AlertModel) => void;
+    setSuccess: (message: string, autoHideDuration?: number) => void;
+    setInfo: (message: string, autoHideDuration?: number) => void;
+    setWarning: (message: string, autoHideDuration?: number) => void;
+    setError: (message: string, autoHideDuration?: number) => void;
 };
 
 interface AlertProviderProps {
@@ -15,7 +18,7 @@ const AlertContext = createContext<AlertContextType>(
 
 interface AlertModel {
     message: string;
-    autoHideLatency: number;
+    autoHideLatency?: number;
     severity: "success" | "info" | "warning" | "error";
 };
 
@@ -26,8 +29,24 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
         setAlerts(prev => [...prev, alert]);
     };
 
+    const setSuccess = (message: string, autoHideDuration?: number) => {
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "success" });
+    };
+
+    const setInfo = (message: string, autoHideDuration?: number) => {
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "info" });
+    };
+
+    const setWarning = (message: string, autoHideDuration?: number) => {
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "warning" });
+    };
+
+    const setError = (message: string, autoHideDuration?: number) => {
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "error" });
+    };
+
     return (
-        <AlertContext.Provider value={{ setAlert: setAlert }}>
+        <AlertContext.Provider value={{ setSuccess: setSuccess, setInfo: setInfo, setWarning: setWarning, setError: setError }}>
             <Box sx={{
                 display: "flex",
                 position: "absolute",

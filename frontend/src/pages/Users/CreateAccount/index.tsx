@@ -69,7 +69,7 @@ function CreateAccount() {
         try{
             
             if(!isValid(formData, exceptFields)){
-                alert.setAlert({ message: "Please fill the required information and try again.", severity: "warning", autoHideLatency: 1000 });
+                alert.setWarning("Please fill the required information and try again.");
                 setLoading(false); 
                 return;
             }
@@ -77,11 +77,11 @@ function CreateAccount() {
             const res = await authManager.register(formData);
             if(res){
                 console.log(res);
-                alert.setAlert({ message: "New user registered successfuly.", severity: "success", autoHideLatency: 1000 });
+                alert.setSuccess("New user registered successfuly.");
             }
         }catch(err){
             console.log(err);
-            alert.setAlert({ message: err instanceof Error ? err.message : err!.toString(), severity: "error", autoHideLatency: 1000 });
+            alert.setError(err instanceof Error ? err.message : err!.toString());
         }
 
         setTimeout(() => setLoading(false), 1000);
@@ -90,7 +90,7 @@ function CreateAccount() {
     const handleEnterKeyDown = useCallback((e: KeyboardEvent<HTMLFormElement>) => {
         if(e.key.match("Enter"))
             handleSubmit();
-    }, []);
+    }, [formData]);
  
     const handleInput = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         dispatch({ type: "SET_FIELD", payload: { name: e.target.name, value: e.target.value } });
@@ -143,7 +143,7 @@ function CreateAccount() {
                                             color={checked ? "primary" : "default"}
                                             label={item.label}
                                             onClick={() => handleRoleChange(item)}
-                                            icon={checked ? <Check fontSize="small" /> : <></>}
+                                            icon={checked ? <Check fontSize="small" /> : <div></div>}
                                         />
                                     );
                                 })
@@ -171,7 +171,6 @@ function CreateAccount() {
                             <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} />
                             <TextField name="address" label="Address" type="text" onChange={handleInput} />
                             <TextField name="email" label="E-mail" type="email" onChange={handleInput} />
-                            <PasswordInputField onChange={handleInput} />
                             <TextField name="telephone" label="Telephone" type="tel" onChange={handleInput} />
                             {
                                 (formData.role == Role.DOCTOR) &&
@@ -189,6 +188,7 @@ function CreateAccount() {
                                     }} onChange={handleInput} />
                                 </>
                             }
+                            <PasswordInputField onChange={handleInput} />
                         </Box>
                     </form>
                     <Box sx={{

@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useContext } from "react";
 import { useAuth } from "./useAuth";
+import { ServerException } from "../types/ServerException";
 
 export interface BasicResultSet {
     resultCode: number;
@@ -40,14 +41,14 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             const res: Response = await fetch(url, options);
 
             if(!res.ok)
-                throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
+                throw new Error(`${res.status} - ${res.statusText}`);
 
             if(getHeaders)
                 getHeaders(res.headers);
 
             return (await res.json()) as T[];
         }catch(err){
-            throw new Error(`Fetch error [useApi]: ${err instanceof Error ? err.message : "Unknown error"}`);
+            throw new Error(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     };
 
@@ -66,12 +67,14 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         try{
             const res: Response = await fetch(url, options);
             
-            if(!res.ok)
-                throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
+            if(!res.ok){
+                const serverException: ServerException = (await res.json()) as ServerException;
+                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+            }
 
             return (await res.json()) as R;
         }catch(err){
-            throw new Error(`Fetch error [useApi]: ${err instanceof Error ? err.message : "Unknown error"}`);
+            throw new Error(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     };
 
@@ -91,11 +94,11 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             const res: Response = await fetch(url, options);
 
             if(!res.ok)
-                throw new Error(`Fetch error [useApi]: status: ${res.status} - ${res.statusText}`);
+                throw new Error(`${res.status} - ${res.statusText}`);
 
             return (await res.json()) as BasicResultSet;
         }catch(err){
-            throw new Error(`Fetch error [useApi]: ${err instanceof Error ? err.message : "Unknown error"}`);
+            throw new Error(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     };
 

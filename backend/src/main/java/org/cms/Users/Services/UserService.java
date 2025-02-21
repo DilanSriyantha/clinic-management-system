@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -53,6 +54,12 @@ public class UserService {
         userRepository.delete(user);
 
         return user;
+    }
+
+    public boolean hasAtLeastOneAdmin() {
+        Iterable<User> admins = userRepository.findAllByRole(Role.ADMIN);
+
+        return admins.iterator().hasNext();
     }
 
     private String generateReferenceId(int lastId, Role role) {

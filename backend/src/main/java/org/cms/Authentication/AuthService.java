@@ -52,6 +52,11 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
+        System.out.println(request.getReferenceId() + " " + request.getPassword());
+
+        var user = userRepository.findByReferenceId(request.getReferenceId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         Authentication authentication;
         try{
             authentication = authenticationManager.authenticate(
@@ -65,9 +70,6 @@ public class AuthService {
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        var user = userRepository.findByReferenceId(request.getReferenceId())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         var jwtToken = jwtService.generateToken(user);
 

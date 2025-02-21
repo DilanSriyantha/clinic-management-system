@@ -1,36 +1,59 @@
 import { MedicalServices, Visibility, VisibilityOff } from "@mui/icons-material";
-import { Alert, Box, Button, Card, Container, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../../../hooks/useAuth";
-import { useApi } from "../../../hooks/useApi";
-import { AuthResponse } from "../../../types/AuthResponse";
+import { Alert, Box, Button, Card, CircularProgress, Container, IconButton, Link, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
+import { useAuthManager } from "../../../hooks/useAuth";
 import { LoginFormData } from "../../../types/LoginFormData";
+import { useAlert } from "../../../hooks/useAlert";
+import { isValid } from "../../../utils/Validator";
+import { useApi } from "../../../hooks/useApi";
+import { User } from "../../../types/User";
+import { useNavigate } from "react-router";
 
 function Login() {
     const [formData, setFormData] = useState<LoginFormData>({ referenceId: null, password: null });
     const [error, setError] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [user, setUser] = useAuth();
+    const [loading, setLoading] = useState<boolean>(true);
 
+    const authManager = useAuthManager();
+    const alert = useAlert();
     const api = useApi();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(formData);
-    }, [formData]);
+        checkHasAdmins();
+    }, []);
+
+    const checkHasAdmins = useCallback(async () => {
+        try{
+            const res = await api.get<User>("/users/byRole", {"role": "ADMIN"});
+            if(res){
+                console.log(res);
+                setTimeout(() => {
+
+                    setLoading(false);
+                    
+                    // if(res.length > 0)
+                        // navigate("register");
+                }, 1000);
+            }
+        }catch(err){
+            alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`)
+        }
+    }, []);
 
     const login = useCallback(async () => {
         try {
-            const res = await api.post<LoginFormData, AuthResponse>("/auth/authenticate", formData);
-            if (res)
+            const res = await authManager.authenticate(formData);
+            if(res)
                 console.log(res);
-            setUser(res);
         } catch (err) {
-            console.log(err);
+            alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
-    }, [user, formData]);
+    }, [formData]);
 
     const handleLogin = useCallback(async () => {
-        if (formData.referenceId === null || formData.password === null) {
+        if (!isValid(formData)) {
             setError(true);
 
             return;
@@ -84,48 +107,55 @@ function Login() {
                             <Typography variant="subtitle1">Welcome, please log in to continue</Typography>
                             {error && (<Alert severity="error">Username or password is wrong. Check your username and password and try again.</Alert>)}
                         </Stack>
-
-                        <form
-                            style={{
-                                width: "100%"
-                            }}
-                            onKeyDown={handleEnterKeyPress}
-                        >
-                            <Stack direction="column" gap={2} >
-                                <TextField
-                                    name="referenceId"
-                                    variant="outlined"
-                                    label="Reference ID*"
-                                    type="text"
-                                    onClick={handleEnterInput}
-                                    onChange={handleInputChange}
-                                />
-                                <TextField
-                                    name="password"
-                                    variant="outlined"
-                                    label="Password*"
-                                    type={showPassword ? "text" : "password"}
-                                    error={error}
-                                    onClick={handleEnterInput}
-                                    onChange={handleInputChange}
-                                    slotProps={{
-                                        input: {
-                                            endAdornment:
-                                                <>
-                                                    <IconButton
-                                                        aria-label={
-                                                            showPassword ? "hide the password" : "display the passowrd"
-                                                        }
-                                                        onClick={handleShowPwClick}>
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </>
-                                        }
+                        
+                        {
+                            loading
+                            ? (
+                                <CircularProgress />
+                            ) : (
+                                <form
+                                    style={{
+                                        width: "100%"
                                     }}
-                                />
-                                <Button variant="contained" onClick={handleLogin}>Login</Button>
-                            </Stack>
-                        </form>
+                                    onKeyDown={handleEnterKeyPress}
+                                >
+                                    <Stack direction="column" gap={2} >
+                                        <TextField
+                                            name="referenceId"
+                                            variant="outlined"
+                                            label="Reference ID*"
+                                            type="text"
+                                            onClick={handleEnterInput}
+                                            onChange={handleInputChange}
+                                        />
+                                        <TextField
+                                            name="password"
+                                            variant="outlined"
+                                            label="Password*"
+                                            type={showPassword ? "text" : "password"}
+                                            error={error}
+                                            onClick={handleEnterInput}
+                                            onChange={handleInputChange}
+                                            slotProps={{
+                                                input: {
+                                                    endAdornment:
+                                                        <>
+                                                            <IconButton
+                                                                aria-label={
+                                                                    showPassword ? "hide the password" : "display the passowrd"
+                                                                }
+                                                                onClick={handleShowPwClick}>
+                                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                            </IconButton>
+                                                        </>
+                                                }
+                                            }}
+                                        />
+                                        <Button variant="contained" onClick={handleLogin}>Login</Button>
+                                    </Stack>
+                                </form>
+                            )
+                        }
                     </Box>
                 </Card>
             </Container>
