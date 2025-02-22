@@ -1,11 +1,13 @@
 import { Box, Stack, Snackbar, Alert } from "@mui/material";
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useRef, useState } from "react";
+import AlertDialog, { AlertDialogRef } from "../components/AlertDialog";
 
 interface AlertContextType {
     setSuccess: (message: string, autoHideDuration?: number) => void;
     setInfo: (message: string, autoHideDuration?: number) => void;
     setWarning: (message: string, autoHideDuration?: number) => void;
     setError: (message: string, autoHideDuration?: number) => void;
+    setAlertDialog: (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void, onNegativeAction?: () => void) => void;
 };
 
 interface AlertProviderProps {
@@ -25,28 +27,34 @@ interface AlertModel {
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
     const [alerts, setAlerts] = useState<AlertModel[]>([]);
 
+    const alertDialogRef = useRef<AlertDialogRef>(null);
+
     const setAlert = (alert: AlertModel) => {
         setAlerts(prev => [...prev, alert]);
     };
 
     const setSuccess = (message: string, autoHideDuration?: number) => {
-        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "success" });
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 3000, severity: "success" });
     };
 
     const setInfo = (message: string, autoHideDuration?: number) => {
-        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "info" });
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 3000, severity: "info" });
     };
 
     const setWarning = (message: string, autoHideDuration?: number) => {
-        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "warning" });
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 3000, severity: "warning" });
     };
 
     const setError = (message: string, autoHideDuration?: number) => {
-        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 1000, severity: "error" });
+        setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 3000, severity: "error" });
+    };
+
+    const setAlertDialog = (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void, onNegativeAction?: () => void) => {
+        alertDialogRef?.current?.setupAndOpen(title, content, positiveText, negativeText, onPositiveAction, onNegativeAction);
     };
 
     return (
-        <AlertContext.Provider value={{ setSuccess: setSuccess, setInfo: setInfo, setWarning: setWarning, setError: setError }}>
+        <AlertContext.Provider value={{ setSuccess: setSuccess, setInfo: setInfo, setWarning: setWarning, setError: setError, setAlertDialog: setAlertDialog }}>
             <Box sx={{
                 display: "flex",
                 position: "absolute",
@@ -73,6 +81,9 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
                     }
                 </Stack>
             </Box>
+            <AlertDialog
+                ref={alertDialogRef}
+            />
             {children}
         </AlertContext.Provider>
     );

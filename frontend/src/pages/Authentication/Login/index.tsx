@@ -1,11 +1,10 @@
 import { MedicalServices, Visibility, VisibilityOff } from "@mui/icons-material";
-import { Alert, Box, Button, Card, CircularProgress, Container, IconButton, Link, Skeleton, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CircularProgress, Container, IconButton, Stack, TextField, Typography } from "@mui/material";
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
-import { useAuthManager } from "../../../hooks/useAuth";
 import { LoginFormData } from "../../../types/LoginFormData";
 import { useAlert } from "../../../hooks/useAlert";
 import { isValid } from "../../../utils/Validator";
-import { useApi } from "../../../hooks/useApi";
+import { useApi, useAuthManager } from "../../../hooks/useApi";
 import { User } from "../../../types/User";
 import { useNavigate } from "react-router";
 

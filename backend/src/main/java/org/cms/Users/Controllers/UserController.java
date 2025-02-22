@@ -1,10 +1,14 @@
 package org.cms.Users.Controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.cms.Enums.Role;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Users.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +30,21 @@ public class UserController {
     }
 
     @GetMapping(path = "/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
-        return userRepository.findAll();
+    public @ResponseBody ResponseEntity<Iterable<User>> getAllUsers() {
+        return userService.getAll();
+    }
+
+    @CrossOrigin(exposedHeaders = "X-Total-Pages")
+    @GetMapping(path = "/page")
+    public @ResponseBody ResponseEntity<Iterable<User>> getPage(
+            @RequestParam(defaultValue = "ADMIN") String role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int pageSize,
+            HttpServletResponse response,
+            HttpServletRequest request
+    ) {
+        System.out.println(request.getHeader("Authorization"));
+        return userService.getPage(role, page, pageSize, response);
     }
 
     @GetMapping(path = "/byRole")

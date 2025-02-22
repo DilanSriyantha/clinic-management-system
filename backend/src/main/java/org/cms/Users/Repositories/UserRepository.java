@@ -2,6 +2,8 @@ package org.cms.Users.Repositories;
 
 import org.cms.Enums.Role;
 import org.cms.Users.Models.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -13,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByRoleAndReferenceId(Role role, String referenceId);
     Optional<User> findByReferenceId(String refId);
     Iterable<User> findAllByRole(Role role);
+    Page<User> findAllByRole(Role role, Pageable pageable);
 }

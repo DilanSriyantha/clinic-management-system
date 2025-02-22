@@ -44,10 +44,10 @@ function ClinicList() {
  
     async function getList() {
         try {
-            const res = await api.get<Clinic>("/clinic-management/list", {
+            const res = await api.get<Clinic[]>("/clinic-management/list", {
                 page: `${page}`,
                 pageSize: `${5}`
-            }, withHeaders);
+            }, undefined, withHeaders);
             if (res)
                 setList(res);
         } catch (err) {

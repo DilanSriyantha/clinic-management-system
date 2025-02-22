@@ -1,10 +1,12 @@
 package org.cms.Configurations;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +36,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
-        final String referenceId;
+        String referenceId;
+
+        System.out.println(authHeader);
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -43,7 +47,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         jwtToken = authHeader.substring(7);
-        referenceId = jwtService.extractReferenceId(jwtToken);
+
+        referenceId = null;
+        try{
+            referenceId = jwtService.extractReferenceId(jwtToken);
+        }catch (ExpiredJwtException ex){
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"statusCode\":" + HttpStatus.UNAUTHORIZED.value() + ",\"message\":\"JwtToken is expired. Please login to the system again.\"}");
+
+            return;
+        }
 
         if(referenceId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);

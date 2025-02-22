@@ -37,13 +37,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     if(userService.hasAtLeastOneAdmin()) {
                         System.out.println("admins > 0");
-                        auth.requestMatchers("/api/v1/auth/register").hasRole(Role.ADMIN.name());
+                        auth.requestMatchers("/api/v1/auth/register").hasAuthority(Role.ADMIN.name());
                         auth.requestMatchers("/api/v1/auth/authenticate").permitAll();
                     } else {
                         System.out.println("admins = 0");
                         auth.requestMatchers("/api/v1/auth/**").permitAll();
                         auth.requestMatchers("/api/v1/users/**").permitAll();
                     }
+                    auth.requestMatchers("/api/v1/users/byRole").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

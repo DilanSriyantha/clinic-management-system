@@ -11,6 +11,7 @@ export interface User {
     address: string;
     telephone: string;
     percentage: number;
+    specialization: string;
     status: number;
     role: number;
     accountNonExpired: boolean;

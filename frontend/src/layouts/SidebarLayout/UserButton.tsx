@@ -1,8 +1,8 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography, useTheme } from "@mui/material";
-import ProfPic from "../../assets/me.jpg";
 import { useCallback, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { deepPurple } from "@mui/material/colors";
+import { useAlert } from "../../hooks/useAlert";
 
 function UserButton() {
     const theme = useTheme();
@@ -10,6 +10,8 @@ function UserButton() {
     const [user, setUser] = useAuth();
 
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+    const alert = useAlert();
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -21,7 +23,7 @@ function UserButton() {
 
     const handleLogout = useCallback(() => {
         setAnchorElUser(null);
-        setUser(null);
+        alert.setAlertDialog("Are you sure?", "Are you sure you want to logout?", "Yes", "No", () => setUser(null));
     }, [user]);
 
     return (

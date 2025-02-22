@@ -5,9 +5,9 @@ import { ChangeEvent, KeyboardEvent, MouseEvent, useCallback, useReducer } from 
 import PasswordInputField from "../../../components/PasswordInputField";
 import { Role } from "../../../enums/Role";
 import { RegisterFormData } from "../../../types/RegisterFormData";
-import { useAuthManager } from "../../../hooks/useAuth";
 import { useAlert } from "../../../hooks/useAlert";
 import { useNavigate } from "react-router";
+import { useAuthManager } from "../../../hooks/useApi";
 
 const initialState: RegisterFormData = {
     name: null,

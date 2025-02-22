@@ -42,6 +42,8 @@ public class User implements UserDetails {
 
     private String telephone;
 
+    private String specialization;
+
     private Float percentage;
 
     @Enumerated(EnumType.STRING)

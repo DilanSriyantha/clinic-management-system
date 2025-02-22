@@ -6,7 +6,7 @@ import { useAuth } from "../../hooks/useAuth";
 function PageHeader() {
     const theme = useTheme();
 
-    const [user, setUser] = useAuth();
+    const [user] = useAuth();
 
     return (
         <Box

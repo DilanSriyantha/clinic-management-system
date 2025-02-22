@@ -1,33 +1,28 @@
 import { alpha, Box, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { useCallback, useEffect, useState } from "react";
-import { Check, Delete, Edit, Filter, ReplayOutlined } from "@mui/icons-material";
-import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
-
-interface Role {
-    value: number;
-    label: string;
-};
-
-const roles: Role[] = [
-    { value: 0, label: "Receptionist" },
-    { value: 1, label: "Doctor" },
-    { value: 2, label: "Pharmacist" },
-];
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { User } from "../../../types/User";
+import { useApi } from "../../../hooks/useApi";
+import { useAlert } from "../../../hooks/useAlert";
+import { PageResponse } from "../../../types/PageResponse";
+import { useAuth } from "../../../hooks/useAuth";
+import { Role } from "../../../enums/Role";
 
 const recep_columns: GridColDef[] = [
-    { field: "refId", headerName: "Ref.ID", width: 70 },
+    { field: "referenceId", headerName: "Ref.ID", width: 70 },
     { field: "name", headerName: "Name", width: 130 },
     { field: "birthday", headerName: "Birthday", width: 70 },
     { field: "address", headerName: "Address", width: 130 },
     { field: "email", headerName: "Email", width: 100 },
     { field: "telephone", headerName: "Telephone", width: 100 },
-    { field: "regDate", headerName: "Reg.Date", width: 100 },
+    { field: "updatedAt", headerName: "Updated At", width: 100 },
     { field: "status", headerName: "Status", width: 70 },
 ];
 
 const doc_columns: GridColDef[] = [
-    { field: "refId", headerName: "Ref.ID", width: 70 },
+    { field: "referenceId", headerName: "Ref.ID", width: 70 },
     { field: "name", headerName: "Name", width: 130 },
     { field: "birthday", headerName: "Birthday", width: 70 },
     { field: "address", headerName: "Address", width: 130 },
@@ -35,54 +30,169 @@ const doc_columns: GridColDef[] = [
     { field: "telephone", headerName: "Telephone", width: 100 },
     { field: "specialization", headerName: "Specialization", width: 100 },
     { field: "percentage", headerName: "Percentage(%)", type: "number", width: 70 },
-    { field: "regDate", headerName: "Reg.Date", width: 100 },
+    { field: "updatedAt", headerName: "Updated At", width: 100 },
     { field: "status", headerName: "Status", width: 70 },
-]
-
-const doc_rows = [
-    { id: 1, refId: "DOC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 2, refId: "DOC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 3, refId: "DOC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 4, refId: "DOC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 5, refId: "DOC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 6, refId: "DOC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 7, refId: "DOC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 8, refId: "DOC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-    { id: 9, refId: "DOC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
 ];
 
-const recep_rows = [
-    { id: 1, refId: "REC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 2, refId: "REC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 3, refId: "REC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 4, refId: "REC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 5, refId: "REC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 6, refId: "REC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 7, refId: "REC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 8, refId: "REC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-    { id: 9, refId: "REC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-];
+// const doc_rows = [
+//     { id: 1, refId: "DOC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 2, refId: "DOC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 3, refId: "DOC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 4, refId: "DOC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 5, refId: "DOC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 6, refId: "DOC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 7, refId: "DOC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 8, refId: "DOC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+//     { id: 9, refId: "DOC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
+// ];
+
+// const recep_rows = [
+//     { id: 1, refId: "REC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 2, refId: "REC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 3, refId: "REC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 4, refId: "REC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 5, refId: "REC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 6, refId: "REC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 7, refId: "REC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 8, refId: "REC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+//     { id: 9, refId: "REC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
+// ];
+
+interface RoleItem {
+    value: Role;
+    label: string
+};
+
+interface UsersListState {
+    role: Role;
+    selectedIds: Set<GridRowId>;
+    list: User[];
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    totalElements: number;
+};
+
+const initialState: UsersListState = {
+    role: Role.DOCTOR,
+    selectedIds: new Set<GridRowId>(),
+    list: [],
+    page: 0,
+    pageSize: 5,
+    totalPages: 1,
+    totalElements: 0,
+};
+
+enum ActionType {
+    SET_ROLE,
+    SET_SELECTED_IDS,
+    ADD_TO_SELECTED_IDS,
+    REMOVE_FROM_SELECTED_IDS,
+    CLEAR_SELECTED_IDS,
+    SET_LIST,
+    SET_PAGE,
+    SET_PAGE_SIZE,
+    SET_TOTAL_PAGES,
+    SET_PAGINATION_INFO,
+    SET_PAGINATION_MODEL
+};
+
+const reducer = (state: UsersListState, action: { type: ActionType, payload: any }): UsersListState => {
+    switch(action.type){
+        case ActionType.SET_ROLE:
+            return { ...state, role: action.payload };
+        case ActionType.SET_SELECTED_IDS:
+            return { ...state, selectedIds: action.payload };
+        case ActionType.ADD_TO_SELECTED_IDS:
+            return { ...state, selectedIds: new Set<GridRowId>(state.selectedIds).add(action.payload) };
+        case ActionType.REMOVE_FROM_SELECTED_IDS:
+            const newSet = new Set<GridRowId>(state.selectedIds);
+            newSet.delete(action.payload);
+            return { ...state, selectedIds: newSet };
+        case ActionType.SET_LIST:
+            return { ...state, list: action.payload };
+        case ActionType.SET_PAGE:
+            return { ...state, page: action.payload };
+        case ActionType.SET_PAGE_SIZE:
+            return { ...state, pageSize: action.payload };
+        case ActionType.SET_TOTAL_PAGES:
+            return { ...state, totalPages: action.payload };
+        case ActionType.SET_PAGINATION_INFO:
+            return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements };
+        case ActionType.SET_PAGINATION_MODEL:
+            return { ...state, page: action.payload.page, pageSize: action.payload.pageSize };
+        default:
+            return state;
+    }
+};
 
 const paginationModel = { page: 0, pageSize: 5 };
 
 function UsersList() {
-    const [role, setRole] = useState<Role>(roles[0]);
-    const [selectedIds, setSelectedIds] = useState<Set<GridRowId>>();
+    const [state, dispatch] = useReducer(reducer, initialState);
 
-    const handleRoleChange = useCallback((item: Role) => {
-        if (role.value === item.value)
+    const roles: RoleItem[] = useMemo(() => ([
+        { value: Role.ADMIN, label: Role[0] },
+        { value: Role.DOCTOR, label: Role[1] },
+        { value: Role.PHARMACIST, label: Role[2] },
+        { value: Role.RECEPTIONIST, label: Role[3] }
+    ]), []);
+
+    const api = useApi();
+    const alert = useAlert();
+    const [user] = useAuth();
+
+    useEffect(() => {
+        console.log(state.selectedIds);
+    }, [state.selectedIds]);
+    
+    useEffect(() => {
+        fetchUsers();
+    }, [state.role, state.page, state.pageSize]);
+
+    const fetchUsers = useCallback(async () => {
+        try{
+            const res = await api.get<PageResponse<User>>("/users/page", {
+                role: Role[state.role],
+                page: `${state.page}`,
+                pageSize: `${state.pageSize}`
+            }, user?.token);
+            if(res){
+                console.log(res);
+                dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
+                    list: res.content,
+                    page: res.number,
+                    pageSize: res.size,
+                    totalPages: res.totalPages,
+                    totalElements: res.totalElements
+                } });
+            }
+        }catch(err){
+            alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+    }, [state.page, state.pageSize, state.role]);
+
+    const handleRoleChange = useCallback((item: RoleItem) => {
+        if (state.role === item.value)
             return;
 
-        setRole(item);
-    }, [role]);
+        dispatch({ type: ActionType.SET_ROLE, payload: item.value });
+    }, [state.role]);
 
     const handleSelectRow = useCallback((ids: GridRowSelectionModel) => {
-        setSelectedIds(new Set(ids));
-    }, [selectedIds]);
+        dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
+    }, [state.selectedIds]);
 
     const handleReloadClick = useCallback(() => {
-
+        fetchUsers();
     }, []);
+
+    function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
+        dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
+            page: model.page,
+            pageSize: model.pageSize
+        } });
+    }
 
     interface TableToolbarProps {
         numSelected?: number;
@@ -146,7 +256,7 @@ function UsersList() {
                         <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
                             {
                                 roles.map((item) => {
-                                    const checked = role.value === item.value;
+                                    const checked = state.role === item.value;
                                     return (
                                         <Chip
                                             key={item.value}
@@ -154,7 +264,7 @@ function UsersList() {
                                             color={checked ? "primary" : "default"}
                                             label={item.label}
                                             onClick={() => handleRoleChange(item)}
-                                            icon={checked ? <Check fontSize="small" /> : <></>}
+                                            icon={checked ? <Check fontSize="small" /> : <div></div>}
                                         />
                                     );
                                 })
@@ -170,11 +280,15 @@ function UsersList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={selectedIds?.size} />
+                    <TableToolbar numSelected={state.selectedIds?.size} />
                     <DataGrid
-                        rows={role.value === 1 ? doc_rows : recep_rows}
-                        columns={role.value === 1 ? doc_columns : recep_columns}
+                        rows={state.list}
+                        columns={state.role === Role.DOCTOR ? doc_columns : recep_columns}
                         initialState={{ pagination: { paginationModel } }}
+                        paginationModel={{ page: state.page, pageSize: state.pageSize }}
+                        onPaginationModelChange={onPaginationModelChange}
+                        paginationMode="server"
+                        rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
                         sx={{ border: 0 }}

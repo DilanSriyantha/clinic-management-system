@@ -5,11 +5,10 @@ import { useAuth } from "../hooks/useAuth";
 import { ReactElement, useMemo } from "react";
 
 const AppRoutes = (): ReactElement | null => {
-    const [user, setUser] = useAuth();
+    const [user] = useAuth();
 
     const routes = useMemo(() => {
         return user ? MainRoutes : AuthRoutes;
-        // return MainRoutes;
     }, [user]);
 
     return useRoutes(routes);

@@ -1,5 +1,6 @@
 package org.cms.Configurations;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,5 +44,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public @ResponseBody ErrorResponse handleException(HttpClientErrorException.Forbidden ex) {
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(value = ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ErrorResponse handleException(ExpiredJwtException ex) {
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
 }

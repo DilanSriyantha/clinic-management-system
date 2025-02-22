@@ -1,13 +1,13 @@
 import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Chip, Container, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
-import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useMemo, useReducer, useState } from "react";
 import { Check } from "@mui/icons-material";
 import { RegisterFormData } from "../../../types/RegisterFormData";
 import { isValid } from "../../../utils/Validator";
 import { Role } from "../../../enums/Role";
-import { useAuth, useAuthManager } from "../../../hooks/useAuth";
 import PasswordInputField from "../../../components/PasswordInputField";
+import { useAuthManager } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 
 interface RoleItem {
