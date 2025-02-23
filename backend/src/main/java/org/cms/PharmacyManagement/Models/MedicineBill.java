@@ -1,11 +1,6 @@
-package org.cms.Models;
+package org.cms.PharmacyManagement.Models;
 
-import javax.swing.*;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import org.cms.Models.Medicine;
 
 public class MedicineBill {
     private int billId;

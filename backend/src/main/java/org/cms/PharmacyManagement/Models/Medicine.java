@@ -1,10 +1,6 @@
-package org.cms.Models;
+package org.cms.PharmacyManagement.Models;
 
-import javax.swing.*;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class Medicine {
@@ -37,7 +33,7 @@ public class Medicine {
     }
 
     public void delete(){
-
+        //DBManager.delete("medicine","medId=" + this.medId);
     }
 
     public int getMedId() {

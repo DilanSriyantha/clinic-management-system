@@ -1,4 +1,4 @@
-package org.cms.View;
+package org.cms.PharmacyManagement.View;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

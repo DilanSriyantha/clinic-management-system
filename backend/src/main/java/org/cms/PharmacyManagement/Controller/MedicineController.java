@@ -1,4 +1,6 @@
-package org.cms.Controller;
+package org.cms.PharmacyManagement.Controller;
+
+import org.cms.PharmacyManagement.Models.Medicine;
 
 public class MedicineController {
     public MedicineController() {}
