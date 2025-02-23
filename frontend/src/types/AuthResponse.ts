@@ -1,10 +1,11 @@
 import { User } from "./User";
 
 export interface AuthResponse {
-    token: string;
+    accessToken: string;
+    refreshToken: string;
     user: User;
 }
 
 export const isAuthResponse = (object: any): object is  AuthResponse => {
-    return (typeof object === 'object' && object !== null && 'token' in object);
+    return (typeof object === 'object' && object !== null && 'accessToken' in object && 'refreshToken' in object);
 };

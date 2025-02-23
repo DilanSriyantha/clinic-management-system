@@ -11,11 +11,11 @@ const ContextProvidersWrapper: React.FC<ContextProvidersWrapperProps> = ({ child
     return (
         <>
             <AuthProvider>
-                <ApiProvider>
-                    <AlertProvider>
+                <AlertProvider>
+                    <ApiProvider>
                         {children}
-                    </AlertProvider>
-                </ApiProvider>
+                    </ApiProvider>
+                </AlertProvider>
             </AuthProvider>
         </>
     );

@@ -4,6 +4,7 @@ import { useAuth } from "./useAuth";
 import { AuthResponse } from "../types/AuthResponse";
 import { LoginFormData } from "../types/LoginFormData";
 import { RegisterFormData } from "../types/RegisterFormData";
+import { useAlert } from "./useAlert";
 
 export interface BasicResultSet {
     resultCode: number;
@@ -11,9 +12,9 @@ export interface BasicResultSet {
 };
 
 interface ApiProviderType {
-    get: <T>(endpoint: string, urlParams?: Record<string, string>, token?: string, getHeaders?: (headers: Headers) => void) => Promise<T>;
-    post: <T, R>(endpoint: string, requestBodyJson: T, token?: string) => Promise<R>;
-    put: <T, R>(endpoint: string, requestBodyJson: T, token?: string) => Promise<R>;
+    get: <T>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string, getHeaders?: (headers: Headers) => void) => Promise<T>;
+    post: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string) => Promise<R>;
+    put: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string) => Promise<R>;
 };
 
 interface ApiProviderProps {
@@ -25,18 +26,19 @@ const ApiContext = createContext<ApiProviderType>(
 );
 
 export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
-    const [user] = useAuth();
+    const [user, setUser] = useAuth();
+    const alert = useAlert();
 
     const api_url = import.meta.env.VITE_API_URL;
 
-    const get = async<T = any>(endpoint: string, urlParams?: Record<string, string>, token?: string, getHeaders?: (headers: Headers) => void): Promise<T> => {
+    const get = async<T = any>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string, getHeaders?: (headers: Headers) => void): Promise<T> => {
         const url = api_url + endpoint + (urlParams ? `?${new URLSearchParams(urlParams).toString()}` : "");
-        token = token ? token : user?.token ? user?.token : undefined;
+        accessToken = accessToken ? accessToken : user?.accessToken ? user?.accessToken : undefined;
         const options: RequestInit = {
             method: "GET",
-            headers: token ? {
+            headers: accessToken ? {
                 "Content-type": "application/json;",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${accessToken}`
             } : {
                 "Content-type": "application/json;"
             }
@@ -46,6 +48,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
 
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
+                handleJwtTokenExpired(serverException);
                 throw new Error(`${serverException.statusCode} - ${serverException.message}`);
             }
 
@@ -58,25 +61,25 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         }
     };
 
-    const post = async<T = any, R = any>(endpoint: string, requestBodyJson: T, token?: string): Promise<R> => {
+    const post = async<T = any, R = any>(endpoint: string, requestBodyJson?: T, accessToken?: string): Promise<R> => {
         const url = api_url + endpoint;
-        token = token ? token : user?.token ? user?.token : undefined;
+        accessToken = accessToken ? accessToken : user?.accessToken ? user?.accessToken : undefined;
         const options: RequestInit = {
             method: "POST",
-            body: JSON.stringify(requestBodyJson),
-            headers: token ? {
+            body: requestBodyJson && JSON.stringify(requestBodyJson),
+            headers: accessToken ? {
                 "Content-type": "application/json;",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${accessToken}`
             } : {
                 "Content-type": "application/json;"
             }
         };
         try {
-            console.log(token);
             const res: Response = await fetch(url, options);
 
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
+                handleJwtTokenExpired(serverException);
                 throw new Error(`${serverException.statusCode} - ${serverException.message}`);
             }
 
@@ -86,15 +89,15 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         }
     };
 
-    const put = async<T = any, R = any>(endpoint: string, requestBodyJson: T, token?: string): Promise<R> => {
+    const put = async<T = any, R = any>(endpoint: string, requestBodyJson?: T, accessToken?: string): Promise<R> => {
         const url = api_url + endpoint;
-        token = token ? token : user?.token ? user?.token : undefined;
+        accessToken = accessToken ? accessToken : user?.accessToken ? user?.accessToken : undefined;
         const options: RequestInit = {
             method: "PUT",
-            body: JSON.stringify(requestBodyJson),
-            headers: token ? {
+            body: requestBodyJson && JSON.stringify(requestBodyJson),
+            headers: accessToken ? {
                 "Content-type": "application/json;",
-                "Authorization": `Bearer ${token}`
+                "Authorization": `Bearer ${accessToken}`
             } : {
                 "Content-type": "application/json;"
             }
@@ -102,14 +105,38 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         try {
             const res: Response = await fetch(url, options);
 
-            if (!res.ok)
-                throw new Error(`${res.status} - ${res.statusText}`);
+            if (!res.ok) {
+                const serverException: ServerException = (await res.json()) as ServerException;
+                handleJwtTokenExpired(serverException);
+                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+            }
 
             return (await res.json()) as R;
         } catch (err) {
             throw new Error(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     };
+
+    const handleJwtTokenExpired = useCallback(async (serverException: ServerException) => {
+        const jwtTokenExpired = serverException.statusCode === 401 && serverException.message.startsWith("JwtToken is expired.");
+        
+        if(!jwtTokenExpired)
+            return;
+        
+        alert.setAlertDialog("Session Expired!", "Your session has been exceeded. Do you want to extend the session?", "Yes", "No", refreshJwtAccessToken);
+    }, [user]);
+
+    const refreshJwtAccessToken = useCallback(async () => {
+        try{
+            const res = await post<string, AuthResponse>("/auth/refresh", undefined, user?.refreshToken);
+            if(res){
+                setUser(res);
+                alert.setSuccess("Session is extended by 10 minutes");
+            }
+        }catch(err){
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    }, [user]);
 
     return (
         <ApiContext.Provider value={{ get, post, put }}>

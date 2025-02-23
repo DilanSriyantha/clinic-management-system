@@ -35,16 +35,22 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    if(userService.hasAtLeastOneAdmin()) {
-                        System.out.println("admins > 0");
+                    if(userService.hasAtLeastOneAdmin())
                         auth.requestMatchers("/api/v1/auth/register").hasAuthority(Role.ADMIN.name());
-                        auth.requestMatchers("/api/v1/auth/authenticate").permitAll();
-                    } else {
-                        System.out.println("admins = 0");
-                        auth.requestMatchers("/api/v1/auth/**").permitAll();
-                        auth.requestMatchers("/api/v1/users/**").permitAll();
-                    }
+                    else
+                        auth.requestMatchers("/api/v1/auth/register").permitAll();
+
+
+                    auth.requestMatchers("/api/v1/auth/refresh").permitAll();
+                    auth.requestMatchers("/api/v1/auth/authenticate").permitAll();
                     auth.requestMatchers("/api/v1/users/byRole").permitAll();
+
+                    auth.requestMatchers("/api/v1/users/all").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/page").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/create").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/update").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/delete").hasAuthority(Role.ADMIN.name());
+
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

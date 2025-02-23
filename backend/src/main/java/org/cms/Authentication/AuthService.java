@@ -1,6 +1,7 @@
 package org.cms.Authentication;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.cms.Configurations.JwtService;
 import org.cms.Enums.Role;
 import org.cms.Enums.Status;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
+
+    private final UserDetailsService userDetailsService;
 
     public AuthResponse register(RegisterRequest request) {
         var user = User.builder()
@@ -43,10 +47,12 @@ public class AuthService {
                 .build();
         userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtAccessToken = jwtService.generateAccessToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
 
         return AuthResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtAccessToken)
+                .refreshToken(jwtRefreshToken)
                 .user(user)
                 .build();
     }
@@ -71,10 +77,42 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtAccessToken = jwtService.generateAccessToken(user);
+        var jwtRefreshToken = jwtService.generateRefreshToken(user);
 
         return AuthResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtAccessToken)
+                .refreshToken(jwtRefreshToken)
+                .user(user)
+                .build();
+    }
+
+    public AuthResponse refresh(String authHeader) throws BadRequestException, UsernameNotFoundException {
+        if(!authHeader.startsWith("Bearer "))
+            throw new BadRequestException("Invalid token format");
+
+        System.out.println("reached");
+        var refreshToken = authHeader.substring(7);
+        String referenceId = jwtService.extractReferenceId(refreshToken);
+        System.out.println(referenceId);
+        System.out.println("reached 2");
+
+        if(referenceId == null)
+            throw new BadRequestException("Invalid refresh token");
+
+        var userDetails = userDetailsService.loadUserByUsername(referenceId);
+
+        var user = userRepository.findByReferenceId(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if(!jwtService.isTokenValid(refreshToken, userDetails))
+            throw new BadRequestException("Invalid refresh token");
+
+        var accessToken = jwtService.generateAccessToken(userDetails);
+
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .user(user)
                 .build();
     }

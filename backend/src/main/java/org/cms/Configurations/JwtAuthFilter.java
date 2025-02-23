@@ -38,7 +38,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwtToken;
         String referenceId;
 
-        System.out.println(authHeader);
+        if(request.getRequestURI().equals("/api/v1/auth/refresh")) {
+            filterChain.doFilter(request, response);
+
+            return;
+        }
 
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -48,16 +52,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         jwtToken = authHeader.substring(7);
 
-        referenceId = null;
-        try{
-            referenceId = jwtService.extractReferenceId(jwtToken);
-        }catch (ExpiredJwtException ex){
+        if(jwtService.isTokenExpired(jwtToken)){
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"statusCode\":" + HttpStatus.UNAUTHORIZED.value() + ",\"message\":\"JwtToken is expired. Please login to the system again.\"}");
 
             return;
         }
+
+        referenceId = jwtService.extractReferenceId(jwtToken);
 
         if(referenceId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);

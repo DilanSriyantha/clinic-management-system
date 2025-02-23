@@ -1,8 +1,6 @@
-import React, { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useContext } from "react";
 import { AuthResponse } from "../types/AuthResponse";
-import { useApi } from "./useApi";
-import { LoginFormData } from "../types/LoginFormData";
-import { RegisterFormData } from "../types/RegisterFormData";
+import useLocalStorage from "./useLocalStorage";
 
 interface AuthProviderType {
     user: AuthResponse | null;
@@ -18,9 +16,8 @@ interface AuthProviderProps {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [_user, _setUser] = useState<AuthResponse | null>(null);
-
-    const api = useApi();
+    // const [_user, _setUser] = useState<AuthResponse | null>(null);
+    const [_user, _setUser] = useLocalStorage<AuthResponse | null>("user", null);
 
     const __setUser = useCallback((authResponse: AuthResponse | null) => {
         _setUser(authResponse);

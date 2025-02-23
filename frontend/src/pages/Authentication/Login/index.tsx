@@ -1,12 +1,11 @@
 import { MedicalServices, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, Card, CircularProgress, Container, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { LoginFormData } from "../../../types/LoginFormData";
 import { useAlert } from "../../../hooks/useAlert";
 import { isValid } from "../../../utils/Validator";
 import { useApi, useAuthManager } from "../../../hooks/useApi";
 import { User } from "../../../types/User";
-import { useNavigate } from "react-router";
 
 function Login() {
     const [formData, setFormData] = useState<LoginFormData>({ referenceId: null, password: null });
@@ -17,7 +16,6 @@ function Login() {
     const authManager = useAuthManager();
     const alert = useAlert();
     const api = useApi();
-    const navigate = useNavigate();
 
     useEffect(() => {
         checkHasAdmins();

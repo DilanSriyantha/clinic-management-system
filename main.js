@@ -1,6 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const fs = require("fs");
 
 var win = null;
@@ -22,16 +22,18 @@ const startJavaProcess = () => {
         ? path.join(process.resourcesPath, "be/backend.jar")
         : path.join("backend", "out", "artifacts", "backend_jar", "backend.jar");
 
-    javaProcess = spawn("java", ["-jar", jarPath], {
+    javaProcess = spawn("java", ["-Dspring.profiles.active=prod", "-jar", jarPath], {
         detached: false,
         stdio: "pipe"
     });
 
+    console.log(javaProcess.spawnargs);
+
     javaProcess.stdout.on("data", (data) => {
         console.log(`Java Backend PID:${javaProcess.pid} Out: ${data}`);
         handleExit(`${data}`);
-        // handleServerStarted(`${data}`);
-        handleServerStarted("Tomcat started")
+        handleServerStarted(`${data}`);
+        // handleServerStarted("Tomcat started");
     });
 
     javaProcess.stderr.on("data", (data) => {

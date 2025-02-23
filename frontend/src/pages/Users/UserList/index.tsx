@@ -1,13 +1,12 @@
 import { alpha, Box, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { User } from "../../../types/User";
 import { useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types/PageResponse";
-import { useAuth } from "../../../hooks/useAuth";
 import { Role } from "../../../enums/Role";
 
 const recep_columns: GridColDef[] = [
@@ -33,30 +32,6 @@ const doc_columns: GridColDef[] = [
     { field: "updatedAt", headerName: "Updated At", width: 100 },
     { field: "status", headerName: "Status", width: 70 },
 ];
-
-// const doc_rows = [
-//     { id: 1, refId: "DOC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 2, refId: "DOC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 3, refId: "DOC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 4, refId: "DOC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 5, refId: "DOC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 6, refId: "DOC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 7, refId: "DOC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 8, refId: "DOC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-//     { id: 9, refId: "DOC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", specialization: "Something", percentage: 20, regDate: "2025-02-16", status: "Active" },
-// ];
-
-// const recep_rows = [
-//     { id: 1, refId: "REC_001", name: 'Snow', birthday: '1997-01-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 2, refId: "REC_001", name: 'Lannister', birthday: '1783-05-04', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 3, refId: "REC_001", name: 'Lannister', birthday: '1256-06-02', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 4, refId: "REC_001", name: 'Stark', birthday: '2001-08-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 5, refId: "REC_001", name: 'Targaryen', birthday: '2012-12-25', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 6, refId: "REC_001", name: 'Melisandre', birthday: '2025-01-06', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 7, refId: "REC_001", name: 'Clifford', birthday: '2000-05-07', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 8, refId: "REC_001", name: 'Frances', birthday: '1996-02-03', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-//     { id: 9, refId: "REC_001", name: 'Roxie', birthday: '1236-12-21', address: "1/12, Some Street, Somewhere", email: "123@email.com", telephone: "0123456789", regDate: "2025-02-16", status: "Active" },
-// ];
 
 interface RoleItem {
     value: Role;
@@ -134,13 +109,12 @@ function UsersList() {
     const roles: RoleItem[] = useMemo(() => ([
         { value: Role.ADMIN, label: Role[0] },
         { value: Role.DOCTOR, label: Role[1] },
-        { value: Role.PHARMACIST, label: Role[2] },
-        { value: Role.RECEPTIONIST, label: Role[3] }
+        { value: Role.RECEPTIONIST, label: Role[2] },
+        { value: Role.PHARMACIST, label: Role[3] }
     ]), []);
 
     const api = useApi();
     const alert = useAlert();
-    const [user] = useAuth();
 
     useEffect(() => {
         console.log(state.selectedIds);
@@ -156,7 +130,7 @@ function UsersList() {
                 role: Role[state.role],
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
-            }, user?.token);
+            });
             if(res){
                 console.log(res);
                 dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
@@ -185,7 +159,7 @@ function UsersList() {
 
     const handleReloadClick = useCallback(() => {
         fetchUsers();
-    }, []);
+    }, [state.role]);
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
         dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {

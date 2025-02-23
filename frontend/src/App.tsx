@@ -7,6 +7,7 @@ import ContextProvidersWrapper from './components/ContextProvidersWrapper';
 import AppRoutes from './routes/AppRoutes';
 
 function App() {
+  
   return (
     <>
       <ThemeProvider theme={LightTheme}>

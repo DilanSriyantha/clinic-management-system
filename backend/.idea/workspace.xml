@@ -10,20 +10,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="140c1e6c-a0e7-4579-afb1-a717e3c541aa" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/backend_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/backend_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/CorsConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/GlobalExceptionHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/JwtService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Repositories/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Services/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/ContextProvidersWrapper/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/ContextProvidersWrapper/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/hooks/useApi.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/hooks/useApi.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/hooks/useAuth.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/hooks/useAuth.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Users/UserList/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Users/UserList/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/routes/AppRoutes.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/routes/AppRoutes.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

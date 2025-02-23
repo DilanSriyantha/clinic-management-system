@@ -1,6 +1,7 @@
 package org.cms.Configurations;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -23,26 +24,38 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String SECRET;
 
+    private static final long ACCESS_TOKEN_LIFESPAN = (1000 * 60 * 10); // 10 minutes
+    private static final long REFRESH_TOKEN_LIFESPAN = (1000 * 60 * 60 * 24 * 7); // 7 days
+
     public String extractReferenceId(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try{
+            return extractClaim(token, Claims::getSubject);
+        }catch (ExpiredJwtException ex) {
+            return null;
+        }
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        System.out.println("Extracted referenceId: " + extractReferenceId(token));
-        System.out.println("UserDetails referenceId: " + userDetails.getUsername());
-        System.out.println("UserDetails password: " + userDetails.getPassword());
         return (userDetails.getUsername().equals(extractReferenceId(token)) && !isTokenExpired(token));
     }
 
     public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        try{
+            return extractClaim(token, Claims::getExpiration).before(new Date());
+        }catch (ExpiredJwtException ex){
+            return true;
+        }
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(userDetails, new HashMap<>());
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(userDetails, new HashMap<>());
     }
 
-    public String generateToken(
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateRefreshToken(userDetails, new HashMap<>());
+    }
+
+    public String generateAccessToken(
             UserDetails userDetails,
             Map<String, Object> extraClaims
     ) {
@@ -51,7 +64,21 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1800000))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_LIFESPAN))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(
+            UserDetails userDetails,
+            Map<String, Object> extraClaims
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_LIFESPAN))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
