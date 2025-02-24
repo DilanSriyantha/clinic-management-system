@@ -6,7 +6,10 @@ import SidebarLayout from "../layouts/SidebarLayout";
 import DoctorManagement from "../pages/DoctorManagement";
 
 const Dashboard = RouteLoader(lazy(() => import("../pages/Dashboard")));
+
 const CreateAccount = RouteLoader(lazy(() => import("../pages/Users/CreateAccount")));
+const UpdateUser = RouteLoader(lazy(() => import("../pages/Users/UpdateUser")));
+
 const UsersList = RouteLoader(lazy(() => import("../pages/Users/UserList")));
 const ClinicList = RouteLoader(lazy(() => import("../pages/ClinicManagement/ClinicList")));
 const CreateClinic = RouteLoader(lazy(() => import("../pages/ClinicManagement/CreateClinic")));
@@ -24,6 +27,10 @@ const MainRoutes: RouteObject[] = [
             {
                 path: "users/create",
                 element: <CreateAccount />
+            },
+            {
+                path: "users/list/update/",
+                element: <UpdateUser />
             },
             {
                 path: "users/list",

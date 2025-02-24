@@ -1,13 +1,14 @@
 import { alpha, Box, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { User } from "../../../types/User";
-import { useApi } from "../../../hooks/useApi";
+import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types/PageResponse";
 import { Role } from "../../../enums/Role";
+import { useNavigate } from "react-router";
 
 const recep_columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -38,6 +39,13 @@ interface RoleItem {
     label: string
 };
 
+const roles: RoleItem[] = [
+    { value: Role.ADMIN, label: Role[0] },
+    { value: Role.DOCTOR, label: Role[1] },
+    { value: Role.RECEPTIONIST, label: Role[2] },
+    { value: Role.PHARMACIST, label: Role[3] }
+];
+
 interface UsersListState {
     role: Role;
     selectedIds: Set<GridRowId>;
@@ -65,6 +73,7 @@ enum ActionType {
     REMOVE_FROM_SELECTED_IDS,
     CLEAR_SELECTED_IDS,
     SET_LIST,
+    DELETE_SELECTED_ITEMS,
     SET_PAGE,
     SET_PAGE_SIZE,
     SET_TOTAL_PAGES,
@@ -86,6 +95,8 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
             return { ...state, selectedIds: newSet };
         case ActionType.SET_LIST:
             return { ...state, list: action.payload };
+        case ActionType.DELETE_SELECTED_ITEMS:
+            return { ...state, list: state.list.filter((item) => !state.selectedIds.has(item.id)) }
         case ActionType.SET_PAGE:
             return { ...state, page: action.payload };
         case ActionType.SET_PAGE_SIZE:
@@ -106,13 +117,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 function UsersList() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const roles: RoleItem[] = useMemo(() => ([
-        { value: Role.ADMIN, label: Role[0] },
-        { value: Role.DOCTOR, label: Role[1] },
-        { value: Role.RECEPTIONIST, label: Role[2] },
-        { value: Role.PHARMACIST, label: Role[3] }
-    ]), []);
-
+    const navigate = useNavigate();
     const api = useApi();
     const alert = useAlert();
 
@@ -168,8 +173,27 @@ function UsersList() {
         } });
     }
 
+    const handleDelete = useCallback(async() => {
+        try{
+            const res = await api.delete<Array<GridRowId>, BasicResultSet>("/users/delete", Array.from(state.selectedIds));
+            if(res){
+                alert.setSuccess(res.message);
+                dispatch({ type: ActionType.DELETE_SELECTED_ITEMS, payload: state.selectedIds });
+            }
+        }catch(err){
+            alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+    }, [state.selectedIds, state.list]);
+
+    const handleEdit = useCallback(() => {
+        const user = state.list.find((user) => state.selectedIds.has(user.id));
+        navigate("update", { state: { user } });
+    }, [state.list, state.selectedIds]);
+
     interface TableToolbarProps {
         numSelected?: number;
+        onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
     function TableToolbar(props: TableToolbarProps) {
@@ -199,13 +223,13 @@ function UsersList() {
                 </Typography>
                 {props.numSelected == 1 && (
                     <Tooltip title="Edit">
-                        <IconButton>
+                        <IconButton onClick={props.onEdit}>
                             <Edit color="primary" />
                         </IconButton>
                     </Tooltip>
                 )}
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={props.onDelete}>
                         <Delete color="error" />
                     </IconButton>
                 </Tooltip>
@@ -254,7 +278,7 @@ function UsersList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
                     <DataGrid
                         rows={state.list}
                         columns={state.role === Role.DOCTOR ? doc_columns : recep_columns}

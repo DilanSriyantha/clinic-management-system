@@ -44,6 +44,7 @@ public class AuthService {
                 .percentage(request.getPercentage())
                 .status(Status.ACTIVE)
                 .role(request.getRole())
+                .specialization(request.getSpecialization())
                 .build();
         userRepository.save(user);
 

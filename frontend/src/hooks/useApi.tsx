@@ -15,6 +15,7 @@ interface ApiProviderType {
     get: <T>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string, getHeaders?: (headers: Headers) => void) => Promise<T>;
     post: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string) => Promise<R>;
     put: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string) => Promise<R>;
+    delete: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string) => Promise<R>;
 };
 
 interface ApiProviderProps {
@@ -117,6 +118,34 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         }
     };
 
+    const _delete = async<T = any, R = any>(endpoint: string, requestBodyJson?: T, accessToken?: string): Promise<R> => {
+        const url = api_url + endpoint;
+        accessToken = accessToken ? accessToken : user?.accessToken ? user?.accessToken : undefined;
+        const options: RequestInit = {
+            method: "DELETE",
+            body: requestBodyJson && JSON.stringify(requestBodyJson),
+            headers: accessToken ? {
+                "Content-type": "application/json;",
+                "Authorization": `Bearer ${accessToken}`
+            } : {
+                "Content-type": "application/json;"
+            }
+        };
+        try {
+            const res: Response = await fetch(url, options);
+
+            if(!res.ok) {
+                const serverException: ServerException = (await res.json()) as ServerException;
+                handleJwtTokenExpired(serverException);
+                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+            }
+
+            return (await res.json()) as R;
+        } catch (err) {
+            throw new Error(`${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+    };
+
     const handleJwtTokenExpired = useCallback(async (serverException: ServerException) => {
         const jwtTokenExpired = serverException.statusCode === 401 && serverException.message.startsWith("JwtToken is expired.");
         
@@ -139,7 +168,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
     }, [user]);
 
     return (
-        <ApiContext.Provider value={{ get, post, put }}>
+        <ApiContext.Provider value={{ get, post, put, delete: _delete }}>
             {children}
         </ApiContext.Provider>
     );

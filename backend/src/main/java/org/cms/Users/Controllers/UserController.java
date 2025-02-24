@@ -6,6 +6,7 @@ import org.cms.Enums.Role;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Users.Services.UserService;
+import org.cms.Utils.BasicResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,8 +54,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/delete")
-    public @ResponseBody User deleteUser(@RequestParam int userId) {
-        return userService.delete(userId);
+    public @ResponseBody ResponseEntity<BasicResultSet> deleteUser(@RequestBody Iterable<Integer> ids) {
+        return ResponseEntity.ok(userService.delete(ids));
     }
 
     @PutMapping(path = "/update")

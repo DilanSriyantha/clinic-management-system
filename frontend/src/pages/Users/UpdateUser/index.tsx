@@ -11,6 +11,8 @@ import { useAuthManager } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { RoleItem } from "../../../types/RoleItem";
 import { SpecializationOption } from "../../../types/SpecializationOption";
+import { useLocation } from "react-router";
+import moment from "moment";
 
 const initialState: RegisterFormData = {
     name: null,
@@ -26,6 +28,8 @@ const initialState: RegisterFormData = {
 
 const reducer = (state: RegisterFormData, action: { type: string, payload?: any }) => {
     switch(action.type) {
+        case "SET_STATE":
+            return {...state, name: action.payload.name, bithday: action.payload.birthday, address: action.payload.address, email: action.payload.email, password: action.payload.password, telephone: action.payload.telephone, specialization: action.payload.specialization, percentage: action.payload.percentage, role: action.payload.role}
         case "SET_FIELD":
             return {...state, [action.payload.name]: action.payload.value};
         case "RESET_FORM":
@@ -35,7 +39,9 @@ const reducer = (state: RegisterFormData, action: { type: string, payload?: any 
     };
 };
 
-function CreateAccount() {
+function UpdateUser() {
+    const location = useLocation();
+
     const alert = useAlert();
     const authManager = useAuthManager();
     const [loading, setLoading] = useState<boolean>(false);
@@ -53,8 +59,10 @@ function CreateAccount() {
     ], []);
 
     useEffect(() => {
-        console.log(formData);
-    }, [formData]);
+        if(!location.state) return;
+        console.log(location.state);
+        dispatch({ type: "SET_STATE", payload: location.state?.user });
+    }, [location.state]);
 
     const handleSubmit = useCallback(async (e?: FormEvent) => {
         setLoading(true);
@@ -118,7 +126,8 @@ function CreateAccount() {
         <>
             <PageTitle
                 subTitle={"Users"}
-                title={"Create Account"}
+                title={"Update User"}
+                backButton={true}
             />
             <Card>
                 <Container sx={{
@@ -163,21 +172,21 @@ function CreateAccount() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField name="name" label="Name" type="text" onChange={handleInput} />
-                            <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} />
-                            <TextField name="address" label="Address" type="text" onChange={handleInput} />
-                            <TextField name="email" label="E-mail" type="email" onChange={handleInput} />
-                            <TextField name="telephone" label="Telephone" type="tel" onChange={handleInput} />
+                            <TextField value={formData.name} name="name" label="Name" type="text" onChange={handleInput} />
+                            <DatePicker value={moment(moment(formData.birthday).toDate())} name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} />
+                            <TextField value={formData.address} name="address" label="Address" type="text" onChange={handleInput} />
+                            <TextField value={formData.email} name="email" label="E-mail" type="email" onChange={handleInput} />
+                            <TextField value={formData.telephone} name="telephone" label="Telephone" type="tel" onChange={handleInput} />
                             {
                                 (formData.role == Role.DOCTOR) &&
                                 <>
                                     <Autocomplete
                                         // disablePortal
                                         options={specializationOptions}
-                                        renderInput={(params) => <TextField {...params} name="specialization" label="Specialization" />}
+                                        renderInput={(params) => <TextField {...params} value={formData.specialization} name="specialization" label="Specialization" />}
                                         onChange={handleSpecializationChange}
                                     />
-                                    <TextField name="percentage" label="Profit Percentage" type="number" slotProps={{
+                                    <TextField value={formData.percentage} name="percentage" label="Profit Percentage" type="number" slotProps={{
                                         input: {
                                             endAdornment: <InputAdornment position="end">%</InputAdornment>
                                         }
@@ -201,4 +210,4 @@ function CreateAccount() {
     )
 }
 
-export default CreateAccount;
+export default UpdateUser;

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.cms.Enums.Role;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
+import org.cms.Utils.BasicResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -65,13 +67,13 @@ public class UserService {
         return user;
     }
 
-    public User delete(int userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public BasicResultSet delete(Iterable<Integer> ids) {
+        userRepository.deleteAllById(ids);
 
-        userRepository.delete(user);
-
-        return user;
+        return BasicResultSet.builder()
+                .resultCode(200)
+                .message("Users deleted successfully.")
+                .build();
     }
 
     public boolean hasAtLeastOneAdmin() {

@@ -31,4 +31,6 @@ public class RegisterRequest {
 
     @Enumerated(value = EnumType.ORDINAL)
     private Role role;
+
+    private String specialization;
 }

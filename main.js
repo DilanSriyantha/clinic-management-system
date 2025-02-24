@@ -22,9 +22,10 @@ const startJavaProcess = () => {
         ? path.join(process.resourcesPath, "be/backend.jar")
         : path.join("backend", "out", "artifacts", "backend_jar", "backend.jar");
 
-    javaProcess = spawn("java", ["-Dspring.profiles.active=prod", "-jar", jarPath], {
+    javaProcess = spawn("java", ["-jar", jarPath, "--spring.profiles.active=prod"], {
         detached: false,
-        stdio: "pipe"
+        stdio: "pipe",
+        env: process.env
     });
 
     console.log(javaProcess.spawnargs);
