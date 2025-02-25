@@ -54,12 +54,19 @@ public class UserService {
             Field[] fields = newUserDetails.getClass().getDeclaredFields();
             for(Field field : fields){
                 field.setAccessible(true);
-                if(field.get(newUserDetails) != null) {
-                    Field userField = user.getClass().getDeclaredField(field.getName());
-                    userField.setAccessible(true);
-                    userField.set(user, field.get(newUserDetails));
+
+                Field userField = user.getClass().getDeclaredField(field.getName());
+                userField.setAccessible(true);
+
+                if(field.get(newUserDetails) == null){
+                    userField.set(user, userField.get(user));
+                    continue;
                 }
+
+                userField.set(user, field.get(newUserDetails));
             }
+
+            userRepository.save(user);
         }catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }

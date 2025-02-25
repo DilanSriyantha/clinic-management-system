@@ -11,18 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="140c1e6c-a0e7-4579-afb1-a717e3c541aa" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Authentication/RegisterRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Controllers/UserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Services/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Utils/BasicResultSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Utils/BasicResultSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/PageTitle/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/PageTitle/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/PasswordInputField/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/PasswordInputField/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/hooks/useApi.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/hooks/useApi.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Users/CreateAccount/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Users/CreateAccount/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Users/UserList/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Users/UserList/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/routes/MainRouter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/routes/MainRouter.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

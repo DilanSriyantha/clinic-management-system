@@ -33,8 +33,8 @@ const startJavaProcess = () => {
     javaProcess.stdout.on("data", (data) => {
         console.log(`Java Backend PID:${javaProcess.pid} Out: ${data}`);
         handleExit(`${data}`);
-        handleServerStarted(`${data}`);
-        // handleServerStarted("Tomcat started");
+        // handleServerStarted(`${data}`);
+        handleServerStarted("Tomcat started");
     });
 
     javaProcess.stderr.on("data", (data) => {
