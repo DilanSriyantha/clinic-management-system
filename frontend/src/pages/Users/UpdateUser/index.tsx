@@ -1,20 +1,22 @@
-import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Chip, Container, InputAdornment, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Chip, Container, Divider, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
-import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useReducer, useState } from "react";
-import { Api, Check } from "@mui/icons-material";
+import { ChangeEvent, FormEvent, KeyboardEvent, MouseEvent, useCallback, useEffect, useReducer, useState } from "react";
+import { Check } from "@mui/icons-material";
 import { RegisterFormData } from "../../../types/RegisterFormData";
 import { isValid } from "../../../utils/Validator";
 import { Role } from "../../../enums/Role";
 import PasswordInputField from "../../../components/PasswordInputField";
-import { BasicResultSet, useApi, useAuthManager } from "../../../hooks/useApi";
+import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { RoleItem } from "../../../types/RoleItem";
 import { SpecializationOption } from "../../../types/SpecializationOption";
 import { useLocation } from "react-router";
 import moment from "moment";
+import { HardPasswordResetRequest } from "../../../types/HardPasswordResetRequest";
 
 const roles: RoleItem[] = [
+    { value: Role.ADMIN, label: Role[0] },
     { value: Role.DOCTOR, label: Role[1] },
     { value: Role.RECEPTIONIST, label: Role[2] },
     { value: Role.PHARMACIST, label: Role[3] },
@@ -41,7 +43,7 @@ const initialState: RegisterFormData = {
 const reducer = (state: RegisterFormData, action: { type: string, payload?: any }) => {
     switch(action.type) {
         case "SET_STATE":
-            return {...state, name: action.payload.name, birthday: action.payload.birthday, address: action.payload.address, email: action.payload.email, password: action.payload.password, telephone: action.payload.telephone, specialization: action.payload.specialization, percentage: action.payload.percentage, role: roles.find((role) => role.label.match(action.payload.role))!.value}
+            return {...state, name: action.payload.name, birthday: action.payload.birthday, address: action.payload.address, email: action.payload.email, telephone: action.payload.telephone, specialization: action.payload.specialization, percentage: action.payload.percentage, role: roles.find((role) => role.label.match(action.payload.role))!.value}
         case "SET_FIELD":
             return {...state, [action.payload.name]: action.payload.value};
         case "RESET_FORM":
@@ -65,10 +67,12 @@ function UpdateUser() {
         dispatch({ type: "SET_STATE", payload: location.state?.user });
     }, [location.state]);
 
-    const handleSubmit = useCallback(async (e?: FormEvent) => {
+    const handleSubmit = useCallback(async () => {
         setLoading(true);
 
-        const exceptFields: string[] = (formData.role === Role.PHARMACIST || formData.role === Role.RECEPTIONIST) ? ["specialization", "percentage"] : [];
+        console.log(formData);
+
+        const exceptFields: string[] = (formData.role === Role.PHARMACIST || formData.role === Role.RECEPTIONIST) ? ["specialization", "percentage", "password"] : ["password"];
         try{
             
             if(!isValid(formData, exceptFields)){
@@ -89,6 +93,33 @@ function UpdateUser() {
 
         setTimeout(() => setLoading(false), 1000);
     }, [formData]);
+
+    const handleHardResetPassword = useCallback(async (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+        setLoading(true);
+
+        console.log(formData.password);
+        try{
+            if(!isValid({ password: formData.password })){
+                alert.setWarning("Please enter the new password to continue!");
+                setLoading(false);
+                return;
+            }
+
+            const res = await api.put<HardPasswordResetRequest, BasicResultSet>("/users/hardResetPassword", { userId: `${location.state.user.id}` }, {
+                newPassword: formData.password!
+            });
+            
+            if(res){
+                console.log(res);
+                alert.setSuccess("Password has been reset successfuly");
+            }
+
+            setTimeout(() => setLoading(false), 1000);
+        }catch(err){
+            console.log(err);
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    }, [formData.password]);
 
     const handleEnterKeyDown = useCallback((e: KeyboardEvent<HTMLFormElement>) => {
         if(e.key.match("Enter"))
@@ -116,10 +147,6 @@ function UpdateUser() {
 
         dispatch({ type: "SET_FIELD", payload: { name: "specialization", value: value.label } });
     }, [formData.specialization]);
-
-    const handleClear = useCallback((e: FormEvent) => {
-        window.location.reload();
-    }, []);
 
     return (
         <>
@@ -193,7 +220,7 @@ function UpdateUser() {
                                     }} onChange={handleInput} />
                                 </>
                             }
-                            <PasswordInputField onChange={handleInput} />
+                            
                         </Box>
                     </form>
                     <Box sx={{
@@ -201,8 +228,28 @@ function UpdateUser() {
                         gap: 1,
                         justifyContent: "flex-end",
                     }}>
-                        <Button variant="outlined" type="reset" onClick={handleClear}>Clear</Button>
                         <Button variant="contained" type="submit" loadingPosition={"start"} loading={loading} onClick={handleSubmit}>Submit</Button>
+                    </Box>
+                </Container>
+            </Card>
+            <Divider sx={{ mt: 1 }} />
+            <Card sx={{ mt: 1, mb: 2 }}>
+                <Container sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    pt: 2,
+                    pb: 2,
+                }}>
+                    <Box sx={{ pb: 2, display: "flex" }} >
+                        <Typography variant="subtitle2">Hard Reset Password</Typography>
+                    </Box>
+                    <PasswordInputField onChange={handleInput} />
+                    <Box sx={{
+                        display: "flex",
+                        pt: 2,
+                        justifyContent: "flex-end",
+                    }}>
+                        <Button variant="contained" type="submit" loadingPosition={"start"} loading={loading} onClick={handleHardResetPassword}>Reset Password</Button>
                     </Box>
                 </Container>
             </Card>

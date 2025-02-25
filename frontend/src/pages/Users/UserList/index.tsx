@@ -9,6 +9,8 @@ import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types/PageResponse";
 import { Role } from "../../../enums/Role";
 import { useNavigate } from "react-router";
+import { RoleItem } from "../../../types/RoleItem";
+import { UsersListState } from "../../../types/UsersListState";
 
 const recep_columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -34,27 +36,12 @@ const doc_columns: GridColDef[] = [
     { field: "status", headerName: "Status", width: 70 },
 ];
 
-interface RoleItem {
-    value: Role;
-    label: string
-};
-
 const roles: RoleItem[] = [
     { value: Role.ADMIN, label: Role[0] },
     { value: Role.DOCTOR, label: Role[1] },
     { value: Role.RECEPTIONIST, label: Role[2] },
     { value: Role.PHARMACIST, label: Role[3] }
 ];
-
-interface UsersListState {
-    role: Role;
-    selectedIds: Set<GridRowId>;
-    list: User[];
-    page: number;
-    pageSize: number;
-    totalPages: number;
-    totalElements: number;
-};
 
 const initialState: UsersListState = {
     role: Role.DOCTOR,
@@ -64,6 +51,7 @@ const initialState: UsersListState = {
     pageSize: 5,
     totalPages: 1,
     totalElements: 0,
+    loading: false,
 };
 
 enum ActionType {
@@ -78,7 +66,8 @@ enum ActionType {
     SET_PAGE_SIZE,
     SET_TOTAL_PAGES,
     SET_PAGINATION_INFO,
-    SET_PAGINATION_MODEL
+    SET_PAGINATION_MODEL,
+    SET_LOADING,
 };
 
 const reducer = (state: UsersListState, action: { type: ActionType, payload: any }): UsersListState => {
@@ -96,7 +85,7 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
         case ActionType.SET_LIST:
             return { ...state, list: action.payload };
         case ActionType.DELETE_SELECTED_ITEMS:
-            return { ...state, list: state.list.filter((item) => !state.selectedIds.has(item.id)) }
+            return { ...state, list: state.list.filter((item) => !state.selectedIds.has(item.id)) };
         case ActionType.SET_PAGE:
             return { ...state, page: action.payload };
         case ActionType.SET_PAGE_SIZE:
@@ -104,9 +93,13 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
         case ActionType.SET_TOTAL_PAGES:
             return { ...state, totalPages: action.payload };
         case ActionType.SET_PAGINATION_INFO:
-            return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements };
+            return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
-            return { ...state, page: action.payload.page, pageSize: action.payload.pageSize };
+            return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
+        case ActionType.SET_LOADING: 
+            if(state.loading === action.payload)
+                return { ...state };
+            return { ...state, loading: action.payload };
         default:
             return state;
     }
@@ -130,6 +123,7 @@ function UsersList() {
     }, [state.role, state.page, state.pageSize]);
 
     const fetchUsers = useCallback(async () => {
+        dispatch({ type: ActionType.SET_LOADING, payload: true });
         try{
             const res = await api.get<PageResponse<User>>("/users/page", {
                 role: Role[state.role],
@@ -137,7 +131,6 @@ function UsersList() {
                 pageSize: `${state.pageSize}`
             });
             if(res){
-                console.log(res);
                 dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
                     list: res.content,
                     page: res.number,
@@ -291,6 +284,7 @@ function UsersList() {
                         checkboxSelection
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
+                        loading={state.loading}
                     />
                 </Container>
             </Card>

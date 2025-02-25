@@ -6,6 +6,7 @@ import { useAlert } from "../../../hooks/useAlert";
 import { isValid } from "../../../utils/Validator";
 import { useApi, useAuthManager } from "../../../hooks/useApi";
 import { User } from "../../../types/User";
+import { useNavigate } from "react-router";
 
 function Login() {
     const [formData, setFormData] = useState<LoginFormData>({ referenceId: null, password: null });
@@ -16,6 +17,7 @@ function Login() {
     const authManager = useAuthManager();
     const alert = useAlert();
     const api = useApi();
+    const navigate = useNavigate();
 
     useEffect(() => {
         checkHasAdmins();
@@ -23,15 +25,15 @@ function Login() {
 
     const checkHasAdmins = useCallback(async () => {
         try{
-            const res = await api.get<User>("/users/byRole", {"role": "ADMIN"});
+            const res = await api.get<User[]>("/users/byRole", {"role": "ADMIN"});
             if(res){
                 console.log(res);
                 setTimeout(() => {
 
                     setLoading(false);
                     
-                    // if(res.length > 0)
-                        // navigate("register");
+                    if(res.length < 1)
+                        navigate("register");
                 }, 1000);
             }
         }catch(err){

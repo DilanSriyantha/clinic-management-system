@@ -1,3 +1,4 @@
+import { Skeleton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -9,6 +10,7 @@ interface DashboardCardProps {
     number: number;
     icon: string;
     bgColor: string;
+    loading: boolean;
 };
 
 const DashboardCard: React.FC<DashboardCardProps> = (props) => {
@@ -32,9 +34,15 @@ const DashboardCard: React.FC<DashboardCardProps> = (props) => {
             </Box>
             <Box sx={{ display: 'flex', width: "100%", flexDirection: 'column', }}>
                 <CardContent sx={{ flex: '1 0 auto', justifyContent: "center" }}>
-                    <Typography component="div" variant="h1">
-                        { props.number }
-                    </Typography>
+                    {
+                        props.loading
+                        ?
+                            <Skeleton
+                        :
+                            <Typography component="div" variant="h1">
+                                { props.number }
+                            </Typography>
+                    }
                     <Typography
                         variant="h4"
                         component="div"

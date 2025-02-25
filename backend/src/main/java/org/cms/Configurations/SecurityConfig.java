@@ -35,21 +35,25 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    if(userService.hasAtLeastOneAdmin())
+                    if(userService.hasAtLeastOneAdmin()) {
+                        System.out.println("Admins count > 0");
                         auth.requestMatchers("/api/v1/auth/register").hasAuthority(Role.ADMIN.name());
-                    else
+                    }else {
+                        System.out.println("Admins count = 0");
                         auth.requestMatchers("/api/v1/auth/register").permitAll();
-
+                    }
 
                     auth.requestMatchers("/api/v1/auth/refresh").permitAll();
                     auth.requestMatchers("/api/v1/auth/authenticate").permitAll();
                     auth.requestMatchers("/api/v1/users/byRole").permitAll();
+                    auth.requestMatchers("/api/v1/dashboard/report").permitAll();
 
                     auth.requestMatchers("/api/v1/users/all").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/page").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/create").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/update").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/delete").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/hardResetPassword").hasAuthority(Role.ADMIN.name());
 
                     auth.anyRequest().authenticated();
                 })

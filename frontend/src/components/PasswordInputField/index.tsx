@@ -3,7 +3,7 @@ import { IconButton, TextField } from "@mui/material";
 import React, { ChangeEvent, MouseEvent, useCallback, useState } from "react";
 
 interface PasswordInputFieldProps {
-    defaultValue?: string;
+    value?: string;
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     onClick?: (e: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => void;
     error?: boolean;
@@ -18,7 +18,8 @@ const PasswordInputField: React.FC<PasswordInputFieldProps> = (props) => {
 
     return (
         <TextField
-            defaultValue={props.defaultValue}
+            focused={props.value ? true : false}
+            value={props.value}
             name="password"
             variant="outlined"
             label="Password*"

@@ -8,6 +8,7 @@ import { RegisterFormData } from "../../../types/RegisterFormData";
 import { useAlert } from "../../../hooks/useAlert";
 import { useNavigate } from "react-router";
 import { useAuthManager } from "../../../hooks/useApi";
+import { isValid } from "../../../utils/Validator";
 
 const initialState: RegisterFormData = {
     name: null,
@@ -41,11 +42,17 @@ function Register() {
 
     const register = useCallback(async () => {
         try{
+            if(!isValid(formData, ["specialization", "percentage"])){
+                alert.setWarning("Please enter the required information to continue.");
+                return;
+            }
+
             const res = await authManager.register(formData);
             if(res){
                 console.log(res);
-                alert.setSuccess("User registration successful.");
-                navigate("", { replace: true });
+                // alert.setSuccess("User registration successful.");
+                
+                setTimeout(() => navigate(-1), 100);
             }
         }catch(err){
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);

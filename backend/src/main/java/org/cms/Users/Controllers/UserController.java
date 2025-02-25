@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.Enums.Role;
+import org.cms.Users.Models.HardPasswordResetRequest;
+import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Users.Services.UserService;
@@ -11,12 +13,12 @@ import org.cms.Utils.BasicResultSet;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.CredentialException;
+
 @RestController // means the class is a controller
 @RequestMapping("/api/v1/users") // means URL's start with /api/v1/users (after application path)
 @RequiredArgsConstructor
 public class UserController {
-
-    private final UserRepository userRepository;
 
     private final UserService userService;
 
@@ -27,7 +29,7 @@ public class UserController {
 
     @GetMapping(path = "/all")
     public @ResponseBody ResponseEntity<Iterable<User>> getAllUsers() {
-        return userService.getAll();
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @CrossOrigin(exposedHeaders = "X-Total-Pages")
@@ -40,12 +42,12 @@ public class UserController {
             HttpServletRequest request
     ) {
         System.out.println(request.getHeader("Authorization"));
-        return userService.getPage(role, page, pageSize, response);
+        return ResponseEntity.ok(userService.getPage(role, page, pageSize, response));
     }
 
     @GetMapping(path = "/byRole")
     public @ResponseBody Iterable<User> getUsersByRole(@RequestParam String role) {
-        return userRepository.findAllByRole(Role.valueOf(role));
+        return userService.getByRole(role);
     }
 
     @DeleteMapping(path = "/delete")
@@ -54,7 +56,17 @@ public class UserController {
     }
 
     @PutMapping(path = "/update")
-    public @ResponseBody User updateUser(@RequestBody User user, @RequestParam int userId) {
-        return userService.update(user, userId);
+    public @ResponseBody ResponseEntity<BasicResultSet> updateUser(@RequestBody User user, @RequestParam int userId) {
+        return ResponseEntity.ok(userService.update(user, userId));
+    }
+
+    @PutMapping(path = "/resetPassword")
+    public @ResponseBody ResponseEntity<BasicResultSet> resetPassword(@RequestBody SoftPasswordResetRequest request, @RequestParam int userId) throws CredentialException {
+        return ResponseEntity.ok(userService.resetPassword(userId, request));
+    }
+
+    @PutMapping(path = "/hardResetPassword")
+    public @ResponseBody ResponseEntity<BasicResultSet> hardResetPassword(@RequestBody HardPasswordResetRequest request, @RequestParam int userId) {
+        return ResponseEntity.ok(userService.hardPasswordReset(userId, request));
     }
 }
