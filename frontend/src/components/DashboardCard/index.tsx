@@ -10,7 +10,7 @@ interface DashboardCardProps {
     number: number;
     icon: string;
     bgColor: string;
-    loading: boolean;
+    loading?: boolean;
 };
 
 const DashboardCard: React.FC<DashboardCardProps> = (props) => {
@@ -37,19 +37,24 @@ const DashboardCard: React.FC<DashboardCardProps> = (props) => {
                     {
                         props.loading
                         ?
-                            <Skeleton
+                            <>
+                                <Skeleton variant='text' height={20} />
+                                <Skeleton variant='text' />
+                            </>
                         :
-                            <Typography component="div" variant="h1">
-                                { props.number }
-                            </Typography>
+                            <>
+                                <Typography component="div" variant="h1">
+                                    { props.number }
+                                </Typography>
+                                <Typography
+                                    variant="h4"
+                                    component="div"
+                                    sx={{ color: 'text.secondary' }}
+                                >
+                                    { props.title }
+                                </Typography>
+                            </>
                     }
-                    <Typography
-                        variant="h4"
-                        component="div"
-                        sx={{ color: 'text.secondary' }}
-                    >
-                        { props.title }
-                    </Typography>
                 </CardContent>
             </Box>
             

@@ -84,44 +84,44 @@ function Dashboard() {
                 <Grid2 container spacing={5}>
                     <Grid2 size={4}>
                         <Box>
-                            <DashboardCard icon={StethoscopeIcon} title="Doctor(s)" number={state.doctorCount} bgColor={theme.colors.success.dark} />
+                            <DashboardCard icon={StethoscopeIcon} title="Doctor(s)" number={state.doctorCount} bgColor={theme.colors.success.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
                     <Grid2 size={4}>
                         <Box >
-                            <DashboardCard icon={UsersIcon} title="Patient(s)" number={state.patientCount} bgColor={theme.colors.info.dark} />
+                            <DashboardCard icon={UsersIcon} title="Patient(s)" number={state.patientCount} bgColor={theme.colors.info.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
                     <Grid2 size={4}>
                         <Box >
-                            <DashboardCard icon={MedicalServicesIcon} title="Pharmacist(s)" number={state.pharmacistCount} bgColor={theme.colors.warning.dark} />
-                        </Box>
-                    </Grid2>
-
-                    <Grid2 size={4}>
-                        <Box >
-                            <DashboardCard icon={ReceptionistIcon} title="Receptionist(s)" number={state.receptionistCount} bgColor={theme.colors.warning.dark} />
-                        </Box>
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <Box >
-                            <DashboardCard icon={AppointmentIcon} title="Appointment(s) Today" number={state.todayAppointmentCount} bgColor={theme.colors.success.dark} />
-                        </Box>
-                    </Grid2>
-                    <Grid2 size={4}>
-                        <Box >
-                            <DashboardCard icon={ReceiptIcon} title="Invoice(s) Today" number={state.todayInvoiceCount} bgColor={theme.colors.info.dark} />
+                            <DashboardCard icon={MedicalServicesIcon} title="Pharmacist(s)" number={state.pharmacistCount} bgColor={theme.colors.warning.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
 
                     <Grid2 size={4}>
                         <Box >
-                            <DashboardCard icon={PillIcon} title="Medicine(s) Low Stocks" number={state.lowStockMedicineCount} bgColor={theme.colors.error.dark} />
+                            <DashboardCard icon={ReceptionistIcon} title="Receptionist(s)" number={state.receptionistCount} bgColor={theme.colors.warning.dark} loading={state.loading} />
+                        </Box>
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <Box >
+                            <DashboardCard icon={AppointmentIcon} title="Appointment(s) Today" number={state.todayAppointmentCount} bgColor={theme.colors.success.dark} loading={state.loading} />
+                        </Box>
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <Box >
+                            <DashboardCard icon={ReceiptIcon} title="Invoice(s) Today" number={state.todayInvoiceCount} bgColor={theme.colors.info.dark} loading={state.loading} />
+                        </Box>
+                    </Grid2>
+
+                    <Grid2 size={4}>
+                        <Box >
+                            <DashboardCard icon={PillIcon} title="Medicine(s) Low Stocks" number={state.lowStockMedicineCount} bgColor={theme.colors.error.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
                     <Grid2 size={8}>
                         <Box >
-                            <DashboardCard icon={CashIcon} title="Total Payment(s) Today" number={state.todayIncomeCount} bgColor={theme.colors.success.dark} />
+                            <DashboardCard icon={CashIcon} title="Total Payment(s) Today" number={state.todayIncomeCount} bgColor={theme.colors.success.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
                 </Grid2>

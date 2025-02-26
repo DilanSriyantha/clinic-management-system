@@ -11,13 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DashboardReport {
 
+    private int adminCount;
+
     private int doctorCount;
 
-    private int patientCount;
+    private int receptionistCount;
 
     private int pharmacistCount;
 
-    private int receptionistCount;
+    private int patientCount;
 
     private int todayAppointmentCount;
 

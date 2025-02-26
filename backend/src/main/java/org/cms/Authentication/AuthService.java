@@ -92,11 +92,9 @@ public class AuthService {
         if(!authHeader.startsWith("Bearer "))
             throw new BadRequestException("Invalid token format");
 
-        System.out.println("reached");
         var refreshToken = authHeader.substring(7);
         String referenceId = jwtService.extractReferenceId(refreshToken);
         System.out.println(referenceId);
-        System.out.println("reached 2");
 
         if(referenceId == null)
             throw new BadRequestException("Invalid refresh token");

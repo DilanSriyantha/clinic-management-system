@@ -1,11 +1,13 @@
 export interface DashboardReport {
+    adminCount: number;
+
     doctorCount: number;
 
-    patientCount: number;
+    receptionistCount: number;
 
     pharmacistCount: number;
 
-    receptionistCount: number;
+    patientCount: number;
 
     todayAppointmentCount: number;
 

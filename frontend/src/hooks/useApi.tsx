@@ -161,6 +161,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if(res){
                 setUser(res);
                 alert.setSuccess("Session is extended by 10 minutes");
+                location.reload();
             }
         }catch(err){
             alert.setError(err instanceof Error ? err.message : "Unknown error");

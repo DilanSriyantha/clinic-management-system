@@ -1,44 +1,76 @@
 import { Autocomplete, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, useCallback, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useReducer, useRef, useState } from "react";
 import { TimePicker } from "@mui/x-date-pickers";
 import AlertSnackbar, { AlertSnackbarHandles } from "../../../components/AlertSnackbar";
-import { useApi } from "../../../hooks/useApi";
+import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { Clinic } from "../../../types/Clinic";
 import moment from "moment";
+import { CreateClinicState } from "../../../types/CreateClinicState";
+import { isValid } from "../../../utils/Validator";
+import { useAlert } from "../../../hooks/useAlert";
+
+const initialState: CreateClinicState = {
+    caption: "",
+    description: "",
+    dayOfWeek: "",
+    time: "",
+    loading: false,
+};
+
+enum ActionType {
+    SET_FIELD,
+    SET_LOADING,
+};
+
+const reducer = (state: CreateClinicState, action: { type: ActionType, payload: any }): CreateClinicState => {
+    switch(action.type){
+        case ActionType.SET_FIELD:
+            return {...state, [action.payload.name]: action.payload.value};
+        case ActionType.SET_LOADING:
+            return {...state, loading: action.payload};
+        default: 
+            return state;
+    }
+};
 
 function CreateClinic() {
-    const alertRef = useRef<AlertSnackbarHandles>(null);
     const timePickerInputRef = useRef<HTMLInputElement>(null);
 
-    const [clinicInfo, setClinicInfo] = useState<Clinic>();
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const api = useApi();
+    const alert = useAlert();
 
     const handleSubmit = useCallback(async () => {
-        if(!clinicInfo)
-            return;
+        try{
+            if(!isValid(state, ["loading"])){
+                alert.setWarning("Please enter the required information to continue");
+                return;
+            }
 
-        createClinicAsync();
-    }, [clinicInfo]);
+            createClinicAsync();
+        }catch(err){
+            console.log(err);
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+
+    }, [state]);
 
     const createClinicAsync = useCallback(async () => {
         try{
-            if(!clinicInfo)
-                return;
-
-            const res = await api.post<Clinic>("/clinic-management/create", clinicInfo);
+            const res = await api.post<Clinic, BasicResultSet>("/clinic-management/create", state as Clinic);
             if(res){
                 console.log(res);
             }
         }catch(err){
             console.log(err);
         }
-    }, [clinicInfo]);
+    }, [state]);
 
     const handleClear = useCallback(() => {
-        setClinicInfo(undefined);
-    }, [clinicInfo]);
+        
+    }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
         if(e.key.match("Enter"))
@@ -46,15 +78,15 @@ function CreateClinic() {
     }
 
     const handleTextFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        setClinicInfo({...clinicInfo, [e.target.name]: e.target.value});
-    }, [clinicInfo]);
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
+    }, []);
 
     const handleTimePickerChange = useCallback(() => {
         if(!timePickerInputRef.current)
             return;
 
-        setClinicInfo({...clinicInfo, [timePickerInputRef.current.name]: timePickerInputRef.current.value});
-    }, [clinicInfo]);
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "time", value: timePickerInputRef.current.value } });
+    }, []);
 
     return (
         <>
@@ -99,7 +131,7 @@ function CreateClinic() {
                                     { label: "Friday", value: 5 },
                                     { label: "Saturday", value: 6 }
                                 ]}
-                                onChange={(e, v) => setClinicInfo({...clinicInfo, ["dayOfWeek"]: v?.label})}
+                                onChange={(e, v) => dispatch({ type: ActionType.SET_FIELD, payload: { name: "dayOfWeek", value: v?.label } })}
                                 renderInput={(params) => <TextField {...params} name="dayOfWeek" label="Day of week" />}
                             />
                             <TimePicker onChange={handleTimePickerChange} inputRef={timePickerInputRef} name="time" label="Time" defaultValue={moment(new Date)} />
@@ -115,7 +147,6 @@ function CreateClinic() {
                     </Box>
                 </Container>
             </Card>
-            <AlertSnackbar ref={alertRef} severity="success" variant="filled" autoHideDuration={1000} message="Successful" />
         </>
     );
 }

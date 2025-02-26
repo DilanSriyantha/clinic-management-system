@@ -1,6 +1,6 @@
-import { Box, Container, IconButton, Pagination, Stack, Tooltip } from "@mui/material";
+import { Box, Container, IconButton, Pagination, Stack, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useReducer, useState } from "react";
 import { useApi } from "../../../hooks/useApi";
 import { Clinic } from "../../../types/Clinic";
 import ClinicCard from "./ClinicCard";
@@ -8,6 +8,8 @@ import SkeletonCard from "./SkeletonCard";
 import { ReplayOutlined } from "@mui/icons-material";
 import SearchBar from "../../../components/SearchBar";
 import Filter, { FilterOption } from "./Filter";
+import { ClinicListState } from "../../../types/ClinicListState";
+import { useAlert } from "../../../hooks/useAlert";
 
 const filterOptions: FilterOption[] = [
     { label: "Caption", value: 1 },
@@ -17,47 +19,73 @@ const filterOptions: FilterOption[] = [
     { label: "Doctor", value: 5 },
 ];
 
+const initialState: ClinicListState = {
+    list: [],
+    page: 0,
+    pageSize: 0,
+    totalElements: 0,
+    totalPages: 0,
+    loading: false,
+};
+
+enum ActionType {
+    SET_LIST,
+    SET_LOADING,
+    SET_PAGINATION_INFO,
+    SET_PAGE
+};
+
+const reducer = (state: ClinicListState, action: { type: ActionType, payload: any }): ClinicListState => {
+    switch(action.type){
+        case ActionType.SET_LIST:
+            return {...state, list: action.payload.content, page: action.payload.number, pageSize: action.payload.size, totalElements: action.payload.totalElements, totalPages: action.payload.totalPages, loading: state.loading && !state.loading};
+        case ActionType.SET_LOADING:
+            return {...state, loading: action.payload};
+        case ActionType.SET_PAGINATION_INFO:
+            return {...state, loading: true, page: action.payload.page, pageSize: action.payload.pageSize, totalElements: action.payload.totalElements, totalPages: action.payload.totalPages };
+        case ActionType.SET_PAGE:
+            return {...state, loading: true, page: action.payload};
+        default:
+            return state;
+    }
+};
+
 function ClinicList() {
-    const [list, setList] = useState<Clinic[] | null>(null);
-    const [page, setPage] = useState<number>(1);
-    const [pages, setPages] = useState<number>(1);
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     const api = useApi();
+    const alert = useAlert();
 
-    const withHeaders = useCallback((headers: Headers) => {
-        const totalPages = headers.get("X-Total-Pages");
-        if(totalPages)
-            setPages(parseInt(totalPages));
-    }, [pages]);
+    useEffect(() => {
+        fetchList();
+    }, [state.page, state.pageSize]);
 
     const handlePageChange = useCallback((e: ChangeEvent<unknown>, pageNumber: number) => {
-        setPage(pageNumber);
-    }, [page]); 
+        dispatch({ type: ActionType.SET_PAGE, payload: pageNumber });
+    }, [state.page]); 
 
     const handleReloadClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-        setPage(1);
-    }, []);
+        console.log("clicked");
+        dispatch({ type: ActionType.SET_PAGE, payload: 0 });
+    }, [state.page]);
 
     const handleFilterChange = useCallback((option: FilterOption) => {
         console.log(option);
     }, []);
  
-    async function getList() {
+    const fetchList = useCallback(async () => {
         try {
-            const res = await api.get<Clinic[]>("/clinic-management/list", {
-                page: `${page}`,
+            const res = await api.get<Clinic[]>("/clinic-management/page", {
+                page: `${state.page}`,
                 pageSize: `${5}`
-            }, undefined, withHeaders);
+            });
             if (res)
-                setList(res);
+                dispatch({ type: ActionType.SET_LIST, payload: res });
         } catch (err) {
             console.log(err);
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
-    }
-
-    useEffect(() => {
-        getList();
-    }, [page]);
+    }, []);
 
     return (
         <>
@@ -94,11 +122,14 @@ function ClinicList() {
             >
                 <Stack direction="row" gap={2}>
                     {
-                        list ? (
-                            list.map((clinic, idx) => (
+                        state.list ? 
+                        state.list.length > 0 ? (
+                            state.list.map((clinic, idx) => (
                                 <ClinicCard key={idx} clinic={clinic} />
                             ))
-                        ) : (
+                        ) : 
+                            <Typography variant="subtitle2" sx={{ fontStyle: "italic" }}>No items</Typography>
+                        : (
                             <>
                                 <SkeletonCard />
                                 <SkeletonCard />
@@ -116,9 +147,9 @@ function ClinicList() {
                     justifyContent: "flex-end",
                 }}>
                     {
-                        pages && (
-                            <Pagination count={pages} page={page} onChange={handlePageChange} shape="rounded" />
-                        )
+                        state.page ? (
+                            <Pagination count={state.totalPages} page={state.page} onChange={handlePageChange} shape="rounded" />
+                        ) : null
                     }
                 </Box>
             </Container>

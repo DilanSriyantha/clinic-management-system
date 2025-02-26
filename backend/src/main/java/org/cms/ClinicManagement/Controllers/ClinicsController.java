@@ -9,6 +9,7 @@ import org.cms.Enums.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -36,15 +37,11 @@ public class ClinicsController {
 
     @CrossOrigin(exposedHeaders = "X-Total-Pages")
     @GetMapping("/page")
-    public Page<Clinic> getPage(
+    public @ResponseBody ResponseEntity<Page<Clinic>> getPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int pageSize,
             HttpServletResponse response
     ) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        int totalPages = (int) Math.ceil((double)clinicRepository.count() / pageSize);
-        response.setIntHeader("X-Total-Pages", totalPages);
-
-        return clinicRepository.findAll(pageable);
+        return ResponseEntity.ok(clinicService.getPage(page, pageSize, response));
     }
 }
