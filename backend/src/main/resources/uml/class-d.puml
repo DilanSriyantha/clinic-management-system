@@ -1,0 +1,950 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Main
+
+class System
+
+class AuthController
+class AuthRequest
+class AuthResponse
+class AuthService
+class RegisterRequest
+
+AuthController <--* AuthService
+AuthController <--o AuthRequest
+AuthController <--o AuthResponse
+AuthController <--o AuthResponse
+AuthController <--o RegisterRequest
+
+class ApplicationConfiguration
+class CorsConfig
+class ErrorResponse
+class GlobalExceptionHandler
+class JwtAuthFilter
+class JwtService
+class SecurityConfig
+
+JwtAuthFilter <--* JwtService
+JwtAuthFilter <--* UserDetailsService
+
+class DashboardReport
+class DashboardController
+class DashboardService
+class DashboardRepositoryImpl
+
+DashboardController <--* DashboardService
+DashboardController <--o DashboardReport
+DashboardService <--o DashboardReport
+DashboardService <--* DashboardRepositoryImpl
+DashboardRepositoryImpl <--* EntityManager
+
+class User
+class UserController
+class UserService
+interface UserRepository
+
+UserController <--* UserService
+userController <--o User
+UserController <--o SoftPasswordResetRequest
+UserController <--o HardPasswordResetRequest
+UserService <--o User
+UserService <--o SoftPasswordResetRequest
+UserService <--o HardPasswordResetRequest
+UserService <--* PasswordEncoder
+UserController <--* UserRepository
+UserRepository <|-- JpaRepository
+
+class Clinic
+class ClinicController
+class ClinicService
+interface ClinicRepository
+
+ClinicController <--o Clinic
+ClinicController <--* ClinicService
+ClinicService <--o Clinic
+ClinicService <--* ClinicRepository
+ClinicRepository <|-- JpaRepository
+
+class Patient
+class PatientController
+class PatientService
+interface PatientRepository
+
+class Prescription
+class PrescriptionController
+class PrescriptionService
+interface PrescriptionRepository
+
+class Event
+class ScheduleController
+class ScheduleService
+interface ScheduleRepository
+
+class Appointment
+class AppointmentController
+class AppointmentService
+interface AppointmentRepository
+
+class PharmacyItem
+class SalesRecord
+class PharmacyController
+class PharmacyService
+interface PharmacyItemRepository
+interface SalesRecordRepository
+
+class Invoice
+class BillingController
+class BillingService
+
+class ReportingController
+class ReportingService
+
+class BasicResultSet
+class DateFormatter
+
+enum Status {
+    ACTIVE
+    INACTIVE
+}
+
+enum Role {
+    ADMIN
+    DOCTOR
+    RECEPTIONIST
+    PHARMACIST
+}
+
+class Main {
+    main(String[] args): void <<static>>
+}
+
+Main <--o System
+
+class System {
+    -instance: System <<static>>
+    -context: ConfigurableApplicationContext <<static>>
+
+    +System(): constructor
+    +getInstance(): System <<static>>
+    +start(Class<Main> mainClass, String[] args)
+    +shutdown(): void
+    +registerStdInListener(): void
+}
+
+System <--* System
+System <--* ConfigurableApplicationContext
+
+class AuthController {
+    -authService: AuthService
+
+    +register(request: RegisterRequest): ResponseEntity<AuthResponse>
+    +authenticate(request: AuthRequest): ResponseEntity<AuthResponse>
+    +refresh(refreshToken: String): ResponseEntity<AuthResponse>
+}
+
+AuthController <--* AuthService
+AuthController <--o RegisterRequest
+AuthController <--o AuthRequest
+AuthController <--o AuthResponse
+
+class AuthRequest {
+    -referenceId: String
+    -password: String
+
+    +getReferenceId(): String
+    +setReferenceId(refId: String): void
+
+    +getPassword(): String
+    +setPassword(password: String): void
+}
+
+class AuthResponse{
+    -accessToken: String
+    -refreshToken: String
+    -user: User
+
+    +getAccessToken(): String
+    +setAccessToken(token: String): void
+
+    +getRefreshToken(): String
+    +setRefreshToken(token: String): void
+
+    +getUser(): User
+    +setUser(user: User): void
+}
+
+class AuthService{
+    -userRepository: UserRepository
+    -jwtService: JwtService
+    -passwordEncoder: PasswordEncoder
+    -authenticationManager: AuthenticationManager
+    -userDetailsService: UserDetailsService
+
+    +register(request: RegisterRequest): AuthResponse
+    +authenticate(request: AuthRequest): AuthResponse
+    +refresh(refreshToken: String): AuthResponse
+    -generateReferenceId(role: Role): String
+}
+
+AuthService <--* UserRepository
+AuthService <--* JwtService
+AuthService <--* PasswordEncoder
+AuthService <--* AuthenticationManager
+AuthService <--* UserDetailsService
+
+class RegisterRequest{
+    -name: String
+    -password: String
+    -referenceId: String
+    -imagePath: String
+    -birthday: String
+    -email: String
+    -address: String
+    -telephone: String
+    -percentage: float
+    -role: Role
+    -specialization: String
+
+    +getName(): String
+    +setName(name: String): void
+
+    +getPassword(): String
+    +setPassword(password: String): void
+
+    +getReferenceId(): String
+    +setReferenceId(refId: String): void
+
+    +getImagePath(): String
+    +setImagePath(path: String): void
+
+    +getBirthday(): String
+    +setBirthday(birthday: String): void
+
+    +getEmail(): String
+    +setEmail(email: String): void
+
+    +getAddress(): String
+    +setAddress(address: String): void
+
+    +getTelephone(): String
+    +setTelephone(telephone: String): void
+
+    +getPercentage(): float
+    +setPercentage(float percentage): void
+
+    +getRole(): Role
+    +setRole(role: Role): void
+
+    +getSpecialization(): String
+    +setSpecialization(specialization: String): void
+}
+
+RegisterRequest <--* Role
+
+class ApplicationConfiguration{
+    -userRepository: UserRepository
+
+    +userDetailsService(): UserDetailsService
+    +authenticationManager(): AuthenticationManager
+    +passwordEncoder(): PasswordEncoder
+    +authenticationProvider(): AuthenticationProvider
+}
+
+ApplicationConfiguration <--* UserRepository
+ApplicationConfiguration <--* UserDetailsService
+ApplicationConfiguration <--* PasswordEncoder
+ApplicationConfiguration <--* AuthenticationProvider
+
+class CorsConfig {
+    +corsConfigurationSource(): CorsConfigurationSource
+}
+
+CorsConfig <--* CorsConfigurationSource
+
+class ErrorResponse {
+    -statusCode: int
+    -message: String
+
+    +getStatusCode(): int
+    +setStatusCode(code: int): void
+
+    +getMessage(): String
+    +setMessage(message: String): void
+}
+
+class GlobalExceptionHandler {
+    +handleException(): ErrorResponse
+}
+
+GlobalExceptionHandler <--* ErrorResponse
+
+class JwtAuthFilter {
+    -jwtService: JwtService
+    -userDetailsService: UserDetailsService
+
+    doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain): void <<protected>>
+}
+
+JwtAuthFilter <--* JwtService
+JwtAuthFilter <--* UserDetailsService
+JwtAuthFilter <--* FilterChain
+JwtAuthFilter <--* HttpServletRequest
+JwtAuthFilter <--* HttpServletResponse
+
+class JwtService {
+    -Secret: String
+
+    +extractReferenceId(token: String): String
+    +isTokenValid(token: String, userDetails: UserDetails): boolean
+    +isTokenExpired(token: String): boolean
+    +generateAccessToken(userDetails: UserDetails, extraClaims: Map<String, Object>): String
+    +generateRefreshToken(userDetails: UserDetails, extraClaims: Map<String, Object>): String
+    -extractClaims<T>(token: String, claimResolver: Function<Claim, T>): T
+    -extractAllClaims(token: String): Claims
+    -getSigningKey(): Key
+}
+
+class SecurityConfig {
+    -authenticationProvider: AuthenticationProvider
+    -jwtAuthFilter: JwtAuthFilter
+    -corsConfigurationSource: CorsConfigurationSource
+    -userService: UserService
+
+    +securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain
+}
+
+class DashboardReport {
+    -adminCount: int
+    -doctorCount: int
+    -receptionistCount: int
+    -pharmacistCount: int
+    -patientCount: int
+    -todayAppointmentCount: int
+    -lowStockMedicineCount: int
+    -todayIncomeCount: int
+
+    +getAdminCount(): int
+    +setAdminCount(c: int): void
+
+    +getDoctorCount(): int
+    +setDoctorCount(c: int): void
+
+    +getReceptionistCount(): int
+    +setReceptionistCount(c: int): void
+
+    +getPharmacistCount(): int
+    +setPharmacistCount(c: int): void
+
+    +getPatientCount(): int
+    +setPatientCount(c: int): void
+
+    +getTodayAppointmentCount(): int
+    +setTodayAppointmentCount(c: int): void
+
+    +getLowStockMedicineCount(): int
+    +setLowStockMedicineCount(c: int): void
+
+    +getTodayIncomeCount(): int
+    +getTodayIncomeCount(c: int): void
+}
+
+class DashboardController {
+    -dashboardService: DashboardService
+
+    +getReport(): ResponseEntity<DashboardReport>
+}
+
+class DashboardService {
+    -dashboardRepository: DashboardRepository
+
+    +getReport(): DashboardReport
+}
+
+class DashboardRepositoryImpl {
+    -entityManager: EntityManager
+
+    +getDashboardReport(): DashboardReport
+    -generateReport(result: Object[]): DashboardReport
+}
+
+class User {
+    -id: int
+    -name: String
+    -password: String
+    -referenceId: String
+    -imagePath: String
+    -email: String
+    -address: String
+    -telephone: String
+    -specialization: String
+    -percentage: String
+    -status: Status
+    -role: Role
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getAuthorities(): Collection<? extends GrantedAuthority>
+    +getUserName(): String
+    +getPassword(): String
+    +isAccountNonExpired(): boolean
+    +isAccountNonLocked(): boolean
+    +isCredentialsNonExpired(): boolean
+    +isEnabled(): boolean
+
+    +setPassword(password: String): void
+
+    +getImagePath(): String
+    +setImagePath(path: String): void
+
+    +getEmail(): String
+    +setEmail(email: String): void
+
+    +getAddress(): String
+    +setAddress(address: String): void
+
+    +getTelephone(): String
+    +setTelephone(telephone: String): void
+
+    +getSpecialization(): String
+    +setSpecialization(specialization: String): void
+
+    +getPercentage(): float
+    +setPercentage(percentage: float): void
+
+    +getStatus(): Status
+    +setStatus(status: Status): void
+
+    +getRole(): Role
+    +setRole(role: Role): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class UserController{
+    -userService: UserService
+
+    +getAllUsers(): ResponseEntity<Iterable<User>>
+    +getPage(role: String, page: int, pageSize: int): ResponseEntity<Iterable<User>>
+    +getUsersByRole(role: String): ResponseEntity<Iterable<User>>
+    +deleteUsers(ids: Iterable<Integer>): ResponseEntity<BasicResultSet>
+    +updateUser(user: User, userId: int): ResponseEntity<BasicResultSet>
+    +resetPassword(request: SoftPasswordResetRequest, userId: int): ResponseEntity<BasicResultSet>
+    +hardResetPassword(request: HardPasswordResetRequest, userId: int): ResponseEntity<BasicResultSet>
+}
+
+class SoftPasswordResetRequest {
+    -newPassword: String
+
+    +getPassword(): String
+    +setPassword(password: String): void
+}
+
+class HardPasswordResetRequest {
+    -currentPassword: String
+    -newPassword: String
+
+    +getCurrentPassword(): String
+    +setCurrentPassword(password: String): void
+
+    +getNewPassword(): String
+    +setNewPassword(password: String): void
+}
+
+class UserService {
+    -userRepository: UserRepository
+    -passwordEncoder: PasswordEncoder
+
+    +getAll(): Iterable<User>
+    +getPage(role: String, page: int, pageSize: int): Iterable<User>
+    +getByRole(role: String): Iterable<User>
+    +create(request: RegisterRequest): User
+    +update(newUserDetails: User, userId: int): BasicResultSet
+    +delete(ids: Iterable<Integer>): BasicResultSet
+    +resetPassword(id: int, request: SoftPasswordResetRequest): BasicResultSet
+    +hardResetPassword(id: int, request: HardPasswordResetRequest): BasicResultSet
+    +hasAtLeastOneAdmin(): boolean
+    -generateReferenceId(lastId: int, role: Role): String
+}
+
+
+interface UserRepository {
+    +findFirstByRoleOrderByCreatedAtDesc(role: Role): Optional<User>
+    +findByRoleAndReferenceId(role: Role, referenceId: String): Optional<User>
+    +findByReferenceId(refId: String): Optional<User>
+    +findAllByRole(role: Role): Optional<User>
+    +findAllByRole(role: Role, pageable: Pageable): Page<User>
+}
+
+class Clinic {
+    -id: int
+    -caption: String
+    -description: String
+    -doctor: User
+    -dayOfWeek: String
+    -time: String
+    -status: Status
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getCaption(): String
+    +setCaption(caption: String)
+
+    +getDescription(): String
+    +setDescription(description: String): void
+
+    +getDoctor(): User
+    +setDoctor(doctor: User): void
+
+    +getDayOfWeek(): String
+    +setDayOfWeek(dayOfWeek: String): void
+
+    +getTime(): String
+    +setTime(time: String): void
+
+    +getStatus(): Status
+    +setStatus(status: Status): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+
+class ClinicController {
+    -clinicService: ClinicService
+
+    +createClinic(clinic: Clinic, doctorReferenceId: String): ResponseEntity<Clinic>
+    +getAll(): ResponseEntity<Iterable<Clinic>>
+    +getPage(page: int, pageSize: int): ResponseEntity<Iterable<Clinic>>
+    +updateClinic(newDetails: Clinic, id: int): ResponseEntity<BasicResultSet>
+    +deleteClinic(id: int): ResponseEntity<BasicResultSet>
+}
+
+class ClinicService {
+    -clinicRepository ClinicRepository
+
+    +getAll(): Iterable<Clinic>
+    +getPage(page: int, pageSize: int): Iterable<Clinic>
+    +createClinic(clinic: Clinic, doctorReferenceId: String): Clinic
+    +updateClinic(newDetails: Clinic, id: int): BasicResultSet
+    +deleteClinic(id: int): BasicResultSet
+}
+
+interface ClinicRepository
+
+class Patient {
+    -id: int
+    -referenceId: String
+    -name: String
+    -age: int
+    -address: String
+    -email: String
+    -telephone: String
+    -allergiesNote: String
+    -prescriptions: List<Prescription>
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getReferenceId(): String
+    +setReferenceId(referenceId: String): void
+
+    +getName(): String
+    +setName(name: String): void
+
+    +getAge(): int
+    +setAge(age: int): void
+
+    +getAddress(): String
+    +setAddress(address: String): void
+
+    +getEmail(): String
+    +setEmail(email: String): void
+
+    +getTelephone(): String
+    +setTelephone(telephone: String): void
+
+    +getAllergiesNote(): String
+    +setAllergiesNote(allergies: String): void
+
+    +getPrescriptions(): List<Prescription>
+    +setPrescriptions(prescriptions: List<Prescription>): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class PatientController {
+    -patientService PatientService
+
+    +getPage(page: int, pageSize: int): ResponseEntity<Iterable<Patient>>
+    +createPatient(patient: Patient): ResponseEntity<Patient>
+    +updatePatient(newPatientDetails: Patient): ResponseEntity<BasicResultSet>
+    +deletePatient(id: int): ResponseEntity<BasicResultSet>
+    +addPrescription(patientId: int, prescription: Prescription): ResponseEntity<BasicResultSet>
+}
+
+class PatientService {
+    -patientRepository: PatientRepository
+
+    +getPage(page: int, pageSize: int): Iterable<Patient>
+    +createPatient(patient: Patient): Patient
+    +updatePatient(newPatientDetails: Patient): BasicResultSet
+    +deletePatient(id: int): BasicResultSet
+    +addPrescription(patientId: int, prescription: Prescription): BasicResultSet
+}
+
+interface PatientRepository
+
+class Prescription {
+    -id: int
+    -patient: Patient
+    -drugs: List<PharmacyItem>
+    -date: Date
+    -time: Time
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getPatient(): Patient
+    +setPatient(patient: Patient): void
+
+    +getDrugs(): List<PharmacyItem>
+    +setDrugs(drugs: List<PharmacyItem>): void
+
+    +getDate(): Date
+    +setDate(date: Date): void
+
+    +getTime(): Time
+    +setTime(time: Time): void
+}
+
+class PrescriptionController {
+    -prescriptionService: PrescriptionService
+
+    +getAllPrescriptions(): ResponseEntity<Iterable<Prescription>>
+    +getPrescriptions(patientId: int): ResponseEntity<Iterable<Prescription>>
+    +addPrescriptionToPatient(patientId: int, prescription: Prescription): ResponseEntity<BasicResultSet>
+    +updatePrescription(prescriptionId: int, newPrescriptionDetails: Prescription): ResponseEntity<BasicResultSet>
+    +deletePrescription(patientId: int, prescriptionId: int): ResponseEntity<BasicResultSet>
+}
+
+class PrescriptionService {
+    -prescriptionRepository: PrescriptionRepository
+    -patientRepository: PatientRepository
+
+    +getAllPrescriptions(): Iterable<Prescription>
+    +getPrescriptions(patientId: int): Iterable<Prescription>
+    +addPrescriptionToPatient(patientId: int, prescription: Prescription): BasicResultSet
+    +updatePrescription(prescriptionId: int, newPrescriptionDetails: Prescription): BasicResultSet
+    +deletePrescription(patientId: int, prescriptionId: int): BasicResultSet
+}
+
+interface PrescriptionRepository
+
+class Event {
+    -id: int
+    -title: String
+    -description: String
+    -time: Time
+    -date: Date
+    -createdBy: User
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getTitle(): String
+    +setTitle(title: String): void
+
+    +getTime(): Time
+    +setTime(time: Time): void
+
+    +getDate(): Date
+    +setDate(date: Date): void
+
+    +getCreatedBy(): User
+    +setCreatedBy(user: User): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class ScheduleController {
+    -scheduleService: ScheduleService
+
+    +getAllEvents(): ResponseEntity<Iterable<Event>>
+    +createEvent(event: Event): ResponseEntity<Event>
+    +updateEvent(eventId: int): ResponseEntity<BasicResultSet>
+    +deleteEvent(eventId: int): ResponseEntity<BasicResultSet>
+}
+
+class ScheduleService {
+    -scheduleRepository: ScheduleRepository
+
+    +getAllEvents(): Iterable<Event>
+    +createEvent(event: Event): Event
+    +updateEvent(eventId: int): BasicResultSet
+    +deleteEvent(eventId: int): BasicResultSet
+}
+
+interface ScheduleRepository
+
+class Appointment {
+    -id: int
+    -referenceId: String
+    -patient: Patient
+    -date: Date
+    -time: Time
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getReferenceId(): String
+    +setReferenceId(referenceId: String): void
+
+    +getPatient(): Patient
+    +setPatient(patient: Patient): void
+
+    +getDate(): Date
+    +setDate(date: Date): void
+
+    +getTime(): Time
+    +setTime(time: Time): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class AppointmentController {
+    -appointmentService: AppointmentService
+
+    +getAllAppointments(): ResponseEntity<Iterable<Appointment>>
+    +getPage(page: int, pageSize: int): ResponseEntity<Iterable<Appointment>>
+    +createAppointment(appointment: Appointment): ResponseEntity<BasicResultSet>
+    +updateAppointment(id: int, newDetails: Appointment): ResponseEntity<BasicResultSet>
+    +deleteAppointment(id: int): ResponseEntity<BasicResultSet>
+}
+
+class AppointmentService {
+    -appointmentRepository: AppointmentRepository
+
+    +getAllAppointments(): Iterable<Appointment>
+    +getPage(page: int, pageSize: int): Iterable<Appointment>
+    +createAppointment(appointment: Appointment): BasicResultSet
+    +updateAppointment(id: int, newDetails: Appointment): BasicResultSet
+    +deleteAppointment(id: int): BasicResultSet
+}
+
+interface AppointmentRepository
+
+class PharmacyItem {
+    -id: int
+    -name: String
+    -description: String
+    -note: String
+    -manufacturedDate: Date
+    -expireDate: Date
+    -unitPrice: float
+    -sellingPrice: float
+    -quantity: int
+    -stockId: long
+    -createdAt: Timestamp
+    -UpdatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getName(): String
+    +setName(name: String): void
+
+    +getDescription(): String
+    +setDescription(description: String): void
+
+    +getNote(): String
+    +setNote(note: String): void
+
+    +getManufacturedDate(): Date
+    +setManufacturedDate(mfd: Date): void
+
+    +getExpireDate(): Date
+    +setExpireDate(exp: Date): void
+
+    +getUnitPrice(): float
+    +setUnitPrice(price: float): void
+
+    +getSellingPrice(): float
+    +setSellingPrice(price: float): void
+
+    +getQuantity(): int
+    +setQuantity(qty: int): void
+
+    +getStockId(): long
+    +setStockId(stockId: long): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class SalesRecord {
+    -id: int
+    -invoice: Invoice
+    -item: PharmacyItem
+    -quantity: int
+    -total: float
+    -date: Date
+    -time: Time
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getInvoice(): Invoice
+    +setInvoice(invoice: Invoice): void
+
+    +getItem(): PharmacyItem
+    +setItem(item: PharmacyItem): void
+
+    +getQuantity(): int
+    +setQuantity(qty: int): void
+
+    +getTotal(): float
+    +setTotal(total: float): void
+
+    +getDate(): Date
+    +setDate(date: Date): void
+
+    +getTime(): Time
+    +setTime(time: Time): void
+}
+
+class PharmacyController {
+    -pharmacyService: PharmacyService
+
+    +getAllPrescriptions(): ResponseEntity<Iterable<Prescription>>
+    +updatePrescriptionStatus(): ResponseEntity<BasicResultSet>
+    +getAllPharmacyItems(): ResponseEntity<Iterable<PharmacyItem>>
+    +createPharmacyItem(pharmacyItem: PharmacyItem): ResponseEntity<BasicResultSet>
+    +UpdatePharmacyItem(id: int, newDetails: PharmacyItem): ResponseEntity<BasicResultSet>
+    +DeletePharmacyItem(id: int): ResponseEntity<BasicResultSet>
+    +createInvoice(): ResponseEntity<Invoice>
+    +updateInvoice(invoiceId: int): ResponseEntity<BasicResultSet>
+    +deleteInvoice(invoiceId: int): ResponseEntity<BasicResultSet>
+}
+
+class PharmacyService {
+    -prescriptionService: PrescriptionService
+    -billingService: BillingService
+
+    +getAllPrescriptions(): Iterable<Prescription>
+    +updatePrescriptionStatus(): BasicResultSet
+    +getAllPharmacyItems(): Iterable<PharmacyItem>
+    +createPharmacyItem(pharmacyItem: PharmacyItem): BasicResultSet
+    +UpdatePharmacyItem(id: int, newDetails: PharmacyItem): BasicResultSet
+    +DeletePharmacyItem(id: int): BasicResultSet
+    +createInvoice(): Invoice
+    +updateInvoice(invoiceId: int): BasicResultSet
+    +deleteInvoice(invoiceId: int): BasicResultSet
+}
+
+interface PharmacyItemRepository
+
+interface SalesRecordRepository
+
+class Invoice {
+    -id: int
+    -number: int
+    -patient: Patient
+    -salesRecords: List<SalesRecord>
+    -subTotal: float
+    -createdAt: Timestamp
+    -updatedAt: Timestamp
+
+    +getId(): int
+    +setId(id: int): void
+
+    +getNumber(): int
+    +setNumber(number: int): void
+
+    +getSalesRecords(): List<SalesRecord>
+    +setSalesRecords(salesRecords: List<SalesRecord>): void
+
+    +getSubTotal(): float
+    +setSubTotal(subTotal: float): void
+
+    +getCreatedAt(): Timestamp
+    +setCreatedAt(createdAt: Timestamp): void
+
+    +getUpdatedAt(): Timestamp
+    +setUpdatedAt(updatedAt: Timestamp): void
+}
+
+class BillingController {
+    -billingService: BillingService
+
+    +getAllInvoices(): ResponseEntity<Iterable<Invoice>>
+    +createInvoice(prescription: Prescription): ResponseEntity<Invoice>
+    +updateInvoice(id: int, newInformation: Prescription): ResponseEntity<BasicResultSet>
+    +updateInvoice(id: int, newInformation: Invoice): ResponseEntity<BasicResultSet>
+    +deleteInvoice(id: int): ResponseEntity<BasicResultSet>
+}
+
+class BillingService {
+    -invoiceRepository: InvoiceRepository
+    -saleRecordRepository: SalesRecordRepository
+
+    +getAllInvoices(): Iterable<Invoice>
+    +createInvoice(prescription: Prescription): Invoice
+    +updateInvoice(id: int, newInformation: Prescription): BasicResultSet
+    +updateInvoice(id: int, newInformation: Invoice): BasicResultSet
+    +deleteInvoice(id: int): BasicResultSet
+}
+
+interface InvoiceRepository
+
+class ReportingController {
+    -reportingService: ReportingService
+
+    +createSalesReport(): ResponseEntity<Object[]>
+    +createIncomeReport(): ResponseEntity<Object[]>
+    +createStockReport(): ResponseEntity<Object[]>
+}
+
+class ReportingService {
+    -billingService: BillingService
+    -pharmacyService: PharmacyService
+    -userService: UserService
+    -patientService: PatientService
+
+    +createSalesReport(): Object[]
+    +createIncomeReport(): Object[]
+    +createStockReport(): Object[]
+}
+
+@enduml

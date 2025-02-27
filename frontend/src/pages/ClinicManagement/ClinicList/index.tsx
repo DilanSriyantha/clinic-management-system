@@ -10,6 +10,7 @@ import SearchBar from "../../../components/SearchBar";
 import Filter, { FilterOption } from "./Filter";
 import { ClinicListState } from "../../../types/ClinicListState";
 import { useAlert } from "../../../hooks/useAlert";
+import { useNavigate } from "react-router";
 
 const filterOptions: FilterOption[] = [
     { label: "Caption", value: 1 },
@@ -55,13 +56,14 @@ function ClinicList() {
 
     const api = useApi();
     const alert = useAlert();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchList();
     }, [state.page, state.pageSize]);
 
     const handlePageChange = useCallback((e: ChangeEvent<unknown>, pageNumber: number) => {
-        dispatch({ type: ActionType.SET_PAGE, payload: pageNumber });
+        dispatch({ type: ActionType.SET_PAGE, payload: pageNumber - 1 });
     }, [state.page]); 
 
     const handleReloadClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
@@ -85,6 +87,10 @@ function ClinicList() {
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
+    }, [state.page]);
+
+    const handleClinicClick = useCallback((clinic: Clinic): void => {
+        navigate("clinic-details", { state: clinic });
     }, []);
 
     return (
@@ -125,7 +131,7 @@ function ClinicList() {
                         state.list ? 
                         state.list.length > 0 ? (
                             state.list.map((clinic, idx) => (
-                                <ClinicCard key={idx} clinic={clinic} />
+                                <ClinicCard key={idx} clinic={clinic} onClick={handleClinicClick} />
                             ))
                         ) : 
                             <Typography variant="subtitle2" sx={{ fontStyle: "italic" }}>No items</Typography>
@@ -147,8 +153,8 @@ function ClinicList() {
                     justifyContent: "flex-end",
                 }}>
                     {
-                        state.page ? (
-                            <Pagination count={state.totalPages} page={state.page} onChange={handlePageChange} shape="rounded" />
+                        state.list.length > 0 ? (
+                            <Pagination count={state.totalPages} page={state.page + 1} onChange={handlePageChange} shape="rounded" />
                         ) : null
                     }
                 </Box>

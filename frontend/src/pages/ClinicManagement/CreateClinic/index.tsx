@@ -1,8 +1,7 @@
 import { Autocomplete, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, useCallback, useReducer, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useReducer, useRef } from "react";
 import { TimePicker } from "@mui/x-date-pickers";
-import AlertSnackbar, { AlertSnackbarHandles } from "../../../components/AlertSnackbar";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { Clinic } from "../../../types/Clinic";
 import moment from "moment";
@@ -62,14 +61,16 @@ function CreateClinic() {
             const res = await api.post<Clinic, BasicResultSet>("/clinic-management/create", state as Clinic);
             if(res){
                 console.log(res);
+                alert.setSuccess("Clinic created successfully");
             }
         }catch(err){
             console.log(err);
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
     }, [state]);
 
     const handleClear = useCallback(() => {
-        
+        location.reload();
     }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {

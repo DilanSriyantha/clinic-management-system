@@ -55,7 +55,8 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/users/delete").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/hardResetPassword").hasAuthority(Role.ADMIN.name());
 
-                    auth.anyRequest().authenticated();
+//                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

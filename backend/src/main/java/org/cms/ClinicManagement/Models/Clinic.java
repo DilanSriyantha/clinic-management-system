@@ -1,12 +1,31 @@
 package org.cms.ClinicManagement.Models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.cms.Enums.Status;
 import org.cms.Users.Models.User;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+@Data
+@Builder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Clinic {
 
     @Id
@@ -17,76 +36,25 @@ public class Clinic {
 
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
-    private User doctor;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "clinic_doctor",
+            joinColumns = @JoinColumn(name = "clinic_id"),
+            inverseJoinColumns = @JoinColumn(name = "doctor_id")
+    )
+    // inform the json serializer that this entity is the owner of doctors in order to prevent infinite recursion.
+    private List<User> doctors = new ArrayList<>();
 
     private String dayOfWeek;
 
     private String time;
 
-    private Integer status;
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
 
     @CreationTimestamp
     private Timestamp createdAt;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public User getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(User doctor) {
-        this.doctor = doctor;
-    }
-
-    public String getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public void setDayOfWeek(String dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
 }

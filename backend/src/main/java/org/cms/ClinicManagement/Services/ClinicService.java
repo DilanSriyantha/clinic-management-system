@@ -1,28 +1,47 @@
 package org.cms.ClinicManagement.Services;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
-import org.cms.Enums.Role;
+import org.cms.Enums.Status;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ClinicService {
 
-    @Autowired
-    private ClinicRepository clinicRepository;
+    private final ClinicRepository clinicRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public Page<Clinic> findAll(Pageable pageable) {
-        return clinicRepository.findAll(pageable);
+    public Iterable<Clinic> getAll() {
+        return clinicRepository.findAll();
+    }
+
+    public Clinic get(int clinicId) {
+        var clinic = clinicRepository.findById(clinicId)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        var doctors = clinic.getDoctors();
+        System.out.println(doctors.size());
+
+        return clinic;
+    }
+
+    public Iterable<User> getDoctorsByClinic(int clinicId) {
+        var clinic = clinicRepository.findById(clinicId)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        return clinic.getDoctors();
     }
 
     public Page<Clinic> getPage(int page, int pageSize, HttpServletResponse response) {
@@ -35,12 +54,38 @@ public class ClinicService {
         return dataPage;
     }
 
-    public Clinic save(Clinic clinic, Role role, String referenceId) {
-        var doctor = userRepository.findByRoleAndReferenceId(role, referenceId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
-
-        clinic.setDoctor(doctor);
+    public Clinic create(Clinic clinic) {
+        clinic.setStatus(Status.ACTIVE);
 
         return clinicRepository.save(clinic);
+    }
+
+    public BasicResultSet assignDoctor(int clinicId, int doctorId) {
+        var clinic = clinicRepository.findById(clinicId)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        var doctor = userRepository.findById(doctorId)
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
+
+        clinic.getDoctors().add(doctor);
+
+        clinicRepository.save(clinic);
+
+        return BasicResultSet.builder()
+                .resultCode(200)
+                .message("Doctor assigned successfully.")
+                .build();
+    }
+
+    public BasicResultSet delete(int id) {
+        var clinic = clinicRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        clinicRepository.delete(clinic);
+
+        return BasicResultSet.builder()
+                .resultCode(200)
+                .message("Clinic deleted successfully")
+                .build();
     }
 }

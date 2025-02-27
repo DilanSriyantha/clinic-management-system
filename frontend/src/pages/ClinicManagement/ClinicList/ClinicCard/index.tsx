@@ -2,17 +2,26 @@ import { Card, CardActionArea, CardContent, CardMedia, Chip, Stack, Typography }
 import { Clinic } from "../../../../types/Clinic";
 import { CalendarIcon, TimeIcon } from "@mui/x-date-pickers";
 import { Person } from "@mui/icons-material";
+import { MouseEvent } from "react";
 
 interface ClinicCardProps {
     clinic: Clinic;
+    onClick?: (clinic: Clinic) => void;
 };
 
-const ClinicCard: React.FC<ClinicCardProps> = ({ clinic }) => {
+const ClinicCard: React.FC<ClinicCardProps> = (props) => {
+
+    function handleCardMediaAreaClick(event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void {
+        if(!props.onClick)
+            return;
+
+        props.onClick(props.clinic);
+    }
 
     return (
         <>
             <Card sx={{ maxWidth: 345 }}>
-                <CardActionArea>
+                <CardActionArea onClick={handleCardMediaAreaClick}>
                     <CardMedia
                         component="img"
                         height="140"
@@ -20,21 +29,21 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic }) => {
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                            {clinic.caption}
+                            {props.clinic.caption}
                         </Typography>
                         <Typography variant="body2" sx={{ color: "text.secondary", pb: 1 }}>
-                            {clinic.description}
+                            {props.clinic.description}
                         </Typography>
                         <Stack direction="row" gap={.5} sx={{
                             alignItems: "center",
                             justifyContent: "center",
                             pb: 1
                         }}>
-                            <Chip icon={<CalendarIcon />} label={clinic.dayOfWeek} />
-                            <Chip icon={<TimeIcon />} label={clinic.time} />
+                            <Chip icon={<CalendarIcon />} label={props.clinic.dayOfWeek} />
+                            <Chip icon={<TimeIcon />} label={props.clinic.time} />
                         </Stack>
                         <Stack direction={"column"} sx={{ pl: 1, pr: 1 }}>
-                            <Chip icon={<Person />} label={clinic.doctorUid ? clinic.doctorUid : "Not assigned!"} />
+                            <Chip icon={<Person />} label={props.clinic.doctorUid ? props.clinic.doctorUid : "Not assigned!"} />
                         </Stack>
                     </CardContent>
                 </CardActionArea>

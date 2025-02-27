@@ -1,7 +1,12 @@
 package org.cms.Users.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
+import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.Enums.Role;
 import org.cms.Enums.Status;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,8 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Builder
@@ -20,7 +24,12 @@ import java.util.List;
 @Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "REF_ID", columnNames = "reference_id"))
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -45,6 +54,10 @@ public class User implements UserDetails {
     private String specialization;
 
     private Float percentage;
+
+    @ManyToMany(mappedBy = "doctors")
+    // inform the json serializer that this entity is owned by clinic in order to prevent infinite recursion.
+    private List<Clinic> clinics = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Status status;

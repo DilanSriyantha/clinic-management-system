@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Status {
-    ACTIVE(1),
-    INACTIVE(2);
+    ACTIVE(0),
+    INACTIVE(1);
 
     private final int value;
     private static final Map<Integer, Status> map = new HashMap<>();

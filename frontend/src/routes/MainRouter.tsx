@@ -12,6 +12,7 @@ const UpdateUser = RouteLoader(lazy(() => import("../pages/Users/UpdateUser")));
 
 const UsersList = RouteLoader(lazy(() => import("../pages/Users/UserList")));
 const ClinicList = RouteLoader(lazy(() => import("../pages/ClinicManagement/ClinicList")));
+const ClinicDetails = RouteLoader(lazy(() => import("../pages/ClinicManagement/ClinicDetails")));
 const CreateClinic = RouteLoader(lazy(() => import("../pages/ClinicManagement/CreateClinic")));
 
 const MainRoutes: RouteObject[] = [
@@ -43,6 +44,10 @@ const MainRoutes: RouteObject[] = [
             {
                 path: "clinic-management/create",
                 element: <CreateClinic />
+            },
+            {
+                path: "clinic-management/list/clinic-details",
+                element: <ClinicDetails />
             },
             // doctor management
             {

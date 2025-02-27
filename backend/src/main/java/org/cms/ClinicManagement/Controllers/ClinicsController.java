@@ -3,12 +3,10 @@ package org.cms.ClinicManagement.Controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.ClinicManagement.Models.Clinic;
-import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.ClinicManagement.Services.ClinicService;
-import org.cms.Enums.Role;
+import org.cms.Users.Models.User;
+import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,20 +17,21 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ClinicsController {
 
-    private final ClinicRepository clinicRepository;
-
     private final ClinicService clinicService;
 
-    @PostMapping("/create")
-    public Clinic createClinic(@RequestBody Clinic clinic, @RequestParam String doctorReferenceId, @RequestParam int role) {
-        clinic.setStatus(1);
-
-        return clinicService.save(clinic, Role.valueOf(role), doctorReferenceId);
+    @GetMapping("/all")
+    public @ResponseBody ResponseEntity<Iterable<Clinic>> getAll() {
+        return ResponseEntity.ok(clinicService.getAll());
     }
 
-    @GetMapping("/all")
-    public @ResponseBody Iterable<Clinic> getAll() {
-        return clinicRepository.findAll();
+    @GetMapping("/byId")
+    public @ResponseBody ResponseEntity<Clinic> get(int clinicId) {
+        return ResponseEntity.ok(clinicService.get(clinicId));
+    }
+
+    @GetMapping("/doctorsByClinic")
+    public @ResponseBody ResponseEntity<Iterable<User>> getDoctorsByClinic(@RequestParam int clinicId) {
+        return ResponseEntity.ok(clinicService.getDoctorsByClinic(clinicId));
     }
 
     @CrossOrigin(exposedHeaders = "X-Total-Pages")
@@ -43,5 +42,20 @@ public class ClinicsController {
             HttpServletResponse response
     ) {
         return ResponseEntity.ok(clinicService.getPage(page, pageSize, response));
+    }
+
+    @PostMapping("/create")
+    public @ResponseBody ResponseEntity<Clinic> create(@RequestBody Clinic clinic) {
+        return ResponseEntity.ok(clinicService.create(clinic));
+    }
+
+    @PostMapping("/assign-doctor")
+    public @ResponseBody ResponseEntity<BasicResultSet> assignDoctor(@RequestParam int clinicId, @RequestParam int doctorId) {
+        return ResponseEntity.ok(clinicService.assignDoctor(clinicId, doctorId));
+    }
+
+    @DeleteMapping("/delete")
+    public @ResponseBody ResponseEntity<BasicResultSet> delete(@RequestParam int id) {
+        return ResponseEntity.ok(clinicService.delete(id));
     }
 }
