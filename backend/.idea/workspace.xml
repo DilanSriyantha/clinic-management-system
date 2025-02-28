@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d810a9d7-cbe5-46f0-9177-17de76ee1e4f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/uml/class-d.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/uml/class-diagram.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +45,7 @@
     "git-widget-placeholder": "system-administration",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Dilan Sriyantha/OneDrive/Clinic Management System/srs/diag",
+    "last_opened_file_path": "D:/Projects/clinic-management-system/backend/src/main/resources/uml",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
