@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:main();
+:System.getInstance().start();
+:System.registerStdInListener();
+if(System.shutdown()) then (true)
+    stop
+else (false)
+    if(UserController.hasAtLeastOneAdmin()) then (true)
+        repeat
+            :AuthController.authenticate();
+            :JwtService.refresh();
+            :JwtAuthFilter.doFilter();
+            backward: throw ExpiredJwtException;
+        repeat while (JwtService.isTokenValid()) is (false) not (true)
+        :SecurityConfig.securityFilterChain();
+    else (false)
+        :AuthController.register();
+    endif
+    if(isReceptionist?) then (true)
+        :PatientController.createPatient();
+        :AppointmentController.createAppointment();
+    else if(isDoctor?) then (true)
+        :PrescriptionController.addPrescriptionToPatient();
+    else if(isPharmacist?) then (true)
+            :PharmacyController.getPrescription();
+            :BillingController.createInvoice();
+            fork
+                :BillingService.calculateSubTotal();
+            fork again
+                :SalesRecordController.createSalesRecords();
+            end fork
+            :Print invoice;
+    else if(isAdmin?) then (true)
+        split
+        :ReportingController.generateSalesReport();
+        split again
+        :ReportingController.generateIncomeReport();
+        split again
+        :ReportingController.generateStockReport();
+        end split
+    else (false)
+        :throw HttpClientErrorException.Forbidden;
+    endif
+endif
+
+'start
+':ClickServlet.handleRequest();
+':new page;
+'if (Page.onSecurityCheck) then (true)
+'  :Page.onInit();
+'  if (isForward?) then (no)
+'    :Process controls;
+'    if (continue processing?) then (no)
+'      stop
+'    endif
+'
+'    if (isPost?) then (yes)
+'      :Page.onPost();
+'    else (no)
+'      :Page.onGet();
+'    endif
+'    :Page.onRender();
+'  endif
+'else (false)
+'endif
+'
+'if (do redirect?) then (yes)
+'  :redirect process;
+'else
+'  if (do forward?) then (yes)
+'    :Forward request;
+'  else (no)
+'    :Render page template;
+'  endif
+'endif
+
+stop
+
+@enduml

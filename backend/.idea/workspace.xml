@@ -6,21 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d810a9d7-cbe5-46f0-9177-17de76ee1e4f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Controllers/ClinicsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Controllers/ClinicsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Models/Clinic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Models/Clinic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Repositories/ClinicRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Repositories/ClinicRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Services/ClinicService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/ClinicManagement/Services/ClinicService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Configurations/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Enums/Status.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Enums/Status.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Users/Models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Users/Models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/enums/Role.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/enums/Role.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicDetails/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicDetails/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicList/ClinicCard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicList/ClinicCard/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicList/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/ClinicList/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/CreateClinic/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/ClinicManagement/CreateClinic/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/routes/MainRouter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/routes/MainRouter.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/types/Clinic.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/types/Clinic.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/uml/class-d.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/uml/class-diagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +19,8 @@
         <option value="Interface" />
         <option value="Class" />
         <option value="UML Class" />
+        <option value="UML Activity" />
+        <option value="UML Sequence" />
       </list>
     </option>
   </component>
@@ -51,17 +39,17 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Server.executor": "Run",
-    "DefaultPlantUmlFileTemplate": "UML Class",
+    "DefaultPlantUmlFileTemplate": "UML Sequence",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "system-administration",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/DilanSriyantha/Desktop",
+    "last_opened_file_path": "C:/Users/Dilan Sriyantha/OneDrive/Clinic Management System/srs/diag",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "preferences.editor"
   }
 }]]></component>
   <component name="RunManager">

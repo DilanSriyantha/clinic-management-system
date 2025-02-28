@@ -1,0 +1,145 @@
+@startchen
+
+entity User {
+    id <<key>>
+    name
+    password
+    referenceId <<derived>>
+    imagePath
+    email
+    address
+    telephone
+    specialization
+    percentage
+    status
+    role
+    createdAt
+    updatedAt
+}
+
+entity Clinic {
+    id <<key>>
+    caption
+    description
+    doctorId FK
+    dayOfWeek
+    time
+    status
+    createdAt
+    updatedAt
+}
+
+relationship worksAt {
+}
+
+Clinic -M- worksAt
+User -N- worksAt
+
+entity Patient {
+    id <<key>>
+    referenceId <<derived>>
+    name
+    age
+    address
+    email
+    telephone
+    allergiesNote
+    createdAt
+    updatedAt
+}
+
+entity Prescription {
+    id <<key>>
+    createdAt
+    updatedAt
+}
+
+relationship has {
+}
+
+Patient -1- has
+Prescription -M- has
+
+entity PharmacyItem {
+    id <<key>>
+    name
+    description
+    note
+    manufacturedDate
+    expireDate
+    sellingPrice
+    quantity
+    createdAt
+    updatedAt
+}
+
+entity Stock {
+    id <<key>>
+    caption
+    description
+    supplier
+    grandTotal
+    createdAt
+    updatedAt
+}
+
+relationship Contains{
+}
+
+Stock -1- Contains
+PharmacyItem -M- Contains
+
+entity Event {
+    id <<key>>
+    title
+    description
+    time
+    date
+    createdAt
+    updatedAt
+}
+
+entity Appointment {
+    id <<key>>
+    referenceId <<derived>>
+    date
+    time
+    createdAt
+    updatedAt
+}
+
+relationship Schedule {
+}
+
+Patient -1- Schedule
+Appointment -M- Schedule
+
+entity SalesRecord {
+    id <<key>>
+    quantity
+    total
+    createdAt
+    updatedAt
+}
+
+entity Invoice {
+    id <<key>>
+    number
+    subTotal
+    createdAt
+    updatedAt
+}
+
+relationship Receive{
+}
+
+Patient -1- Receive
+Invoice -M- Receive
+
+relationship ConsistedOf {
+}
+
+Invoice -1- ConsistedOf
+SalesRecord -M- ConsistedOf
+
+@endchen

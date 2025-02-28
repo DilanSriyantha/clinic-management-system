@@ -1,0 +1,9 @@
+package org.cms.ScheduleManagement.Controllers;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+
+@Controller
+@RequiredArgsConstructor
+public class ScheduleController {
+}

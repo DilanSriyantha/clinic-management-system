@@ -305,6 +305,9 @@ class JwtService {
     -getSigningKey(): Key
 }
 
+JwtService <--o Key
+JwtService <--o UserDetails
+
 class SecurityConfig {
     -authenticationProvider: AuthenticationProvider
     -jwtAuthFilter: JwtAuthFilter
@@ -313,6 +316,12 @@ class SecurityConfig {
 
     +securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain
 }
+
+SecurityConfig <--* AuthenticationProvider
+SecurityConfig <--* JwtAuthFilter
+SecurityConfig <--* CorsConfigurationSource
+SecurityConfig <--* UserService
+SecurityConfig <--* HttpSecurity
 
 class DashboardReport {
     -adminCount: int
@@ -424,6 +433,9 @@ class User {
     +getUpdatedAt(): Timestamp
     +setUpdatedAt(updatedAt: Timestamp): void
 }
+
+User <--o Role
+User <--o Status
 
 class UserController{
     -userService: UserService
@@ -589,6 +601,8 @@ class Patient {
     +setUpdatedAt(updatedAt: Timestamp): void
 }
 
+Patient <--o Prescription
+
 class PatientController {
     -patientService PatientService
 
@@ -599,6 +613,11 @@ class PatientController {
     +addPrescription(patientId: int, prescription: Prescription): ResponseEntity<BasicResultSet>
 }
 
+PatientController <--* PatientService
+PatientController <--o Patient
+PatientController <--o BasicResultSet
+PatientController <--o Prescription
+
 class PatientService {
     -patientRepository: PatientRepository
 
@@ -608,6 +627,10 @@ class PatientService {
     +deletePatient(id: int): BasicResultSet
     +addPrescription(patientId: int, prescription: Prescription): BasicResultSet
 }
+
+PatientService <--* PatientRepository
+PatientService <--o Patient
+PatientService <--o BasicResultSet
 
 interface PatientRepository
 
@@ -634,6 +657,8 @@ class Prescription {
     +setTime(time: Time): void
 }
 
+Prescription <--o PharmacyItem
+
 class PrescriptionController {
     -prescriptionService: PrescriptionService
 
@@ -643,6 +668,9 @@ class PrescriptionController {
     +updatePrescription(prescriptionId: int, newPrescriptionDetails: Prescription): ResponseEntity<BasicResultSet>
     +deletePrescription(patientId: int, prescriptionId: int): ResponseEntity<BasicResultSet>
 }
+
+PrescriptionController <--* PrescriptionService
+PrescriptionController <--o Prescription
 
 class PrescriptionService {
     -prescriptionRepository: PrescriptionRepository
@@ -654,6 +682,11 @@ class PrescriptionService {
     +updatePrescription(prescriptionId: int, newPrescriptionDetails: Prescription): BasicResultSet
     +deletePrescription(patientId: int, prescriptionId: int): BasicResultSet
 }
+
+PrescriptionService <--* PrescriptionRepository
+PrescriptionService <--* PatientRepository
+PrescriptionService <--o Prescription
+PrescriptionService <--o BasicResultSet
 
 interface PrescriptionRepository
 
@@ -698,6 +731,10 @@ class ScheduleController {
     +deleteEvent(eventId: int): ResponseEntity<BasicResultSet>
 }
 
+ScheduleController <--* ScheduleService
+ScheduleController <--o Event
+ScheduleController <--o BasicResultSet
+
 class ScheduleService {
     -scheduleRepository: ScheduleRepository
 
@@ -706,6 +743,10 @@ class ScheduleService {
     +updateEvent(eventId: int): BasicResultSet
     +deleteEvent(eventId: int): BasicResultSet
 }
+
+ScheduleService <--* ScheduleRepository
+ScheduleService <--o Event
+ScheduleService <--o BasicResultSet
 
 interface ScheduleRepository
 
@@ -750,6 +791,10 @@ class AppointmentController {
     +deleteAppointment(id: int): ResponseEntity<BasicResultSet>
 }
 
+AppointmentController <--* AppointmentService
+AppointmentController <--o Appointment
+AppointmentController <--o BasicResultSet
+
 class AppointmentService {
     -appointmentRepository: AppointmentRepository
 
@@ -759,6 +804,10 @@ class AppointmentService {
     +updateAppointment(id: int, newDetails: Appointment): BasicResultSet
     +deleteAppointment(id: int): BasicResultSet
 }
+
+AppointmentService <--* AppointmentRepository
+AppointmentService <--o Appointment
+AppointmentService <--o BasicResultSet
 
 interface AppointmentRepository
 
@@ -844,6 +893,9 @@ class SalesRecord {
     +setTime(time: Time): void
 }
 
+SalesRecord <--o Invoice
+SalesRecord <--o PharmacyItem
+
 class PharmacyController {
     -pharmacyService: PharmacyService
 
@@ -858,9 +910,16 @@ class PharmacyController {
     +deleteInvoice(invoiceId: int): ResponseEntity<BasicResultSet>
 }
 
+PharmacyController <--* PharmacyService
+PharmacyController <--o Prescription
+PharmacyController <--o BasicResultSet
+PharmacyController <--o PharmacyItem
+PharmacyController <--o Invoice
+
 class PharmacyService {
     -prescriptionService: PrescriptionService
     -billingService: BillingService
+    -pharmacyItemRepository: PharmacyItemRepository
 
     +getAllPrescriptions(): Iterable<Prescription>
     +updatePrescriptionStatus(): BasicResultSet
@@ -873,9 +932,18 @@ class PharmacyService {
     +deleteInvoice(invoiceId: int): BasicResultSet
 }
 
+PharmacyService <--* PrescriptionService
+PharmacyService <--* BillingService
+PharmacyService <--o BasicResultSet
+PharmacyService <--o PharmacyItem
+PharmacyService <--o Invoice
+PharmacyService <--* PharmacyItemRepository
+
 interface PharmacyItemRepository
+PharmacyItemRepository <|-- JpaRepository
 
 interface SalesRecordRepository
+SalesRecordRepository <|-- JpaRepository
 
 class Invoice {
     -id: int
@@ -905,6 +973,8 @@ class Invoice {
     +setUpdatedAt(updatedAt: Timestamp): void
 }
 
+Invoice <--o SalesRecord
+
 class BillingController {
     -billingService: BillingService
 
@@ -914,6 +984,11 @@ class BillingController {
     +updateInvoice(id: int, newInformation: Invoice): ResponseEntity<BasicResultSet>
     +deleteInvoice(id: int): ResponseEntity<BasicResultSet>
 }
+
+BillingController <--* BillingService
+BillingController <--o BillingController
+BillingController <--o Invoice
+BillingController <--o BasicResultSet
 
 class BillingService {
     -invoiceRepository: InvoiceRepository
@@ -926,7 +1001,14 @@ class BillingService {
     +deleteInvoice(id: int): BasicResultSet
 }
 
+BillingService <--* InvoiceRepository
+BillingService <--* SalesRecordRepository
+BillingService <--o Invoice
+BillingService <--o Prescription
+BillingService <--o BasicResultSet
+
 interface InvoiceRepository
+InvoiceRepository <|-- JpaRepository
 
 class ReportingController {
     -reportingService: ReportingService
@@ -935,6 +1017,8 @@ class ReportingController {
     +createIncomeReport(): ResponseEntity<Object[]>
     +createStockReport(): ResponseEntity<Object[]>
 }
+
+ReportingController <--* ReportingService
 
 class ReportingService {
     -billingService: BillingService
@@ -946,5 +1030,10 @@ class ReportingService {
     +createIncomeReport(): Object[]
     +createStockReport(): Object[]
 }
+
+ReportingService <--* BillingService
+ReportingService <--* PharmacyService
+ReportingService <--* UserService
+ReportingService <--* PatientService
 
 @enduml
