@@ -12,7 +12,7 @@ import java.util.List;
 public class PatientController {
 
     PatientRecords patientRecords = new PatientRecords();
-    private List<Patient> patientsList = patientRecords.getPatientList()+;
+    private List<Patient> patientsList = patientRecords.getPatientList();
     private  int firstId = 1000;
 
     public void addPatient(int age, String name, String telephone, String email, String address, String allergiesNote, String description, Timestamp createdAt){
@@ -65,11 +65,32 @@ public class PatientController {
         System.out.println("Patient has not been found!");
     }
 
-//    public void updatePatient(int age, String name, String telephone, String email, String address, String allergiesNote, String description){
-//
-//        Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
-//
-//
-//    }
+    public void updatePatient(int id,int age, String name, String telephone, String email, String address, String allergiesNote, String description){
+
+        Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+
+        Iterator<Patient> iterator = patientsList.iterator();
+
+        while(iterator.hasNext()){
+            Patient patient = iterator.next();
+
+            if(patient.getId() == id){
+
+                patient.setAge(age);
+                patient.setName(name);
+                patient.setTelephone(telephone);
+                patient.setEmail(email);
+                patient.setAddress(address);
+                patient.setAllergiesNote(allergiesNote);
+                patient.setDescription(description);
+                patient.setUpdatedAt(updatedAt);
+
+                System.out.println("Patient has been Updated" + patient.getId());
+                return;
+            }
+
+        }
+        System.out.println("Patient has not been found!");
+    }
 
 }
