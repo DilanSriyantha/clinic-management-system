@@ -100,6 +100,12 @@ entity Event {
     updatedAt
 }
 
+relationship Post {
+}
+
+User -M- Post
+Event -1- Post
+
 entity Appointment {
     id <<key>>
     referenceId <<derived>>

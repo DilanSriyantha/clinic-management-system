@@ -1,10 +1,10 @@
 package org.cms.ClinicManagement.Services;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.Enums.Status;
@@ -60,20 +60,52 @@ public class ClinicService {
         return clinicRepository.save(clinic);
     }
 
-    public BasicResultSet assignDoctor(int clinicId, int doctorId) {
-        var clinic = clinicRepository.findById(clinicId)
+    public BasicResultSet assignDoctor(AssignDoctorDto assignDoctorDto) {
+        var clinic = clinicRepository.findById(assignDoctorDto.getClinicId())
                 .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
 
-        var doctor = userRepository.findById(doctorId)
+        var doctor = userRepository.findById(assignDoctorDto.getDoctorId())
                 .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
 
         clinic.getDoctors().add(doctor);
+
+        System.out.println("doctors count : " + clinic.getDoctors().size());
 
         clinicRepository.save(clinic);
 
         return BasicResultSet.builder()
                 .resultCode(200)
                 .message("Doctor assigned successfully.")
+                .build();
+    }
+
+    public BasicResultSet dissmissDoctor(AssignDoctorDto dismissDoctorDto) {
+        var clinic = clinicRepository.findById(dismissDoctorDto.getClinicId())
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        var doctor = userRepository.findById(dismissDoctorDto.getDoctorId())
+                .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
+
+        clinic.getDoctors().removeIf(user -> user.getId() == doctor.getId());
+
+        System.out.println("doctors count : " + clinic.getDoctors().size());
+
+        clinicRepository.save(clinic);
+
+        return BasicResultSet.builder()
+                .resultCode(200)
+                .message("Doctor dismissed successfully")
+                .build();
+    }
+
+    // patient manager is not implemented yet
+    public BasicResultSet assignPatient(int clinicId, int patientId) {
+        var clinic = clinicRepository.findById(clinicId)
+                .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+            
+        return BasicResultSet.builder()
+                .resultCode(200)
+                .message("Patient assigned successfully")
                 .build();
     }
 

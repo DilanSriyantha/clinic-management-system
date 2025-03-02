@@ -1,8 +1,6 @@
 package org.cms.Users.Models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,7 +54,6 @@ public class User implements UserDetails {
     private Float percentage;
 
     @ManyToMany(mappedBy = "doctors")
-    // inform the json serializer that this entity is owned by clinic in order to prevent infinite recursion.
     private List<Clinic> clinics = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

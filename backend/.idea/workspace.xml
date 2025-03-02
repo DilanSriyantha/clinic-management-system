@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d810a9d7-cbe5-46f0-9177-17de76ee1e4f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,11 +46,11 @@
     "git-widget-placeholder": "system-administration",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Projects/clinic-management-system/backend/src/main/resources/uml",
+    "last_opened_file_path": "C:/Users/DilanSriyantha/OneDrive/Clinic Management System/srs/diag",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.editor"
+    "settings.editor.selected.configurable": "MavenSettings"
   }
 }]]></component>
   <component name="RunManager">
