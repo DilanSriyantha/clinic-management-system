@@ -1,7 +1,13 @@
 package org.cms.Models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Timestamp;
-import java.util.Date;
+
+
+@Getter
+@Setter
 
 public class Patient {
     private int id;
@@ -31,95 +37,6 @@ public class Patient {
         this.updatedAt = updatedAt;
         this.referenceId = referenceId;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getAllergiesNote() {
-        return allergiesNote;
-    }
-
-    public void setAllergiesNote(String allergiesNote) {
-        this.allergiesNote = allergiesNote;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public int getReferenceId() {
-        return referenceId;
-    }
-
-    public void setReferenceId(int referenceId) {
-        this.referenceId = referenceId;
-    }
-
 
 
 }
