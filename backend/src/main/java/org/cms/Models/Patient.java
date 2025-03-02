@@ -1,23 +1,24 @@
 package org.cms.Models;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Patient {
     private int id;
     private int age;
     private String name;
-    private int telephone;
+    private String telephone;
     private String email;
     private String address;
     private String allergiesNote;
     private String description;
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     private int referenceId;
 //    private List<Prescriptions>  prescriptions;
 //    private List<Appointment>  appointments;
 
-    public Patient (int id,int age,String name,int telephone,String email,String address,String allergiesNote,String description,Date createdAt,Date updatedAt,int referenceId){
+    public Patient (int id,int age,String name,String telephone,String email,String address,String allergiesNote,String description,Timestamp createdAt,Timestamp updatedAt,int referenceId){
         this.id = id;
         this.age = age;
         this.name = name;
@@ -55,11 +56,11 @@ public class Patient {
         this.name = name;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 
@@ -95,19 +96,19 @@ public class Patient {
         this.description = description;
     }
 
-    public Date getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 
