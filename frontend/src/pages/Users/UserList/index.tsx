@@ -8,7 +8,7 @@ import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types/PageResponse";
 import { Role } from "../../../enums/Role";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { RoleItem } from "../../../types/RoleItem";
 import { UsersListState } from "../../../types/UsersListState";
 
