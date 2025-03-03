@@ -3,11 +3,9 @@ package org.cms.Users.Controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.cms.Enums.Role;
+import org.cms.Users.Models.User;
 import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
-import org.cms.Users.Models.User;
-import org.cms.Users.Repositories.UserRepository;
 import org.cms.Users.Services.UserService;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.CredentialException;
 
-@RestController // means the class is a controller
-@RequestMapping("/api/v1/users") // means URL's start with /api/v1/users (after application path)
+@RestController
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 

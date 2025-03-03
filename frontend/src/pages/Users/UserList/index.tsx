@@ -1,7 +1,7 @@
-import { alpha, Box, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Box, Button, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { User } from "../../../types/User";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
@@ -11,6 +11,8 @@ import { Role } from "../../../enums/Role";
 import { useLocation, useNavigate } from "react-router";
 import { RoleItem } from "../../../types/RoleItem";
 import { UsersListState } from "../../../types/UsersListState";
+import { For } from "../../../enums/For";
+import { AssignDoctorDto } from "../../../DTOs/AssignDoctorDto";
 
 const recep_columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -110,13 +112,11 @@ const paginationModel = { page: 0, pageSize: 5 };
 function UsersList() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const location = useLocation();
+
     const navigate = useNavigate();
     const api = useApi();
     const alert = useAlert();
-
-    useEffect(() => {
-        console.log(state.selectedIds);
-    }, [state.selectedIds]);
     
     useEffect(() => {
         fetchUsers();
@@ -183,10 +183,32 @@ function UsersList() {
         navigate("update", { state: { user } });
     }, [state.list, state.selectedIds]);
 
+    const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
+        const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
+
+        if(!doctorId) return;
+
+        try{
+            const res = await api.post<AssignDoctorDto, BasicResultSet>("/clinic-management/assignDoctor", {
+                clinicId: location.state.clinicId,
+                doctorId: doctorId,
+            });
+            if(res){
+                console.log(res);
+                alert.setSuccess("Doctor assigned to the clinic successfully");
+                navigate(-1);
+            }
+        }catch(err) {
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    }, [state.list, state.selectedIds]);
+
+
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onAssign: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
     function TableToolbar(props: TableToolbarProps) {
@@ -214,18 +236,27 @@ function UsersList() {
                 >
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
-                {props.numSelected == 1 && (
-                    <Tooltip title="Edit">
-                        <IconButton onClick={props.onEdit}>
-                            <Edit color="primary" />
-                        </IconButton>
+                {location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC
+                    ? 
+                    <Tooltip title="Assign">
+                        <Button variant="contained" startIcon={<Add />} onClick={props.onAssign}>Assign</Button>
                     </Tooltip>
-                )}
-                <Tooltip title="Delete">
-                    <IconButton onClick={props.onDelete}>
-                        <Delete color="error" />
-                    </IconButton>
-                </Tooltip>
+                :
+                    <>
+                        {props.numSelected == 1 && (
+                            <Tooltip title="Edit">
+                                <IconButton onClick={props.onEdit}>
+                                    <Edit color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                        <Tooltip title="Delete">
+                            <IconButton onClick={props.onDelete}>
+                                <Delete color="error" />
+                            </IconButton>
+                        </Tooltip>
+                    </>
+                }
             </Toolbar>
         );
     };
@@ -233,8 +264,9 @@ function UsersList() {
     return (
         <>
             <PageTitle
-                subTitle="Users"
-                title="Users List"
+                subTitle={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? "Assign a Doctor" : "Users"}
+                title={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? "Doctors List" : "Users List"}
+                backButton={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -245,20 +277,23 @@ function UsersList() {
                 }}>
                     <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start" }}>
                         <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
-                            {
-                                roles.map((item) => {
-                                    const checked = state.role === item.value;
-                                    return (
-                                        <Chip
-                                            key={item.value}
-                                            variant={checked ? "filled" : "outlined"}
-                                            color={checked ? "primary" : "default"}
-                                            label={item.label}
-                                            onClick={() => handleRoleChange(item)}
-                                            icon={checked ? <Check fontSize="small" /> : <div></div>}
-                                        />
-                                    );
-                                })
+                            {   location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC
+                                ?
+                                    null
+                                : 
+                                    roles.map((item) => {
+                                        const checked = state.role === item.value;
+                                        return (
+                                            <Chip
+                                                key={item.value}
+                                                variant={checked ? "filled" : "outlined"}
+                                                color={checked ? "primary" : "default"}
+                                                label={item.label}
+                                                onClick={() => handleRoleChange(item)}
+                                                icon={checked ? <Check fontSize="small" /> : <div></div>}
+                                            />
+                                        );
+                                    })
                             }
                         </Stack>
                         <Box 
@@ -271,7 +306,7 @@ function UsersList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} />
                     <DataGrid
                         rows={state.list}
                         columns={state.role === Role.DOCTOR ? doc_columns : recep_columns}
@@ -282,9 +317,11 @@ function UsersList() {
                         rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
+                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? true : false}
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
                         loading={state.loading}
+                        
                     />
                 </Container>
             </Card>

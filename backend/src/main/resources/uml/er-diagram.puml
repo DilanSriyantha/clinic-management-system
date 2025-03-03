@@ -100,11 +100,19 @@ entity Event {
     updatedAt
 }
 
+<<<<<<< HEAD
 relationship post {
 }
 
 Event -M- post
 User -1- post
+=======
+relationship Post {
+}
+
+User -M- Post
+Event -1- Post
+>>>>>>> d3a42c91885a139082cdfaa2df0406546621cb33
 
 entity Appointment {
     id <<key>>

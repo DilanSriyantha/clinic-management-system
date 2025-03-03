@@ -7,7 +7,7 @@ interface AlertContextType {
     setInfo: (message: string, autoHideDuration?: number) => void;
     setWarning: (message: string, autoHideDuration?: number) => void;
     setError: (message: string, autoHideDuration?: number) => void;
-    setAlertDialog: (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void, onNegativeAction?: () => void) => void;
+    setAlertDialog: (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void | Promise<void>, onNegativeAction?: () => void | Promise<void>) => void;
 };
 
 interface AlertProviderProps {
@@ -49,7 +49,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
         setAlert({ message: message, autoHideLatency: autoHideDuration ? autoHideDuration : 3000, severity: "error" });
     };
 
-    const setAlertDialog = (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void, onNegativeAction?: () => void) => {
+    const setAlertDialog = (title: string, content: string, positiveText: string, negativeText: string, onPositiveAction?: () => void | Promise<void>, onNegativeAction?: () => void | Promise<void>) => {
         alertDialogRef?.current?.setupAndOpen(title, content, positiveText, negativeText, onPositiveAction, onNegativeAction);
     };
 

@@ -20,8 +20,7 @@ public class DashboardRepositoryImpl {
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'ADMIN') AS admin_count,
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'DOCTOR') AS doctor_count,
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'RECEPTIONIST') AS receptionist_count,
-                (SELECT COUNT(*) FROM `user` WHERE `role` = 'PHARMACIST') AS pharmacist_count,
-                (SELECT COUNT(*) FROM `clinic`) AS clinic_count
+                (SELECT COUNT(*) FROM `user` WHERE `role` = 'PHARMACIST') AS pharmacist_count
             """);
 
         Object[] result = (Object[]) query.getSingleResult();

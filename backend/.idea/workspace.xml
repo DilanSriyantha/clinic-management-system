@@ -5,6 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d810a9d7-cbe5-46f0-9177-17de76ee1e4f" name="Changes" comment="">
+<<<<<<< HEAD
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cms/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cms/Main.java" afterDir="false" />
+>>>>>>> d3a42c91885a139082cdfaa2df0406546621cb33
       <change beforePath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/uml/er-diagram.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,6 +43,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Application.Server.executor&quot;: &quot;Run&quot;,
@@ -52,6 +58,22 @@
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Server.executor": "Run",
+    "DefaultPlantUmlFileTemplate": "UML Sequence",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "system-administration",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/DilanSriyantha/OneDrive/Clinic Management System/srs/diag",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings"
+>>>>>>> d3a42c91885a139082cdfaa2df0406546621cb33
   }
 }</component>
   <component name="RunManager">

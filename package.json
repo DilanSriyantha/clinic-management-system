@@ -8,7 +8,8 @@
     "start-electron": "electron .",
     "start-java": "java -jar backend/out/artifacts/backend_jar/backend.jar --spring.profiles.active=prod",
     "start-vite": "cd frontend && npm run dev",
-    "start": "start cmd.exe /c \"npm run start-vite\" && npm run start-electron",
+    "start-spring-boot": "cd backend && mvnw spring-boot:run",
+    "start": "start cmd.exe /c \"npm run start-spring-boot\" && start cmd.exe /c \"npm run start-vite\" && npm run start-electron",
     "dev": "concurrently \"npm run start-electron\" \"npm run start-vite\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

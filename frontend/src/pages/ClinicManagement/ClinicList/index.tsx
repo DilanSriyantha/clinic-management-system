@@ -1,6 +1,6 @@
 import { Box, Container, IconButton, Pagination, Stack, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useReducer, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { useApi } from "../../../hooks/useApi";
 import { Clinic } from "../../../types/Clinic";
 import ClinicCard from "./ClinicCard";
@@ -89,8 +89,8 @@ function ClinicList() {
         }
     }, [state.page]);
 
-    const handleClinicClick = useCallback((clinic: Clinic): void => {
-        navigate("clinic-details", { state: clinic });
+    const handleClinicClick = useCallback((clinicId: number): void => {
+        navigate("clinic-details", { state: { clinicId: clinicId } });
     }, []);
 
     return (

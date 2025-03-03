@@ -1,29 +1,31 @@
-import { Avatar, Box, Card, Divider, Grid2, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Card, Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Add, LinkOff, MedicalServices } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { MouseEvent, useCallback } from "react";
 import { User } from "../../../../types/User";
 import { deepOrange } from "@mui/material/colors";
 
 interface DoctorSectionProps {
     clinicDoctors: User[];
+    onAssignClick: () => void;
+    onDismissClick: (doctorId: number) => void;
 };
 
 const DoctorSection: React.FC<DoctorSectionProps> = (props) => {
-    const [doctors, setDoctors] = useState<User[] | null>();
 
-    useEffect(() => {
-        if (!props.clinicDoctors) return;
-
-        setDoctors(props.clinicDoctors);
-
-        console.log(props.clinicDoctors);
+    const handleAssignClick = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
+        props.onAssignClick();
     }, []);
 
     interface DoctorItemProps {
         doctor: User;
+        onDismissClick: (doctorId: number) => void;
     };
 
     const DoctorItem: React.FC<DoctorItemProps> = (props) => {
+
+        const handleDismissClick = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+            props.onDismissClick(props.doctor.id);
+        }, []);
 
         return (
             <>
@@ -31,6 +33,11 @@ const DoctorSection: React.FC<DoctorSectionProps> = (props) => {
                     <Stack direction={"row"} sx={{ alignItems: "center" }} gap={1} pb={2}>
                         <Avatar sx={{ bgcolor: deepOrange[500] }}>{props.doctor.name.substring(0, 1)}</Avatar>
                         <Typography variant="h6">Dr. {props.doctor.name}</Typography>
+                        <Tooltip title={"Dismiss"}>
+                            <IconButton onClick={handleDismissClick}>
+                                <LinkOff color="error" />
+                            </IconButton>
+                        </Tooltip>
                     </Stack>
                     <Stack direction={"column"} gap={1}>
                         <div style={{ paddingTop: 5, paddingBottom: 5 }}>
@@ -54,8 +61,6 @@ const DoctorSection: React.FC<DoctorSectionProps> = (props) => {
                         </div>
                     </Stack>
                 </Box>
-
-
             </>
         );
     };
@@ -70,7 +75,7 @@ const DoctorSection: React.FC<DoctorSectionProps> = (props) => {
                                 <MedicalServices />
                                 <Typography variant="h5">Doctor Information</Typography>
                             </Box>
-                            <IconButton color="primary">
+                            <IconButton color="primary" onClick={handleAssignClick}>
                                 <Add />
                                 <Typography variant="button">Assign</Typography>
                             </IconButton>
@@ -78,12 +83,11 @@ const DoctorSection: React.FC<DoctorSectionProps> = (props) => {
                         <Stack direction={"column"} gap={2}>
                             <Stack direction={"column"}>
                                 {
-                                    doctors && doctors.length > 0
+                                    props.clinicDoctors && props.clinicDoctors.length > 0
                                         ?
-                                        doctors.map((doc, idx) => (
-                                            <DoctorItem key={idx} doctor={doc} />
+                                        props.clinicDoctors.map((doc, idx) => (
+                                            <DoctorItem key={idx} doctor={doc} onDismissClick={props.onDismissClick} />
                                         ))
-
                                         :
                                         <Typography variant="subtitle1" sx={{ fontStyle: "italic" }}>No doctor(s) assigned.</Typography>
                                 }

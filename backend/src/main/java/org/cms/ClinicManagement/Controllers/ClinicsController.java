@@ -2,6 +2,8 @@ package org.cms.ClinicManagement.Controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Services.ClinicService;
 import org.cms.Users.Models.User;
@@ -25,7 +27,7 @@ public class ClinicsController {
     }
 
     @GetMapping("/byId")
-    public @ResponseBody ResponseEntity<Clinic> get(int clinicId) {
+    public @ResponseBody ResponseEntity<Clinic> get(@RequestParam int clinicId) {
         return ResponseEntity.ok(clinicService.get(clinicId));
     }
 
@@ -49,10 +51,20 @@ public class ClinicsController {
         return ResponseEntity.ok(clinicService.create(clinic));
     }
 
-    @PostMapping("/assign-doctor")
-    public @ResponseBody ResponseEntity<BasicResultSet> assignDoctor(@RequestParam int clinicId, @RequestParam int doctorId) {
-        return ResponseEntity.ok(clinicService.assignDoctor(clinicId, doctorId));
+    @PostMapping("/assignDoctor")
+    public @ResponseBody ResponseEntity<BasicResultSet> assignDoctor(@RequestBody AssignDoctorDto assignDoctorDto) {
+        return ResponseEntity.ok(clinicService.assignDoctor(assignDoctorDto));
     }
+
+    @PostMapping("/dismissDoctor")
+    public @ResponseBody ResponseEntity<BasicResultSet> dismissDoctor(@RequestBody AssignDoctorDto dismissDoctorDto) {
+        return ResponseEntity.ok(clinicService.dissmissDoctor(dismissDoctorDto));
+    }
+
+    @PostMapping("/assignPatient")
+    public @ResponseBody ResponseEntity<BasicResultSet> assignPatient(@RequestParam int clinicId, @RequestParam int patientId) {
+        return ResponseEntity.ok(clinicService.assignPatient(clinicId, patientId));
+    } 
 
     @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResultSet> delete(@RequestParam int id) {

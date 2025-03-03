@@ -6,7 +6,7 @@ import { MouseEvent } from "react";
 
 interface ClinicCardProps {
     clinic: Clinic;
-    onClick?: (clinic: Clinic) => void;
+    onClick?: (clinicId: number) => void;
 };
 
 const ClinicCard: React.FC<ClinicCardProps> = (props) => {
@@ -15,7 +15,7 @@ const ClinicCard: React.FC<ClinicCardProps> = (props) => {
         if(!props.onClick)
             return;
 
-        props.onClick(props.clinic);
+        props.onClick(props.clinic.id);
     }
 
     return (
