@@ -1,4 +1,4 @@
-package org.cms.Models;
+package org.cms.PatientManagement.Models;
 
 
 import java.sql.Timestamp;

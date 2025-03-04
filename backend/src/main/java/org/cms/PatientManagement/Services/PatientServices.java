@@ -1,21 +1,17 @@
-package org.cms.Controllers;
+package org.cms.PatientManagement.Services;
 
-
-import org.cms.Models.Patient;
-import org.cms.Services.PatientRecords;
+import org.cms.PatientManagement.Models.Patient;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PatientController {
-
+public class PatientServices {
     PatientRecords patientRecords = new PatientRecords();
-    private List<Patient> patientsList = patientRecords.getPatientList();
-    private  int firstId = 1000;
+    private final List<Patient> patientsList = patientRecords.getPatientList();
+    private int firstId = 1000;
 
-    public void addPatient(int age, String name, String telephone, String email, String address, String allergiesNote, String description, Timestamp createdAt){
+    public void addPatient(int age, String name, String telephone, String email, String address, String allergiesNote, String description, Timestamp createdAt,int referenceId){
         //when frist adding upadated date = created date
         Timestamp updatedAt = createdAt;
 
@@ -23,15 +19,12 @@ public class PatientController {
         int id =+ firstId;
         firstId++;
 
-        //refernce id nee to get
-        int referenceId = 0;
 
         Patient patient = new Patient(id,age,name,telephone,email,address,allergiesNote,description,createdAt,updatedAt,referenceId);
         patientsList.add(patient);
 
         System.out.println("New patient add to system " + patient.getName()+" " + patient.getId());
     }
-
 
     public void removePatientByName(String name){
         Iterator<Patient> iterator = patientsList.iterator();
@@ -60,7 +53,6 @@ public class PatientController {
                 System.out.println("Patient has been removed " + patient.getId());
                 return;
             }
-
         }
         System.out.println("Patient has not been found!");
     }
@@ -75,7 +67,6 @@ public class PatientController {
             Patient patient = iterator.next();
 
             if(patient.getId() == id){
-
                 patient.setAge(age);
                 patient.setName(name);
                 patient.setTelephone(telephone);
@@ -88,9 +79,35 @@ public class PatientController {
                 System.out.println("Patient has been Updated" + patient.getId());
                 return;
             }
-
         }
         System.out.println("Patient has not been found!");
     }
 
+    public Patient findPatientById(int id){
+
+        Iterator<Patient> iterator = patientsList.iterator();
+
+        while(iterator.hasNext()){
+
+            Patient patient = iterator.next();
+            if(patient.getId() == id){
+                return patient;
+            }
+        }
+        return null;
+    }
+
+    public Patient findPatientByName(String Name){
+
+        Iterator<Patient> iterator = patientsList.iterator();
+
+        while(iterator.hasNext()){
+
+            Patient patient = iterator.next();
+            if(patient.getName() == Name){
+                return patient;
+            }
+        }
+        return null;
+    }
 }

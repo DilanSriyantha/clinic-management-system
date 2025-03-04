@@ -1,6 +1,6 @@
-package org.cms.Services;
+package org.cms.PatientManagement.Services;
 
-import org.cms.Models.Patient;
+import org.cms.PatientManagement.Models.Patient;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
