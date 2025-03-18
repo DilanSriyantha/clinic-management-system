@@ -3,13 +3,15 @@ package org.cms.PatientManagement.Services;
 import org.cms.PatientManagement.Models.Patient;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PatientServices {
+public class PatientService {
     PatientRecords patientRecords = new PatientRecords();
     private final List<Patient> patientsList = patientRecords.getPatientList();
     private int firstId = 1000;
+
 
     public void addPatient(int age, String name, String telephone, String email, String address, String allergiesNote, String description, Timestamp createdAt,int referenceId){
         //when frist adding upadated date = created date
@@ -110,4 +112,50 @@ public class PatientServices {
         }
         return null;
     }
+
+    public Patient create(Patient patient) {
+
+        int id = patient.getId();
+        int age = patient.getAge();
+        String name = patient.getName();
+        String telephone = patient.getTelephone();
+        String email = patient.getEmail();
+        String address = patient.getAddress();
+        String allergiesNote = patient.getAllergiesNote();
+        String description = patient.getDescription();
+        Timestamp createdAt = patient.getCreatedAt();
+        Timestamp updatedAt = patient.getUpdatedAt();
+        int referenceId = patient.getReferenceId();
+
+        Patient newPatient = new Patient(id,age,name,telephone,email,address,allergiesNote,description,createdAt,updatedAt,referenceId);
+        patientsList.add( newPatient);
+
+        return newPatient;
+    }
+
+
+    public boolean delete(int id) {
+
+        Iterator<Patient> iterator = patientsList.iterator();
+
+        while(iterator.hasNext()){
+
+            Patient patient = iterator.next();
+            if(patient.getId() == id){
+                patientsList.remove(patient);
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+
+//    public List<Prescriptions> getPrescriptions(int id) {
+//
+//        Iterator<Prescriptions> iterator = patientsList.iterator();
+//
+//
+//
+//    }
 }
