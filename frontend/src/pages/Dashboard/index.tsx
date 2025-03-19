@@ -15,6 +15,7 @@ import { useApi } from "../../hooks/useApi";
 import { useAlert } from "../../hooks/useAlert";
 import { DashboardReport } from "../../types/DashboardReport";
 import { DashboardState } from "../../types/DashboardState";
+import ScheduleCalendar from "../../components/ScheduleCalendar";
 
 const initialState: DashboardState = {
     doctorCount: 0,
@@ -81,7 +82,8 @@ function Dashboard() {
                 <PageTitleWrapper>
                     <PageHeader />
                 </PageTitleWrapper>
-                <Grid2 container spacing={5}>
+                <ScheduleCalendar />
+                <Grid2 container spacing={5} sx={{ mt: 2 }}>
                     <Grid2 size={4}>
                         <Box>
                             <DashboardCard icon={StethoscopeIcon} title="Doctor(s)" number={state.doctorCount} bgColor={theme.colors.success.dark} loading={state.loading} />

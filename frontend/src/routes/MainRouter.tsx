@@ -9,11 +9,14 @@ const Dashboard = RouteLoader(lazy(() => import("../pages/Dashboard")));
 
 const CreateAccount = RouteLoader(lazy(() => import("../pages/Users/CreateAccount")));
 const UpdateUser = RouteLoader(lazy(() => import("../pages/Users/UpdateUser")));
-
 const UsersList = RouteLoader(lazy(() => import("../pages/Users/UserList")));
+
 const ClinicList = RouteLoader(lazy(() => import("../pages/ClinicManagement/ClinicList")));
 const ClinicDetails = RouteLoader(lazy(() => import("../pages/ClinicManagement/ClinicDetails")));
 const CreateClinic = RouteLoader(lazy(() => import("../pages/ClinicManagement/CreateClinic")));
+
+const CreateEvent = RouteLoader(lazy(() => import("../pages/ScheduleManagement/CreateEvent")));
+const UpdateEvent = RouteLoader(lazy(() => import("../pages/ScheduleManagement/UpdateEvent")));
 
 const MainRoutes: RouteObject[] = [
     {
@@ -24,6 +27,14 @@ const MainRoutes: RouteObject[] = [
             {
                 path: "",
                 element: <Dashboard />
+            },
+            {
+                path: "schedule-management/create",
+                element: <CreateEvent />
+            },
+            {
+                path: "schedule-management/update",
+                element: <UpdateEvent />
             },
             {
                 path: "users/create",

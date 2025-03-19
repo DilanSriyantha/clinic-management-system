@@ -38,8 +38,8 @@ function UserButton() {
                         borderRadius: 100,
                         gap: 1
                     }} onClick={handleOpenUserMenu}>
-                        <Avatar sx={{ width: 24, height: 24, bgcolor: deepPurple[500] }}>{user?.user.referenceId.slice(0, 1)}</Avatar>
-                        <Typography variant='subtitle1'>{user?.user.referenceId}</Typography>
+                        <Avatar sx={{ width: 24, height: 24, bgcolor: deepPurple[500] }}>{user?.user.name.slice(0, 1)}</Avatar>
+                        <Typography variant='subtitle1'>{user?.user.name}</Typography>
                     </IconButton>
                 </Box>
             </Tooltip>

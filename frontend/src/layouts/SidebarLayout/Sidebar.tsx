@@ -20,6 +20,7 @@ import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_G
 import UserButton from './UserButton';
 import AdvancedMenuItem from './AdvancedMenuItem';
 import { GroupOutlined, InsertDriveFileTwoTone, LocalHospital } from '@mui/icons-material';
+import { CalendarIcon } from '@mui/x-date-pickers';
 
 const drawerWidth = 240;
 
@@ -28,6 +29,17 @@ const menuOptions = [
         caption: "Dashboard",
         to: "/",
         icon: <img src={DashboardIcon} />
+    },
+    {
+        caption: "Schedule Management",
+        icon: <CalendarIcon htmlColor="#fff" />,
+        children: [
+            {
+                caption: "Create Event",
+                to: "schedule-management/create",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
     },
     {
         caption: "Users",
@@ -61,41 +73,52 @@ const menuOptions = [
             }
         ]
     },
-    {
-        caption: "Doctor Management",
-        icon: <img src={StethoscopeIcon} />,
-        children: [
-            {
-                caption: "Patient Queue",
-                to: "doctor-management/queue",
-                icon: <InsertDriveFileTwoTone />
-            },
-            {
-                caption: "Prescription",
-                to: "doctor-management/prescription",
-                icon: <InsertDriveFileTwoTone />
-            },
-            {
-                caption: "Lab Requests",
-                to: "doctor-management/lab-requests",
-                icon: <InsertDriveFileTwoTone />
-            },
-            {
-                caption: "Patients",
-                to: "doctor-management/patients",
-                icon: <InsertDriveFileTwoTone />
-            },
-        ]
-    },
-    {
-        caption: "Billing & Payment",
-        to: "billing",
-        icon: <img src={BillingIcon} />
-    },
+    // {
+    //     caption: "Doctor Management",
+    //     icon: <img src={StethoscopeIcon} />,
+    //     children: [
+    //         {
+    //             caption: "Patient Queue",
+    //             to: "doctor-management/queue",
+    //             icon: <InsertDriveFileTwoTone />
+    //         },
+    //         {
+    //             caption: "Prescription",
+    //             to: "doctor-management/prescription",
+    //             icon: <InsertDriveFileTwoTone />
+    //         },
+    //         {
+    //             caption: "Lab Requests",
+    //             to: "doctor-management/lab-requests",
+    //             icon: <InsertDriveFileTwoTone />
+    //         },
+    //         {
+    //             caption: "Patients",
+    //             to: "doctor-management/patients",
+    //             icon: <InsertDriveFileTwoTone />
+    //         },
+    //     ]
+    // },
+    // {
+    //     caption: "Billing & Payment",
+    //     to: "billing",
+    //     icon: <img src={BillingIcon} />
+    // },
     {
         caption: "Pharmacy Management",
-        to: "pharmacy",
-        icon: <img src={InventoryIcon} />
+        icon: <img src={InventoryIcon} />,
+        children: [
+            {
+                caption: "Sales",
+                to: "/",
+                icon: <InsertDriveFileTwoTone />
+            }, 
+            {
+                caption: "Stocks",
+                to: "/",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
     },
     {
         caption: "Reporting & Analysis",

@@ -83,12 +83,14 @@ function loadFrontend() {
 
 app.whenReady().then(() => {
     createWindow();
-    startJavaProcess();
+    // startJavaProcess();
+    loadFrontend();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
-            startJavaProcess();
+            // startJavaProcess();
+            loadFrontend();
         }
     });
 });

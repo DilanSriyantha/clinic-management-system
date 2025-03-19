@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cms-db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - cms_db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3308:3306"
+    working_dir: /cms_db
+    container_name: cms_db_container
+
+volumes:
+  cms_db_data:
+    

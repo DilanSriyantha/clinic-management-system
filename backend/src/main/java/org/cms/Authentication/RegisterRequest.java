@@ -1,6 +1,5 @@
 package org.cms.Authentication;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Builder;

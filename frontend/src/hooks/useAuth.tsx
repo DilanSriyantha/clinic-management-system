@@ -16,7 +16,6 @@ interface AuthProviderProps {
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    // const [_user, _setUser] = useState<AuthResponse | null>(null);
     const [_user, _setUser] = useLocalStorage<AuthResponse | null>("user", null);
 
     const __setUser = useCallback((authResponse: AuthResponse | null) => {

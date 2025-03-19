@@ -14,6 +14,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findFirstByRoleOrderByCreatedAtDesc(Role role);
     Optional<User> findByRoleAndReferenceId(Role role, String referenceId);
     Optional<User> findByReferenceId(String refId);
+    Optional<User> findByEmail(String email);
     Iterable<User> findAllByRole(Role role);
     Page<User> findAllByRole(Role role, Pageable pageable);
 }

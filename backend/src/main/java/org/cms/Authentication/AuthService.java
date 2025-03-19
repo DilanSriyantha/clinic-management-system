@@ -59,21 +59,25 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
-        System.out.println(request.getReferenceId() + " " + request.getPassword());
+        System.out.println(request.getEmail() + " " + request.getPassword());
 
-        var user = userRepository.findByReferenceId(request.getReferenceId())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        System.out.println(user.getName());
 
         Authentication authentication;
         try{
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getReferenceId(),
+                            request.getEmail(),
                             request.getPassword()
                     )
             );
         }catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid ReferenceID or Password");
+            e.printStackTrace();
+            System.out.println(passwordEncoder.matches(request.getPassword(), user.getPassword()));
+            throw new BadCredentialsException("Invalid Email or Password");
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -93,15 +97,15 @@ public class AuthService {
             throw new BadRequestException("Invalid token format");
 
         var refreshToken = authHeader.substring(7);
-        String referenceId = jwtService.extractReferenceId(refreshToken);
-        System.out.println(referenceId);
+        String username = jwtService.extractEmail(refreshToken);
+        System.out.println(username);
 
-        if(referenceId == null)
+        if(username == null)
             throw new BadRequestException("Invalid refresh token");
 
-        var userDetails = userDetailsService.loadUserByUsername(referenceId);
+        var userDetails = userDetailsService.loadUserByUsername(username);
 
-        var user = userRepository.findByReferenceId(userDetails.getUsername())
+        var user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if(!jwtService.isTokenValid(refreshToken, userDetails))

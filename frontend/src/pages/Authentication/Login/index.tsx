@@ -1,6 +1,6 @@
 import { MedicalServices, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Alert, Box, Button, Card, CircularProgress, Container, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { LoginFormData } from "../../../types/LoginFormData";
 import { useAlert } from "../../../hooks/useAlert";
 import { isValid } from "../../../utils/Validator";
@@ -9,7 +9,7 @@ import { User } from "../../../types/User";
 import { useNavigate } from "react-router";
 
 function Login() {
-    const [formData, setFormData] = useState<LoginFormData>({ referenceId: null, password: null });
+    const [formData, setFormData] = useState<LoginFormData>({ email: null, password: null });
     const [error, setError] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
@@ -120,9 +120,9 @@ function Login() {
                                 >
                                     <Stack direction="column" gap={2} >
                                         <TextField
-                                            name="referenceId"
+                                            name="email"
                                             variant="outlined"
-                                            label="Reference ID*"
+                                            label="E-mail*"
                                             type="text"
                                             onClick={handleEnterInput}
                                             onChange={handleInputChange}

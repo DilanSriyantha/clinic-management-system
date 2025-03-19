@@ -55,6 +55,7 @@ public class ClinicService {
     }
 
     public Clinic create(Clinic clinic) {
+        System.out.println(clinic.toString());
         clinic.setStatus(Status.ACTIVE);
 
         return clinicRepository.save(clinic);

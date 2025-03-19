@@ -1,6 +1,5 @@
 package org.cms.Configurations;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
-        String referenceId;
+        String email;
 
         if(request.getRequestURI().equals("/api/v1/auth/refresh")) {
             filterChain.doFilter(request, response);
@@ -60,15 +58,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        referenceId = jwtService.extractReferenceId(jwtToken);
+        email = jwtService.extractEmail(jwtToken);
 
-        if(referenceId == null || SecurityContextHolder.getContext().getAuthentication() != null) {
+        if(email == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             filterChain.doFilter(request, response);
 
             return;
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(referenceId);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         if(!jwtService.isTokenValid(jwtToken, userDetails)){
             filterChain.doFilter(request, response);

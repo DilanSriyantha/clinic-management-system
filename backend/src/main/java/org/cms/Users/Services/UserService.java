@@ -8,18 +8,14 @@ import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.CredentialException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

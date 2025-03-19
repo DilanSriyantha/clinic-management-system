@@ -27,7 +27,7 @@ public class JwtService {
     private static final long ACCESS_TOKEN_LIFESPAN = (1000 * 60 * 10); // 10 minutes
     private static final long REFRESH_TOKEN_LIFESPAN = (1000 * 60 * 60 * 24 * 7); // 7 days
 
-    public String extractReferenceId(String token) {
+    public String extractEmail(String token) {
         try{
             return extractClaim(token, Claims::getSubject);
         }catch (ExpiredJwtException ex) {
@@ -36,7 +36,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        return (userDetails.getUsername().equals(extractReferenceId(token)) && !isTokenExpired(token));
+        return (userDetails.getUsername().equals(extractEmail(token)) && !isTokenExpired(token));
     }
 
     public boolean isTokenExpired(String token) {

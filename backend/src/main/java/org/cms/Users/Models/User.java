@@ -7,6 +7,7 @@ import lombok.*;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.Enums.Role;
 import org.cms.Enums.Status;
+import org.cms.ScheduleManagement.Models.Event;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +20,11 @@ import java.util.*;
 @Data
 @Builder
 @Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(name = "REF_ID", columnNames = "reference_id"))
+@Table(
+    name = "user", 
+    uniqueConstraints = 
+        @UniqueConstraint(columnNames = {"reference_id", "email"})
+)
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIdentityInfo(
@@ -43,6 +48,7 @@ public class User implements UserDetails {
 
     private String birthday;
 
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     private String address;
@@ -55,6 +61,9 @@ public class User implements UserDetails {
 
     @ManyToMany(mappedBy = "doctors")
     private List<Clinic> clinics = new ArrayList<>();
+
+    @OneToMany
+    private List<Event> events = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -75,7 +84,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return referenceId;
+        return email;
     }
 
     @Override
