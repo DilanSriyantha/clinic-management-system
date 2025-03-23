@@ -1,22 +1,32 @@
 import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useEffect, useReducer, useRef } from "react";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { isValid } from "../../../utils/Validator";
 import { useAlert } from "../../../hooks/useAlert";
-import { CreateEventState } from "../../../types";
 import { EventVisibility } from "../../../enums/EventVisibility";
 import { useAuth } from "../../../hooks/useAuth";
 import { useLocation } from "react-router";
 
-const initialState: CreateEventState = {
-    title: "",
-    description: "",
-    visibility: EventVisibility[0],
-    date: moment(new Date).format("YYYY-MM-DD"),
-    time: moment(new Date).format("hh:mm a"),
+interface CreatePatientState {
+    name: string;
+    birthday: string;
+    address: string;
+    email: string;
+    telephone: string;
+    allergiesNote: string;
+    loading: boolean;
+};
+
+const initialState: CreatePatientState = {
+    name: "",
+    birthday: moment(new Date).format("YYYY-MM-DD"),
+    address: "",
+    email: "",
+    telephone: "",
+    allergiesNote: "",
     loading: false,
 };
 
@@ -26,12 +36,12 @@ enum ActionType {
     SET_LOADING,
 };
 
-const reducer = (state: CreateEventState, action: { type: ActionType, payload: any }): CreateEventState => {
+const reducer = (state: CreatePatientState, action: { type: ActionType, payload: any }): CreatePatientState => {
     switch(action.type){
         case ActionType.SET_FIELD:
             return {...state, [action.payload.name]: action.payload.value};
         case ActionType.SET_ALL_FIELDS:
-            return { ...state, title: action.payload.title, description: action.payload.description, visibility: action.payload.visibility, date: action.payload.date, time: action.payload.time };
+            return { ...state, name: action.payload.name, birthday: action.payload.birthday, address: action.payload.address, email: action.payload.email, telephone: action.payload.telephone, allergiesNote: action.payload.allergiesNote, loading: false };
         case ActionType.SET_LOADING:
             return {...state, loading: action.payload};
         default: 
@@ -49,7 +59,7 @@ const eventVisibilityOptions: EventVisibilityOption[] = [
     { label: "Public", value: EventVisibility[1] }
 ];
 
-function CreateEvent() {
+function CreatePatient() {
     const timePickerInputRef = useRef<HTMLInputElement>(null);
 
     const [user] = useAuth();
@@ -92,7 +102,7 @@ function CreateEvent() {
 
     const createEventAsync = useCallback(async () => {
         try{
-            const res = await api.post<CreateEventState, BasicResultSet>("/schedule-management/createEvent", state, undefined, {
+            const res = await api.post<CreatePatientState, BasicResultSet>("/schedule-management/createEvent", state, undefined, {
                 ownerId: `${user?.user.id}`
             });
             if(res){
@@ -109,7 +119,7 @@ function CreateEvent() {
         if(!location.state) return;
 
         try{
-            const res = await api.put<CreateEventState, BasicResultSet>("/schedule-management/updateEvent", {
+            const res = await api.put<CreatePatientState, BasicResultSet>("/schedule-management/updateEvent", {
                 eventId: `${location.state.id}`,
             }, state);
             if(res){
@@ -153,8 +163,8 @@ function CreateEvent() {
     return (
         <>
             <PageTitle
-                subTitle="Schedule Management"
-                title="Create Event"
+                subTitle="Patient Management"
+                title="Create Patient"
             />
             <Card>
                 <Container sx={{
@@ -180,19 +190,12 @@ function CreateEvent() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <Autocomplete
-                                // disablePortal
-                                options={eventVisibilityOptions}
-                                onChange={handleEventVisibilityChanged}
-                                renderInput={(params) => <TextField {...params} value={state.visibility} name="eventVisibility" label="Visibility" />}
-                                defaultValue={eventVisibilityOptions[0]}
-                                value={eventVisibilityOptions.filter((v) => v.value === state.visibility)[0]}
-                            />
-                            <TextField onChange={handleTextFieldChange} name="title" label="Title" type="text" value={state.title} />
-                            <TextField onChange={handleTextFieldChange} name="description" label="Description" type="text" value={state.description} />
-                            <DatePicker onChange={handleDatePickerChange} name="date" label="Date" defaultValue={moment(new Date)} value={state.time.length > 0 ? moment(Date.parse(state.date)) : moment(new Date)} />
-                            <TimePicker onChange={handleTimePickerChange} inputRef={timePickerInputRef} name="time" label="Time"
-                            defaultValue={moment(new Date)} value={state.time.length > 0 ? moment(Date.parse(state.date + " " + state.time)) : moment(new Date)} />
+                            <TextField onChange={handleTextFieldChange} name="name" label="Name" type="text" value={state.name} />
+                            <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" defaultValue={moment(new Date)} value={state.birthday.length > 0 ? moment(Date.parse(state.birthday)) : moment(new Date)} />
+                            <TextField onChange={handleTextFieldChange} name="address" label="Address" type="text" value={state.address} />
+                            <TextField onChange={handleTextFieldChange} name="email" label="Email" type="text" value={state.email} />
+                            <TextField onChange={handleTextFieldChange} name="telephone" label="Telephone" type="text" value={state.telephone} />
+                            <TextField onChange={handleTextFieldChange} name="allergiesNote" label="Name" type="text" value={state.allergiesNote} />
                         </Box>
                     </form>
                     <Box sx={{
@@ -209,4 +212,4 @@ function CreateEvent() {
     );
 }
 
-export default CreateEvent;
+export default CreatePatient;

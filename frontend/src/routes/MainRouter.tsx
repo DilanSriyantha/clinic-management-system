@@ -3,7 +3,6 @@ import RouteLoader from "./RouteLoader";
 import { Typography } from "@mui/material";
 import { RouteObject } from "react-router";
 import SidebarLayout from "../layouts/SidebarLayout";
-import DoctorManagement from "../pages/DoctorManagement";
 
 const Dashboard = RouteLoader(lazy(() => import("../pages/Dashboard")));
 
@@ -17,6 +16,10 @@ const CreateClinic = RouteLoader(lazy(() => import("../pages/ClinicManagement/Cr
 
 const CreateEvent = RouteLoader(lazy(() => import("../pages/ScheduleManagement/CreateEvent")));
 const UpdateEvent = RouteLoader(lazy(() => import("../pages/ScheduleManagement/UpdateEvent")));
+
+const PatientsList = RouteLoader(lazy(() => import("../pages/PatientManagement/PatientsList")));
+const CreatePatient = RouteLoader(lazy(() => import("../pages/PatientManagement/CreatePatient")));
+const UpdatePatient = RouteLoader(lazy(() => import("../pages/PatientManagement/UpdatePatient")));
 
 const MainRoutes: RouteObject[] = [
     {
@@ -60,26 +63,18 @@ const MainRoutes: RouteObject[] = [
                 path: "clinic-management/list/clinic-details",
                 element: <ClinicDetails />
             },
-            // doctor management
+            // patient management
             {
-                path: "doctor-management",
-                element: <DoctorManagement />
+                path: "patient-management/list",
+                element: <PatientsList />
             },
             {
-                path: "doctor-management/queue",
-                element: <><Typography variant='h1'>Patient</Typography></>
+                path: "patient-management/create",
+                element: <CreatePatient />
             },
             {
-                path: "doctor-management/prescription",
-                element: <><Typography variant='h1'>Prescription</Typography></>
-            },
-            {
-                path: "doctor-management/lab-requests",
-                element: <><Typography variant='h1'>Lab request</Typography></>
-            },
-            {
-                path: "doctor-management/patients",
-                element: <><Typography variant='h1'>Patients</Typography></>
+                path: "patient-management/update",
+                element: <UpdatePatient />
             },
             // billing
             {

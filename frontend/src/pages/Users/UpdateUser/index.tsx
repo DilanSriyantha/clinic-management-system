@@ -1,19 +1,19 @@
 import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Chip, Container, Divider, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
-import { ChangeEvent, FormEvent, KeyboardEvent, MouseEvent, useCallback, useEffect, useReducer, useState } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, useCallback, useEffect, useReducer, useState } from "react";
 import { Check } from "@mui/icons-material";
-import { RegisterFormData } from "../../../types/RegisterFormData";
+import { RegisterFormData } from "../../../types";
 import { isValid } from "../../../utils/Validator";
 import { Role } from "../../../enums/Role";
 import PasswordInputField from "../../../components/PasswordInputField";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
-import { RoleItem } from "../../../types/RoleItem";
-import { SpecializationOption } from "../../../types/SpecializationOption";
+import { RoleItem } from "../../../types";
+import { SpecializationOption } from "../../../types";
 import { useLocation } from "react-router";
 import moment from "moment";
-import { HardPasswordResetRequest } from "../../../types/HardPasswordResetRequest";
+import { HardPasswordResetRequest } from "../../../types";
 
 const roles: RoleItem[] = [
     { value: Role.ADMIN, label: Role[0] },

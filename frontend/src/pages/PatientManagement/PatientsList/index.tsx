@@ -73,7 +73,7 @@ enum ActionType {
 };
 
 const reducer = (state: UsersListState, action: { type: ActionType, payload: any }): UsersListState => {
-    switch(action.type){
+    switch (action.type) {
         case ActionType.SET_ROLE:
             return { ...state, role: action.payload };
         case ActionType.SET_SELECTED_IDS:
@@ -98,8 +98,8 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
             return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
-        case ActionType.SET_LOADING: 
-            if(state.loading === action.payload)
+        case ActionType.SET_LOADING:
+            if (state.loading === action.payload)
                 return { ...state };
             return { ...state, loading: action.payload };
         default:
@@ -109,7 +109,7 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function UsersList() {
+function PatientsList() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const location = useLocation();
@@ -117,30 +117,32 @@ function UsersList() {
     const navigate = useNavigate();
     const api = useApi();
     const alert = useAlert();
-    
+
     useEffect(() => {
         fetchUsers();
     }, [state.role, state.page, state.pageSize]);
 
     const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
-        try{
-            const res = await api.get<PageResponse<User>>("/users/page", {
+        try {
+            const res = await api.get<PageResponse<User>>("/patient-management/page", {
                 role: Role[state.role],
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
             });
-            if(res){
+            if (res) {
                 console.log(res.content);
-                dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
-                    list: res.content,
-                    page: res.number,
-                    pageSize: res.size,
-                    totalPages: res.totalPages,
-                    totalElements: res.totalElements
-                } });
+                dispatch({
+                    type: ActionType.SET_PAGINATION_INFO, payload: {
+                        list: res.content,
+                        page: res.number,
+                        pageSize: res.size,
+                        totalPages: res.totalPages,
+                        totalElements: res.totalElements
+                    }
+                });
             }
-        }catch(err){
+        } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     }, [state.page, state.pageSize, state.role]);
@@ -161,20 +163,22 @@ function UsersList() {
     }, [state.role]);
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
-        dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
-            page: model.page,
-            pageSize: model.pageSize
-        } });
+        dispatch({
+            type: ActionType.SET_PAGINATION_INFO, payload: {
+                page: model.page,
+                pageSize: model.pageSize
+            }
+        });
     }
 
-    const handleDelete = useCallback(async() => {
-        try{
+    const handleDelete = useCallback(async () => {
+        try {
             const res = await api.delete<any, BasicResultSet>("/users/delete", undefined, Array.from(state.selectedIds).join());
-            if(res){
+            if (res) {
                 alert.setSuccess(res.message);
                 dispatch({ type: ActionType.DELETE_SELECTED_ITEMS, payload: state.selectedIds });
             }
-        }catch(err){
+        } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     }, [state.selectedIds, state.list]);
@@ -187,19 +191,19 @@ function UsersList() {
     const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
         const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
 
-        if(!doctorId) return;
+        if (!doctorId) return;
 
-        try{
-            const res = await api.post<AssignDoctorDto, BasicResultSet>("/clinic-management/assignDoctor", {
+        try {
+            const res = await api.post<AssignDoctorDto, BasicResultSet>("/clinic-management/assignPatient", {
                 clinicId: location.state.clinicId,
                 doctorId: doctorId,
             });
-            if(res){
+            if (res) {
                 console.log(res);
-                alert.setSuccess("Doctor assigned to the clinic successfully");
+                alert.setSuccess("Patient assigned to the clinic successfully");
                 navigate(-1);
             }
-        }catch(err) {
+        } catch (err) {
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
     }, [state.list, state.selectedIds]);
@@ -237,12 +241,12 @@ function UsersList() {
                 >
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
-                {location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC
-                    ? 
+                {location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC
+                    ?
                     <Tooltip title="Assign">
                         <Button variant="contained" startIcon={<Add />} onClick={props.onAssign}>Assign</Button>
                     </Tooltip>
-                :
+                    :
                     <>
                         {props.numSelected == 1 && (
                             <Tooltip title="Edit">
@@ -265,9 +269,9 @@ function UsersList() {
     return (
         <>
             <PageTitle
-                subTitle={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? "Assign a Doctor" : "Users"}
-                title={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? "Doctors List" : "Users List"}
-                backButton={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? true : false}
+                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : "Patients"}
+                title={"Patients List"}
+                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -278,26 +282,26 @@ function UsersList() {
                 }}>
                     <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start" }}>
                         <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
-                            {   location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC
+                            {location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC
                                 ?
-                                    null
-                                : 
-                                    roles.map((item) => {
-                                        const checked = state.role === item.value;
-                                        return (
-                                            <Chip
-                                                key={item.value}
-                                                variant={checked ? "filled" : "outlined"}
-                                                color={checked ? "primary" : "default"}
-                                                label={item.label}
-                                                onClick={() => handleRoleChange(item)}
-                                                icon={checked ? <Check fontSize="small" /> : <div></div>}
-                                            />
-                                        );
-                                    })
+                                null
+                                :
+                                roles.map((item) => {
+                                    const checked = state.role === item.value;
+                                    return (
+                                        <Chip
+                                            key={item.value}
+                                            variant={checked ? "filled" : "outlined"}
+                                            color={checked ? "primary" : "default"}
+                                            label={item.label}
+                                            onClick={() => handleRoleChange(item)}
+                                            icon={checked ? <Check fontSize="small" /> : <div></div>}
+                                        />
+                                    );
+                                })
                             }
                         </Stack>
-                        <Box 
+                        <Box
                             sx={{ pb: 2 }}
                         >
                             <Tooltip title="Reload">
@@ -318,7 +322,7 @@ function UsersList() {
                         rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
-                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC) ? true : false}
+                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? true : false}
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
                         loading={state.loading}
@@ -329,4 +333,4 @@ function UsersList() {
     );
 }
 
-export default UsersList;
+export default PatientsList;

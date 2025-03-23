@@ -44,7 +44,9 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/v1/users/byRole").permitAll();
                     auth.requestMatchers("/api/v1/dashboard/report").permitAll();
 
-                    auth.requestMatchers("/api/v1/users/all").hasAuthority(Role.ADMIN.name());
+                    // auth.requestMatchers("/api/v1/users/all").hasAuthority(Role.ADMIN.name());
+                    auth.requestMatchers("/api/v1/users/all").permitAll();
+                    auth.requestMatchers("/api/v1/users/page").permitAll();
                     auth.requestMatchers("/api/v1/users/page").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/create").hasAuthority(Role.ADMIN.name());
                     auth.requestMatchers("/api/v1/users/update").hasAuthority(Role.ADMIN.name());

@@ -13,8 +13,8 @@ import CashIcon from "../../assets/payments_24dp_00_FILL0_wght400_GRAD0_opsz24.s
 import { useCallback, useEffect, useReducer } from "react";
 import { useApi } from "../../hooks/useApi";
 import { useAlert } from "../../hooks/useAlert";
-import { DashboardReport } from "../../types/DashboardReport";
-import { DashboardState } from "../../types/DashboardState";
+import { DashboardReport } from "../../types";
+import { DashboardState } from "../../types";
 import ScheduleCalendar from "../../components/ScheduleCalendar";
 
 const initialState: DashboardState = {

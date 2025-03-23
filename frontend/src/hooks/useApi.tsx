@@ -1,9 +1,9 @@
 import React, { createContext, ReactNode, useCallback, useContext } from "react";
-import { ServerException } from "../types/ServerException";
+import { ServerException } from "../types";
 import { useAuth } from "./useAuth";
-import { AuthResponse } from "../types/AuthResponse";
-import { LoginFormData } from "../types/LoginFormData";
-import { RegisterFormData } from "../types/RegisterFormData";
+import { AuthResponse } from "../types";
+import { LoginFormData } from "../types";
+import { RegisterFormData } from "../types";
 import { useAlert } from "./useAlert";
 
 export interface BasicResultSet {
@@ -15,7 +15,7 @@ interface ApiProviderType {
     get: <T>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string, getHeaders?: (headers: Headers) => void) => Promise<T>;
     post: <T, R>(endpoint: string, requestBodyJson?: T, accessToken?: string, urlParams?: Record<string, string>) => Promise<R>;
     put: <T, R>(endpoint: string, urlParams?: Record<string, string>, requestBodyJson?: T, accessToken?: string) => Promise<R>;
-    delete: <R>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string) => Promise<R>;
+    delete: <T, R>(endpoint: string, urlParams?: Record<string, string>, requestBodyJson?: T, accessToken?: string) => Promise<R>;
 };
 
 interface ApiProviderProps {
@@ -118,11 +118,12 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         }
     };
 
-    const _delete = async<R = any>(endpoint: string, urlParams?: Record<string, string>, accessToken?: string): Promise<R> => {
+    const _delete = async<T = any, R = any>(endpoint: string, urlParams?: Record<string, string>, requestBodyJson?: T, accessToken?: string): Promise<R> => {
         const url = api_url + endpoint + (urlParams ? `?${new URLSearchParams(urlParams).toString()}` : "");
         accessToken = accessToken ? accessToken : user?.accessToken ? user?.accessToken : undefined;
         const options: RequestInit = {
             method: "DELETE",
+            body: requestBodyJson && JSON.stringify(requestBodyJson),
             headers: accessToken ? {
                 "Content-type": "application/json;",
                 "Authorization": `Bearer ${accessToken}`

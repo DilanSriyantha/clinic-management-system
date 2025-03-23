@@ -3,14 +3,14 @@ import PageTitle from "../../../components/PageTitle";
 import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { ChangeEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { Check } from "@mui/icons-material";
-import { RegisterFormData } from "../../../types/RegisterFormData";
+import { RegisterFormData } from "../../../types";
 import { isValid } from "../../../utils/Validator";
 import { Role } from "../../../enums/Role";
 import PasswordInputField from "../../../components/PasswordInputField";
 import { useAuthManager } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
-import { RoleItem } from "../../../types/RoleItem";
-import { SpecializationOption } from "../../../types/SpecializationOption";
+import { RoleItem } from "../../../types";
+import { SpecializationOption } from "../../../types";
 
 const initialState: RegisterFormData = {
     name: null,

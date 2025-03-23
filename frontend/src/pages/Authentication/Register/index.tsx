@@ -50,9 +50,9 @@ function Register() {
             const res = await authManager.register(formData);
             if(res){
                 console.log(res);
-                // alert.setSuccess("User registration successful.");
+                alert.setSuccess("User registration successful.");
                 
-                setTimeout(() => navigate(-1), 100);
+                setTimeout(() => navigate("/"), 100);
             }
         }catch(err){
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);

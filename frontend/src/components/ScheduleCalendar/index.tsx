@@ -4,9 +4,9 @@ import { CalendarIcon, DateCalendar, DateView, TimeIcon } from "@mui/x-date-pick
 import { PickerSelectionState } from "@mui/x-date-pickers/internals";
 import moment from "moment";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { Event } from "../../types/Event";
+import { Event } from "../../types";
 import { BasicResultSet, useApi } from "../../hooks/useApi";
-import { PageResponse } from "../../types/PageResponse";
+import { PageResponse } from "../../types";
 import { deepPurple } from "@mui/material/colors";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
@@ -70,7 +70,7 @@ function ScheduleCalendar() {
 
     async function deleteEvent() {
         try{
-            const res = await api.delete<BasicResultSet>("/schedule-management/deleteEvent", {
+            const res = await api.delete<any, BasicResultSet>("/schedule-management/deleteEvent", {
                 eventId: `${event?.id}`
             });
             if(res){

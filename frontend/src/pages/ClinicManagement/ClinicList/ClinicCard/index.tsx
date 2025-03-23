@@ -11,6 +11,8 @@ interface ClinicCardProps {
 
 const ClinicCard: React.FC<ClinicCardProps> = (props) => {
 
+    console.log(props.clinic.doctors);
+
     function handleCardMediaAreaClick(event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void {
         if(!props.onClick)
             return;
@@ -43,7 +45,7 @@ const ClinicCard: React.FC<ClinicCardProps> = (props) => {
                             <Chip icon={<TimeIcon />} label={props.clinic.time} />
                         </Stack>
                         <Stack direction={"column"} sx={{ pl: 1, pr: 1 }}>
-                            <Chip icon={<Person />} label={props.clinic.doctorUid ? props.clinic.doctorUid : "Not assigned!"} />
+                            <Chip icon={<Person />} label={props.clinic.doctors!.length > 0 ? props.clinic.doctors!.length > 1 ? `Dr. ${props.clinic.doctors![0].name} & ${props.clinic.doctors!.length - 1} Others` : `Dr. ${props.clinic.doctors![0].name}` : "Not assigned!"} />
                         </Stack>
                     </CardContent>
                 </CardActionArea>

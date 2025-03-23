@@ -19,7 +19,7 @@ import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_op
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import UserButton from './UserButton';
 import AdvancedMenuItem from './AdvancedMenuItem';
-import { GroupOutlined, InsertDriveFileTwoTone, LocalHospital } from '@mui/icons-material';
+import { Accessible, GroupOutlined, InsertDriveFileTwoTone, LocalHospital } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
 
 const drawerWidth = 240;
@@ -53,6 +53,22 @@ const menuOptions = [
             {
                 caption: "Users List",
                 to: "users/list",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
+    },
+    {
+        caption: "Patient Management",
+        icon: <Accessible htmlColor='#fff'/>,
+        children: [
+            {
+                caption: "Create Patient",
+                to: "patient-management/create",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Patients List",
+                to: "patient-management/list",
                 icon: <InsertDriveFileTwoTone />
             }
         ]
