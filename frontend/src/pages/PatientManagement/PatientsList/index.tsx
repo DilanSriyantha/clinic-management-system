@@ -12,37 +12,17 @@ import { useLocation, useNavigate } from "react-router";
 import { RoleItem } from "../../../types";
 import { UsersListState } from "../../../types";
 import { For } from "../../../enums/For";
-import { AssignDoctorDto } from "../../../DTOs/AssignDoctorDto";
+import { AssignDoctorDto } from "../../../DTOs";
 
-const recep_columns: GridColDef[] = [
+const columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
     { field: "name", headerName: "Name", width: 130 },
-    { field: "birthday", headerName: "Birthday", width: 70 },
+    { field: "age", headerName: "Age", width: 70 },
     { field: "address", headerName: "Address", width: 130 },
     { field: "email", headerName: "Email", width: 100 },
     { field: "telephone", headerName: "Telephone", width: 100 },
+    { field: "allergiesNote", headerName: "AllergiesNote", width: 150 },
     { field: "updatedAt", headerName: "Updated At", width: 100 },
-    { field: "status", headerName: "Status", width: 70 },
-];
-
-const doc_columns: GridColDef[] = [
-    { field: "referenceId", headerName: "Ref.ID", width: 70 },
-    { field: "name", headerName: "Name", width: 130 },
-    { field: "birthday", headerName: "Birthday", width: 70 },
-    { field: "address", headerName: "Address", width: 130 },
-    { field: "email", headerName: "Email", width: 100 },
-    { field: "telephone", headerName: "Telephone", width: 100 },
-    { field: "specialization", headerName: "Specialization", width: 100 },
-    { field: "percentage", headerName: "Percentage(%)", type: "number", width: 70 },
-    { field: "updatedAt", headerName: "Updated At", width: 100 },
-    { field: "status", headerName: "Status", width: 70 },
-];
-
-const roles: RoleItem[] = [
-    { value: Role.ADMIN, label: Role[0] },
-    { value: Role.DOCTOR, label: Role[1] },
-    { value: Role.RECEPTIONIST, label: Role[2] },
-    { value: Role.PHARMACIST, label: Role[3] }
 ];
 
 const initialState: UsersListState = {
@@ -280,27 +260,7 @@ function PatientsList() {
                     pt: 2,
                     pb: 2
                 }}>
-                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start" }}>
-                        <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
-                            {location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC
-                                ?
-                                null
-                                :
-                                roles.map((item) => {
-                                    const checked = state.role === item.value;
-                                    return (
-                                        <Chip
-                                            key={item.value}
-                                            variant={checked ? "filled" : "outlined"}
-                                            color={checked ? "primary" : "default"}
-                                            label={item.label}
-                                            onClick={() => handleRoleChange(item)}
-                                            icon={checked ? <Check fontSize="small" /> : <div></div>}
-                                        />
-                                    );
-                                })
-                            }
-                        </Stack>
+                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start" }}>
                         <Box
                             sx={{ pb: 2 }}
                         >
@@ -314,7 +274,7 @@ function PatientsList() {
                     <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} />
                     <DataGrid
                         rows={state.list}
-                        columns={state.role === Role.DOCTOR ? doc_columns : recep_columns}
+                        columns={columns}
                         initialState={{ pagination: { paginationModel } }}
                         paginationModel={{ page: state.page, pageSize: state.pageSize }}
                         onPaginationModelChange={onPaginationModelChange}

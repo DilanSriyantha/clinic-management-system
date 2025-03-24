@@ -4,7 +4,7 @@ import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mu
 import { ChangeEvent, KeyboardEvent, MouseEvent, useCallback, useReducer } from "react";
 import PasswordInputField from "../../../components/PasswordInputField";
 import { Role } from "../../../enums/Role";
-import { RegisterFormData } from "../../../types/RegisterFormData";
+import { RegisterFormData } from "../../../types";
 import { useAlert } from "../../../hooks/useAlert";
 import { useNavigate } from "react-router";
 import { useAuthManager } from "../../../hooks/useApi";

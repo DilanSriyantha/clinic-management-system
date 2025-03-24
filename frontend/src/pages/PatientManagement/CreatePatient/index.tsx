@@ -1,14 +1,14 @@
-import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useEffect, useReducer, useRef } from "react";
-import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "react";
+import { DatePicker } from "@mui/x-date-pickers";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
-import moment, { Moment } from "moment";
+import moment from "moment";
 import { isValid } from "../../../utils/Validator";
 import { useAlert } from "../../../hooks/useAlert";
-import { EventVisibility } from "../../../enums/EventVisibility";
 import { useAuth } from "../../../hooks/useAuth";
 import { useLocation } from "react-router";
+import { PatientDto } from "../../../DTOs";
 
 interface CreatePatientState {
     name: string;
@@ -49,19 +49,7 @@ const reducer = (state: CreatePatientState, action: { type: ActionType, payload:
     }
 };
 
-interface EventVisibilityOption {
-    label: string,
-    value: string
-};
-
-const eventVisibilityOptions: EventVisibilityOption[] = [
-    { label: "Private", value: EventVisibility[0] },
-    { label: "Public", value: EventVisibility[1] }
-];
-
 function CreatePatient() {
-    const timePickerInputRef = useRef<HTMLInputElement>(null);
-
     const [user] = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -88,11 +76,11 @@ function CreatePatient() {
             }
 
             if(location.state){
-                updateEventAsync();
+                updatePatientAsync();
                 return;
             }
 
-            createEventAsync();
+            createPatientAsync();
         }catch(err){
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
@@ -100,14 +88,12 @@ function CreatePatient() {
 
     }, [state]);
 
-    const createEventAsync = useCallback(async () => {
+    const createPatientAsync = useCallback(async () => {
         try{
-            const res = await api.post<CreatePatientState, BasicResultSet>("/schedule-management/createEvent", state, undefined, {
-                ownerId: `${user?.user.id}`
-            });
+            const res = await api.post<PatientDto, BasicResultSet>("/patient-management/create", PatientDto.from(state));
             if(res){
                 console.log(res);
-                alert.setSuccess("Event created successfully");
+                alert.setSuccess("Patient created successfully");
             }
         }catch(err){
             console.log(err);
@@ -115,16 +101,16 @@ function CreatePatient() {
         }
     }, [state]);
 
-    const updateEventAsync = useCallback(async () => {
+    const updatePatientAsync = useCallback(async () => {
         if(!location.state) return;
 
         try{
-            const res = await api.put<CreatePatientState, BasicResultSet>("/schedule-management/updateEvent", {
-                eventId: `${location.state.id}`,
+            const res = await api.put<CreatePatientState, BasicResultSet>("/patient-management/update", {
+                patientId: `${location.state.id}`,
             }, state);
             if(res){
                 console.log(res);
-                alert.setSuccess("Event updated successfully.");
+                alert.setSuccess("Patient updated successfully.");
             }
         }catch(err){
             console.log(err);
@@ -145,20 +131,10 @@ function CreatePatient() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
-    const handleTimePickerChange = useCallback((value: moment.Moment | null) => {
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "time", value: moment(value).format("hh:mm:ss") } });
-    }, []);
-
     const handleDatePickerChange = useCallback((value: moment.Moment | null) => {
         console.log(moment(value).format("yyyy-MM-DD"));
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "date", value: moment(value).format("yyyy-MM-DD") } })
     }, []);
-
-
-    function handleEventVisibilityChanged(event: SyntheticEvent<Element, Event>, value: EventVisibilityOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<EventVisibilityOption> | undefined): void {
-        if(value === null) return;
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "visibility", value: value.value } });
-    }
 
     return (
         <>
@@ -191,11 +167,11 @@ function CreatePatient() {
                             width: "100%"
                         }}>
                             <TextField onChange={handleTextFieldChange} name="name" label="Name" type="text" value={state.name} />
-                            <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" defaultValue={moment(new Date)} value={state.birthday.length > 0 ? moment(Date.parse(state.birthday)) : moment(new Date)} />
+                            <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" format="YYYY-MM-DD" />
                             <TextField onChange={handleTextFieldChange} name="address" label="Address" type="text" value={state.address} />
                             <TextField onChange={handleTextFieldChange} name="email" label="Email" type="text" value={state.email} />
                             <TextField onChange={handleTextFieldChange} name="telephone" label="Telephone" type="text" value={state.telephone} />
-                            <TextField onChange={handleTextFieldChange} name="allergiesNote" label="Name" type="text" value={state.allergiesNote} />
+                            <TextField onChange={handleTextFieldChange} name="allergiesNote" label="Allergies Note" type="text" multiline minRows={4} value={state.allergiesNote} />
                         </Box>
                     </form>
                     <Box sx={{
