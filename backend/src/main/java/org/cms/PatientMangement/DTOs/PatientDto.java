@@ -16,8 +16,6 @@ import lombok.NoArgsConstructor;
 public class PatientDto {
     private String name;
 
-    private String referenceId;
-
     private String birthday;
 
     private String email;
@@ -35,7 +33,6 @@ public class PatientDto {
     public Patient toPatient() {
         return Patient.builder()
             .name(name)
-            .referenceId(referenceId)
             .email(email)
             .address(address)
             .telephone(telephone)

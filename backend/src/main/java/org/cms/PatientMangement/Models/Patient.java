@@ -1,7 +1,9 @@
 package org.cms.PatientMangement.Models;
 
 import java.sql.Timestamp;
+import java.util.List;
 
+import org.cms.PrescriptionManagement.Models.Prescription;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -52,6 +55,9 @@ public class Patient {
     private String telephone;
     
     private String allergiesNote;
+
+    @OneToMany
+    private List<Prescription> prescriptions;
 
     @CreationTimestamp
     private Timestamp createdAt;

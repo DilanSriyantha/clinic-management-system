@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router";
 import PageTitle from "../../../components/PageTitle";
 import { Status } from "../../../enums/Status";
-import { ClinicDetailsState } from "../../../types/ClinicDetailsState";
+import { ClinicDetailsState } from "../../../types";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { User } from "../../../types/User";
+import { User } from "../../../types";
 import DoctorSection from "./DoctorsSection";
 import { Delete, LocalHospital } from "@mui/icons-material";
 import { Card, Box, Typography, Stack, Divider, Button } from "@mui/material";
@@ -11,8 +11,8 @@ import moment from "moment";
 import { For } from "../../../enums/For";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
-import { AssignDoctorDto } from "../../../DTOs/AssignDoctorDto";
-import { Clinic } from "../../../types/Clinic";
+import { AssignDoctorDto } from "../../../DTOs";
+import { Clinic } from "../../../types";
 
 const initialState: ClinicDetailsState = {
     id: -1,

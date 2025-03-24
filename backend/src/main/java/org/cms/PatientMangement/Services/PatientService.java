@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,6 +71,15 @@ public class PatientService {
         return BasicResult.builder()
             .status(200)
             .message("Patient deleted successfully.")
+            .build();
+    }
+
+    public BasicResult addPrescription(PrescriptionDto prescription) {
+        
+
+        return BasicResult.builder()
+            .status(200)
+            .message("Prescription added successfully.")
             .build();
     }
 }

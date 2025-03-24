@@ -3,6 +3,7 @@ package org.cms.PatientMangement.Controllers;
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Services.PatientService;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,13 +36,19 @@ public class PatientController {
         return ResponseEntity.ok(patientService.create(patientDto));
     }
 
-    @PutMapping("update")
+    @PutMapping("/update")
     public @ResponseBody ResponseEntity<BasicResult> update(@RequestParam int id, @RequestBody PatientDto latestPatientDetails) {
         return ResponseEntity.ok(patientService.update(id, latestPatientDetails));
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResult> delete(@RequestParam int id) {
         return ResponseEntity.ok(patientService.delete(id));
     }
+
+    @PostMapping("/addPrescription")
+    public ResponseEntity<BasicResult> addPrescription(@RequestBody PrescriptionDto prescription) {
+        return ResponseEntity.ok(patientService.addPrescription(prescription));
+    }
+    
 }

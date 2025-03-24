@@ -16,13 +16,23 @@ export interface PatientDto {
 
 export namespace PatientDto {
     export function from(object: any): PatientDto {
-        var patientDto: PatientDto = {} as PatientDto;
+        var patientDto: PatientDto = {
+            name: "",
+            birthday: "",
+            address: "",
+            email: "",
+            telephone: "",
+            allergiesNote: "",
+        };
         
         const keys = Object.keys(object);
         for(var i = 0; i < keys.length; i++) {
+            console.log(keys[i], object[keys[i]]);
             if(keys[i] in patientDto)
-                patientDto[keys[i] as keyof typeof patientDto] = object[keys[i]];
+                patientDto[keys[i] as keyof PatientDto] = object[keys[i]];
         }
+
+        console.log(patientDto);
 
         return patientDto;
     }
