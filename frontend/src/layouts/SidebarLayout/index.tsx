@@ -11,6 +11,8 @@ interface SidebarLayoutProps {
 const SidebarLayout: React.FC<SidebarLayoutProps> = () => {
     const theme = useTheme();
 
+    const [open, setOpen] = React.useState<boolean>(false);
+
     return (
         <Box
             sx={{
@@ -43,19 +45,6 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = () => {
         >
             {/* <Header /> */}
             <Sidebar />
-            <Box
-                sx={{
-                    position: 'relative',
-                    zIndex: 5,
-                    display: 'block',
-                    flex: 1,
-                    [theme.breakpoints.down('xl')]: {
-                        ml: `75px`
-                    }
-                }}
-            >
-                <Outlet />
-            </Box>
         </Box>
     );
 };

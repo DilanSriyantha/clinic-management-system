@@ -1,6 +1,7 @@
 package org.cms.PatientMangement.Services;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.Models.Patient;
@@ -12,13 +13,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PatientService {
     private final PatientRepository patientRepository;
+
+    private final EntityManager entityManager;
 
     public Page<Patient> getPage(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -29,6 +34,9 @@ public class PatientService {
     public BasicResult create(PatientDto patientDto) {
         var patient = patientDto.toPatient();
 
+        var referenceId = patientRepository.generateReferenceId();
+        patient.setReferenceId(referenceId);
+    
         patientRepository.save(patient);
 
         return BasicResult.builder()
@@ -41,15 +49,9 @@ public class PatientService {
         var patient = patientRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
-        Field[] fields = latestPatientDetails.getClass().getFields();
-
         try{
-            for(var field : fields) {
-                if(field.get(latestPatientDetails) != null) {
-                    patient.getClass().getField(field.getName()).setAccessible(true);
-                    patient.getClass().getField(field.getName()).set(patient, field);
-                }
-            }
+            patient.update(latestPatientDetails);
+            patientRepository.save(patient);
         }catch(Exception ex){
             throw new InternalError(ex);
         }
@@ -74,6 +76,18 @@ public class PatientService {
             .build();
     }
 
+    @Transactional
+    public BasicResult deleteBatch(int[] ids) {
+        Iterable<Integer> batch = intsToIterable(ids);
+
+        patientRepository.deleteAllByIdInBatch(batch);
+
+        return BasicResult.builder()
+            .status(200)
+            .message("Batch deleted successfuly.")
+            .build();
+    }
+
     public BasicResult addPrescription(PrescriptionDto prescription) {
         
 
@@ -81,5 +95,9 @@ public class PatientService {
             .status(200)
             .message("Prescription added successfully.")
             .build();
+    }
+
+    private Iterable<Integer> intsToIterable(int[] arr) {
+        return () -> Arrays.stream(arr).iterator();
     }
 }

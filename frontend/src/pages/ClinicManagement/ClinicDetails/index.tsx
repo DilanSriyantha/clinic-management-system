@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router";
 import PageTitle from "../../../components/PageTitle";
 import { Status } from "../../../enums/Status";
-import { ClinicDetailsState } from "../../../types";
+import { ClinicDetailsState, Patient } from "../../../types";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { User } from "../../../types";
 import DoctorSection from "./DoctorsSection";
@@ -13,12 +13,14 @@ import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { AssignDoctorDto } from "../../../DTOs";
 import { Clinic } from "../../../types";
+import PatientsSection from "./PatientsSection";
 
 const initialState: ClinicDetailsState = {
     id: -1,
     caption: "",
     description: "",
     doctors: new Set<User>,
+    patients: new Set<Patient>,
     dayOfWeek: "",
     time: "",
     status: Status.ACTIVE,
@@ -37,7 +39,7 @@ const reducer = (state: ClinicDetailsState, action: { type: ActionType, payload:
         case ActionType.SET_FIELD:
             return { ...state, [action.payload.name]: action.payload.value };
         case ActionType.SET_CLINIC_FIELDS:
-            return { ...state, id: action.payload.id, caption: action.payload.caption, description: action.payload.description, doctors: action.payload.doctors, dayOfWeek: action.payload.dayOfWeek, time: action.payload.time, status: action.payload.status, updatedAt: action.payload.updatedAt };
+            return { ...state, id: action.payload.id, caption: action.payload.caption, description: action.payload.description, doctors: action.payload.doctors, patients: action.payload.patients, dayOfWeek: action.payload.dayOfWeek, time: action.payload.time, status: action.payload.status, updatedAt: action.payload.updatedAt };
         case ActionType.SET_LOADING:
             return { ...state, loading: action.payload };
         default:
@@ -142,7 +144,7 @@ function ClinicDetails() {
                     </Box>
                 }
             />
-            <Stack direction={"column"} gap={2}>
+            <Stack direction={"column"} gap={2} sx={{ pb: 2 }}>
                 <Card>
                     <Box sx={{ display: "flex", textAlign: "start", flexDirection: "column", p: 2 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 2 }}>
@@ -189,6 +191,7 @@ function ClinicDetails() {
                     </Box>
                 </Card>
                 <DoctorSection clinicDoctors={Array.from(state.doctors)} onAssignClick={handleAssignClick} onDismissClick={handleDismissClick} />
+                <PatientsSection clinicId={location.state.clinicId} patientsList={state.patients} />
             </Stack>
         </>
     );

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.cms.Enums.Status;
+import org.cms.PatientMangement.Models.Patient;
 import org.cms.Users.Models.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -42,6 +43,14 @@ public class Clinic {
     )
     // inform the json serializer that this entity is the owner of doctors in order to prevent infinite recursion.
     private List<User> doctors = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "clinic_patient",
+        joinColumns = @JoinColumn(name = "clinic_id"),
+        inverseJoinColumns = @JoinColumn(name = "patient_id")
+    )
+    private List<Patient> patients = new ArrayList<>();
 
     private String dayOfWeek;
 

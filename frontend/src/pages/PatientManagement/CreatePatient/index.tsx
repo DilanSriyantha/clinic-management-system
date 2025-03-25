@@ -105,9 +105,9 @@ function CreatePatient() {
         if(!location.state) return;
 
         try{
-            const res = await api.put<CreatePatientState, BasicResultSet>("/patient-management/update", {
-                patientId: `${location.state.id}`,
-            }, state);
+            const res = await api.put<PatientDto, BasicResultSet>("/patient-management/update", {
+                id: `${location.state.id}`,
+            }, PatientDto.from(state));
             if(res){
                 console.log(res);
                 alert.setSuccess("Patient updated successfully.");
@@ -132,15 +132,15 @@ function CreatePatient() {
     }, []);
 
     const handleDatePickerChange = useCallback((value: moment.Moment | null) => {
-        console.log(moment(value).format("yyyy-MM-DD"));
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "date", value: moment(value).format("yyyy-MM-DD") } })
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "birthday", value: moment(value).format("yyyy-MM-DD") } })
     }, []);
 
     return (
         <>
             <PageTitle
                 subTitle="Patient Management"
-                title="Create Patient"
+                title={location.state ? "Update Patient" : "Create Patient"}
+                backButton={location.state ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -167,7 +167,7 @@ function CreatePatient() {
                             width: "100%"
                         }}>
                             <TextField onChange={handleTextFieldChange} name="name" label="Name" type="text" value={state.name} />
-                            <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" format="YYYY-MM-DD" />
+                            <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" format="YYYY-MM-DD" value={moment(Date.parse(state.birthday))} />
                             <TextField onChange={handleTextFieldChange} name="address" label="Address" type="text" value={state.address} />
                             <TextField onChange={handleTextFieldChange} name="email" label="Email" type="text" value={state.email} />
                             <TextField onChange={handleTextFieldChange} name="telephone" label="Telephone" type="text" value={state.telephone} />

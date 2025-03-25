@@ -18,6 +18,7 @@ export interface Clinic {
     caption: string;
     description: string;
     doctors?: User[];
+    patients?: Patient[];
     doctorUid?: string;
     dayOfWeek: string;
     time: string;
@@ -30,6 +31,7 @@ export interface ClinicDetailsState {
     caption: string;
     description: string;
     doctors: Set<User>;
+    patients: Set<Patient>;
     dayOfWeek: string;
     time: string;
     status: Status;
@@ -216,4 +218,24 @@ export interface UsersListState {
     totalPages: number;
     totalElements: number;
     loading: boolean;
+};
+
+export interface Patient {
+    id: number;
+    name: string;
+    referenceId: string;
+    birthday: string;
+    age: number;
+    email: string;
+    address: string;
+    telephone: string;
+    allergiesNote: string;
+    prescriptions: any[];
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export interface AssignPatientsDto {
+    clinicId: number;
+    patientIds: GridRowId[];
 };

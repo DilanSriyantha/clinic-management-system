@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router";
 import { RoleItem } from "../../../types";
 import { UsersListState } from "../../../types";
 import { For } from "../../../enums/For";
-import { AssignDoctorDto } from "../../../DTOs/AssignDoctorDto";
+import { AssignDoctorDto } from "../../../DTOs";
 
 const recep_columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },

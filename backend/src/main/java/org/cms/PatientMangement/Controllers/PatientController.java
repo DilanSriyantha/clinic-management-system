@@ -46,9 +46,13 @@ public class PatientController {
         return ResponseEntity.ok(patientService.delete(id));
     }
 
+    @DeleteMapping("/deleteBatch")
+    public @ResponseBody ResponseEntity<BasicResult> deleteBatch(@RequestBody int[] ids) {
+        return ResponseEntity.ok(patientService.deleteBatch(ids));
+    }
+
     @PostMapping("/addPrescription")
     public ResponseEntity<BasicResult> addPrescription(@RequestBody PrescriptionDto prescription) {
         return ResponseEntity.ok(patientService.addPrescription(prescription));
     }
-    
 }

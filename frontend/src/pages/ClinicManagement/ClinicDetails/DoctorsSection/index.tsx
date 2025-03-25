@@ -1,7 +1,7 @@
 import { Avatar, Box, Card, Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Add, LinkOff, MedicalServices } from "@mui/icons-material";
 import { MouseEvent, useCallback } from "react";
-import { User } from "../../../../types/User";
+import { User } from "../../../../types";
 import { deepOrange } from "@mui/material/colors";
 
 interface DoctorSectionProps {

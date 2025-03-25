@@ -1,18 +1,14 @@
-import { alpha, Box, Button, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Add, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
-import { User } from "../../../types";
+import { AssignPatientsDto, Patient, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types";
-import { Role } from "../../../enums/Role";
 import { useLocation, useNavigate } from "react-router";
-import { RoleItem } from "../../../types";
-import { UsersListState } from "../../../types";
 import { For } from "../../../enums/For";
-import { AssignDoctorDto } from "../../../DTOs";
 
 const columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -25,19 +21,17 @@ const columns: GridColDef[] = [
     { field: "updatedAt", headerName: "Updated At", width: 100 },
 ];
 
-const initialState: UsersListState = {
-    role: Role.DOCTOR,
-    selectedIds: new Set<GridRowId>(),
-    list: [],
-    page: 0,
-    pageSize: 5,
-    totalPages: 1,
-    totalElements: 0,
-    loading: false,
+interface PatientListState {
+    selectedIds: Set<GridRowId>,
+    list: Patient[];
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    totalElements: number;
+    loading: boolean;
 };
 
 enum ActionType {
-    SET_ROLE,
     SET_SELECTED_IDS,
     ADD_TO_SELECTED_IDS,
     REMOVE_FROM_SELECTED_IDS,
@@ -52,10 +46,18 @@ enum ActionType {
     SET_LOADING,
 };
 
-const reducer = (state: UsersListState, action: { type: ActionType, payload: any }): UsersListState => {
+const initialState: PatientListState = {
+    selectedIds: new Set<GridRowId>(),
+    list: [],
+    page: 0,
+    pageSize: 5,
+    totalPages: 1,
+    totalElements: 1,
+    loading: false,  
+};
+
+const reducer = (state: PatientListState, action: { type: ActionType, payload: any }): PatientListState => {
     switch (action.type) {
-        case ActionType.SET_ROLE:
-            return { ...state, role: action.payload };
         case ActionType.SET_SELECTED_IDS:
             return { ...state, selectedIds: action.payload };
         case ActionType.ADD_TO_SELECTED_IDS:
@@ -98,15 +100,16 @@ function PatientsList() {
     const api = useApi();
     const alert = useAlert();
 
+    console.log(location.state);
+
     useEffect(() => {
         fetchUsers();
-    }, [state.role, state.page, state.pageSize]);
+    }, [state.page, state.pageSize]);
 
     const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try {
             const res = await api.get<PageResponse<User>>("/patient-management/page", {
-                role: Role[state.role],
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
             });
@@ -125,14 +128,7 @@ function PatientsList() {
         } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
-    }, [state.page, state.pageSize, state.role]);
-
-    const handleRoleChange = useCallback((item: RoleItem) => {
-        if (state.role === item.value)
-            return;
-
-        dispatch({ type: ActionType.SET_ROLE, payload: item.value });
-    }, [state.role]);
+    }, [state.page, state.pageSize]);
 
     const handleSelectRow = useCallback((ids: GridRowSelectionModel) => {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
@@ -140,7 +136,7 @@ function PatientsList() {
 
     const handleReloadClick = useCallback(() => {
         fetchUsers();
-    }, [state.role]);
+    }, []);
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
         dispatch({
@@ -153,7 +149,7 @@ function PatientsList() {
 
     const handleDelete = useCallback(async () => {
         try {
-            const res = await api.delete<any, BasicResultSet>("/users/delete", undefined, Array.from(state.selectedIds).join());
+            const res = await api.delete<any, BasicResultSet>("/patient-management/deleteBatch", undefined, Array.from(state.selectedIds));
             if (res) {
                 alert.setSuccess(res.message);
                 dispatch({ type: ActionType.DELETE_SELECTED_ITEMS, payload: state.selectedIds });
@@ -164,8 +160,8 @@ function PatientsList() {
     }, [state.selectedIds, state.list]);
 
     const handleEdit = useCallback(() => {
-        const user = state.list.find((user) => state.selectedIds.has(user.id));
-        navigate("update", { state: { user } });
+        const patient = state.list.find((patient) => state.selectedIds.has(patient.id));
+        navigate("/patient-management/create", { state: patient });
     }, [state.list, state.selectedIds]);
 
     const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
@@ -174,9 +170,9 @@ function PatientsList() {
         if (!doctorId) return;
 
         try {
-            const res = await api.post<AssignDoctorDto, BasicResultSet>("/clinic-management/assignPatient", {
+            const res = await api.post<AssignPatientsDto, BasicResultSet>("/clinic-management/assignPatients", {
                 clinicId: location.state.clinicId,
-                doctorId: doctorId,
+                patientIds: Array.from(state.selectedIds),
             });
             if (res) {
                 console.log(res);

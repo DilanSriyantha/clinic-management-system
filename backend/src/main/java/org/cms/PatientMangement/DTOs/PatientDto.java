@@ -33,6 +33,7 @@ public class PatientDto {
     public Patient toPatient() {
         return Patient.builder()
             .name(name)
+            .birthday(birthday)
             .email(email)
             .address(address)
             .telephone(telephone)

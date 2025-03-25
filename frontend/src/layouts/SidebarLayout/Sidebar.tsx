@@ -12,15 +12,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import DashboardIcon from '../../assets/dashboard_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
-import StethoscopeIcon from '../../assets/stethoscope_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import InventoryIcon from '../../assets/inventory_2_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
-import BillingIcon from '../../assets/receipt_long_24dp_00_FILL0_wght400_GRAD0_opsz24.svg'
 import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import UserButton from './UserButton';
 import AdvancedMenuItem from './AdvancedMenuItem';
-import { Accessible, GroupOutlined, InsertDriveFileTwoTone, LocalHospital } from '@mui/icons-material';
+import { Accessible, GroupOutlined, InsertDriveFileTwoTone, LocalHospital, Medication } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
+import { Outlet } from 'react-router';
 
 const drawerWidth = 240;
 
@@ -74,6 +73,22 @@ const menuOptions = [
         ]
     },
     {
+        caption: "Prescription Management",
+        icon: <Medication htmlColor='#fff'/>,
+        children: [
+            {
+                caption: "Create Prescription",
+                to: "prescription-management/create",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Prescriptions List",
+                to: "prescription-management/list",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
+    },
+    {
         caption: "Clinic Management",
         icon: <LocalHospital htmlColor='#fff' />,
         children: [
@@ -121,17 +136,38 @@ const menuOptions = [
     //     icon: <img src={BillingIcon} />
     // },
     {
-        caption: "Pharmacy Management",
+        caption: "Pharmacy Sales Management",
         icon: <img src={InventoryIcon} />,
         children: [
             {
-                caption: "Sales",
-                to: "/",
+                caption: "Create Invoice",
+                to: "pharmacy-sales-management/create-invoice",
                 icon: <InsertDriveFileTwoTone />
             }, 
             {
-                caption: "Stocks",
-                to: "/",
+                caption: "Invoice List",
+                to: "pharmacy-sales-management/invoice-list",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
+    },
+    {
+        caption: "Pharmacy Stock Management",
+        icon: <img src={InventoryIcon} />,
+        children: [
+            {
+                caption: "Create Stock",
+                to: "pharmacy-sales-management/create-stock",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Add Items",
+                to: "pharmacy-sales-management/add-items",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Items List",
+                to: "pharmacy-sales-management/items-list",
                 icon: <InsertDriveFileTwoTone />
             }
         ]
@@ -200,6 +236,23 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
+const OutletContainer = styled(Box, { shouldForwardProp: (prop) => prop !== 'open' })<{ open: boolean }>(
+    ({ theme, open }) => ({
+        marginLeft: `75px`,
+        transition: theme.transitions.create(['margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        ...(open && {
+            marginLeft: `240px`,
+            transition: theme.transitions.create(['margin'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        }),
+    }),
+);
+
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
         width: drawerWidth,
@@ -230,48 +283,61 @@ export default function Sidebar() {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <AppBar position="fixed" open={open}>
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{
-                            marginRight: 5,
-                            ...(open && { display: 'none' }),
-                        }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }} noWrap component="div">
-                        Clinic Management System (CMS) by PPAG7
-                    </Typography>
-                    <UserButton />
-                </Toolbar>
-            </AppBar>
-            <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton color='inherit' onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {menuOptions.map((obj, index) => (
-                        <AdvancedMenuItem
-                            key={index}
-                            caption={obj.caption}
-                            to={obj.to}
-                            drawerOpened={open}
-                            icon={obj.icon}
-                            openDrawer={handleDrawerOpen}
-                            children={obj.children}
-                        />
-                    ))}
-                </List>
-            </Drawer>
-        </Box>
+        <>
+            <Box sx={{ display: 'flex' }}>
+                <AppBar position="fixed" open={open}>
+                    <Toolbar>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            sx={{
+                                marginRight: 5,
+                                ...(open && { display: 'none' }),
+                            }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" sx={{ fontWeight: "bold" }} noWrap component="div">
+                            Clinic Management System (CMS) by PPAG7
+                        </Typography>
+                        <UserButton />
+                    </Toolbar>
+                </AppBar>
+                <Drawer variant="permanent" open={open}>
+                    <DrawerHeader>
+                        <IconButton color='inherit' onClick={handleDrawerClose}>
+                            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    </DrawerHeader>
+                    <Divider />
+                    <List>
+                        {menuOptions.map((obj, index) => (
+                            <AdvancedMenuItem
+                                key={index}
+                                caption={obj.caption}
+                                to={obj.to}
+                                drawerOpened={open}
+                                icon={obj.icon}
+                                openDrawer={handleDrawerOpen}
+                                children={obj.children}
+                            />
+                        ))}
+                    </List>
+                </Drawer>
+            </Box>
+            <OutletContainer
+                sx={{
+                    position: 'relative',
+                    zIndex: 5,
+                    display: 'block',
+                    flex: 1,
+                }}
+                open={open}
+            >
+                <Outlet />
+            </OutletContainer>
+        </>
     );
 }

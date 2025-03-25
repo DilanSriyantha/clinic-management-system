@@ -50,7 +50,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
                 handleJwtTokenExpired(serverException);
-                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+                throw new Error(await res.json());
             }
 
             if (getHeaders)
@@ -81,7 +81,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
                 handleJwtTokenExpired(serverException);
-                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+                throw new Error(serverException.message);
             }
 
             return (await res.json()) as R;
@@ -109,7 +109,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
                 handleJwtTokenExpired(serverException);
-                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+                throw new Error(serverException.message);
             }
 
             return (await res.json()) as R;
@@ -137,7 +137,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if(!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
                 handleJwtTokenExpired(serverException);
-                throw new Error(`${serverException.statusCode} - ${serverException.message}`);
+                throw new Error(serverException.message);
             }
 
             return (await res.json()) as R;

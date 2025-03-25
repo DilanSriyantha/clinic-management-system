@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
+import org.cms.ClinicManagement.DTOs.AssignPatientDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Services.ClinicService;
 import org.cms.Users.Models.User;
@@ -11,6 +12,9 @@ import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/v1/clinic-management")
@@ -59,10 +63,15 @@ public class ClinicsController {
         return ResponseEntity.ok(clinicService.dissmissDoctor(dismissDoctorDto));
     }
 
-    @PostMapping("/assignPatient")
-    public @ResponseBody ResponseEntity<BasicResultSet> assignPatient(@RequestParam int clinicId, @RequestParam int patientId) {
-        return ResponseEntity.ok(clinicService.assignPatient(clinicId, patientId));
+    @PostMapping("/assignPatients")
+    public @ResponseBody ResponseEntity<BasicResultSet> assignPatients(@RequestBody AssignPatientDto assignPatientDto) {
+        return ResponseEntity.ok(clinicService.assignPatients(assignPatientDto));
     } 
+
+    @PostMapping("/dismissPatients")
+    public @ResponseBody ResponseEntity<BasicResultSet> dismissPatients(@RequestBody AssignPatientDto dismissPatientDto) {
+        return ResponseEntity.ok(clinicService.dismissPatients(dismissPatientDto));
+    }
 
     @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResultSet> delete(@RequestParam int id) {
