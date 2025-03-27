@@ -240,29 +240,23 @@ export interface AssignPatientsDto {
     patientIds: GridRowId[];
 };
 
-export interface Prescription {
-    id: number;
-    prescriptionLines: PrescriptionLine[];
-    patient: Patient;
-    doctor: User;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
-};
-
 export interface PrescriptionDto {
+    id: number;
     prescriptionLines: PrescriptionLineDto[];
     patientId: number;
+    patientName: string;
+    patientReferenceId: string;
     doctorId: number;
-}
+    doctorName: string;
+    doctorReferenceId: string;
+};
 
-export interface PrescriptionLine {
-    id: number;
-    description: string;
-    prescrition: Prescription;
-    createdAt: Timestamp;
-    updatedAt: Timestamp;
+export interface PrescriptionCreateRequest {
+    patientId: number;
+    doctorId: number;
+    prescriptionLines: PrescriptionLineDto[]
 };
 
 export interface PrescriptionLineDto {
     description: string;
-}
+};

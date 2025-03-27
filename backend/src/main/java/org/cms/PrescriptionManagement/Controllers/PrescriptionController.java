@@ -1,7 +1,6 @@
 package org.cms.PrescriptionManagement.Controllers;
 
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
-import org.cms.PrescriptionManagement.Models.Prescription;
 import org.cms.PrescriptionManagement.Services.PrescriptionService;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
@@ -27,7 +26,7 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
 
     @GetMapping("/page")
-    public @ResponseBody ResponseEntity<Page<Prescription>> handleGetPage(@RequestParam int page, @RequestParam int pageSize) {
+    public @ResponseBody ResponseEntity<Page<PrescriptionDto>> handleGetPage(@RequestParam int page, @RequestParam int pageSize) {
         return ResponseEntity.ok(prescriptionService.getPage(page, pageSize));
     }
 

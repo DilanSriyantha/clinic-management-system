@@ -50,7 +50,7 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
             if (!res.ok) {
                 const serverException: ServerException = (await res.json()) as ServerException;
                 handleJwtTokenExpired(serverException);
-                throw new Error(await res.json());
+                throw new Error(serverException.message);
             }
 
             if (getHeaders)

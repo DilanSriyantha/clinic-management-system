@@ -3,13 +3,19 @@ package org.cms.PrescriptionManagement.Models;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.cms.PatientMangement.Models.Patient;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionLineDto;
 import org.cms.Users.Models.User;
+import org.cms.Utils.ModelMapper;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
@@ -29,10 +35,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id"
-)
 public class Prescription {
     
     @Id
@@ -40,12 +42,15 @@ public class Prescription {
     private Integer id;
 
     @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<PrescriptionLine> prescriptionLines = new ArrayList<>();
 
     @ManyToOne
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
+    @JsonIgnore
     private User doctor;
 
     @CreationTimestamp
@@ -53,4 +58,17 @@ public class Prescription {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    public static PrescriptionDto toDto(Prescription prescription) {
+        return PrescriptionDto.builder()
+            .id(prescription.getId())
+            .patientId(prescription.getPatient().getId())
+            .patientName(prescription.getPatient().getName())
+            .patientReferenceId(prescription.getPatient().getReferenceId())
+            .doctorId(prescription.getDoctor().getId())
+            .doctorName(prescription.getDoctor().getName())
+            .doctorReferenceId(prescription.getDoctor().getReferenceId())
+            .prescriptionLines(prescription.getPrescriptionLines().stream().map(pl -> ModelMapper.getInstance().map(pl, PrescriptionLineDto.class)).collect(Collectors.toList()))
+            .build();
+    }
 }

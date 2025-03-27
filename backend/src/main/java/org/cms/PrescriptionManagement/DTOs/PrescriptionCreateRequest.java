@@ -1,6 +1,7 @@
 package org.cms.PrescriptionManagement.DTOs;
 
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,21 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrescriptionDto {
-
-    private int id;
-
+public class PrescriptionCreateRequest {
+    
     private int patientId;
 
-    private String patientName;
-
-    private String patientReferenceId;
-
     private int doctorId;
-
-    private String doctorName;
-
-    private String doctorReferenceId;
 
     private List<PrescriptionLineDto> prescriptionLines;
 }

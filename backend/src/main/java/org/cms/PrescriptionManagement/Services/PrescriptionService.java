@@ -32,10 +32,10 @@ public class PrescriptionService {
 
     private final UserRepository userRepository;
 
-    public Page<Prescription> getPage(int page, int pageSize) {
+    public Page<PrescriptionDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return prescriptionRepository.findAll(pageable);
+        return prescriptionRepository.findAll(pageable).map(Prescription::toDto);
     }
 
     @Transactional

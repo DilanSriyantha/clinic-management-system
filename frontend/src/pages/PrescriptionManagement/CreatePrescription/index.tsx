@@ -1,7 +1,7 @@
 import { Card, Container, Box, Typography, Button, Grid2, ListItem, ListItemText, Stack, TextField, IconButton, Tooltip, useTheme, Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { Link, useLocation, useNavigate } from "react-router";
-import { PrescriptionDto, PrescriptionLineDto } from "../../../types";
+import { useLocation, useNavigate } from "react-router";
+import { Patient, PrescriptionCreateRequest, PrescriptionDto, PrescriptionLineDto } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useReducer } from "react";
@@ -92,7 +92,7 @@ function CreatePrescription() {
 
     const createPrescription = useCallback(async () => {
         try {
-            const res = await api.post<PrescriptionDto, BasicResultSet>("/prescription-management/create", { ...state, doctorId: user?.user.id, patientId: location.state && location.state.patient.id } as PrescriptionDto);
+            const res = await api.post<PrescriptionCreateRequest, BasicResultSet>("/prescription-management/create", { ...state, doctorId: user?.user.id, patientId: location.state && location.state.patient.id } as PrescriptionCreateRequest);
 
             if (res) {
                 console.log(res);
@@ -162,15 +162,16 @@ function CreatePrescription() {
                 pb: 2
             }}>
                 <Stack direction={"column"} gap={1}>
-                    <Grid2 container size={12}> 
+                    <Grid2 container size={12} gap={1}> 
                         <Grid2 size={5}>
-                            <Card sx={{ p: 1 }}>
-                                <Stack direction={"column"}>
+                            <Card sx={{ p: 1, height: "100%" }}>
+                                <Stack direction={"column"} textAlign={"start"}>
                                     <Typography variant="body1">Allergy Note</Typography>
+                                    <Typography variant="body2" sx={{ fontStyle: !location.state ? "italic" : "normal" }} fontWeight={300} pt={1}>{location.state ? (location.state.patient as Patient).allergiesNote : "No patient(s)"}</Typography>
                                 </Stack>
                             </Card>
                         </Grid2>
-                        <Grid2 size={5}>
+                        <Grid2 size={6}>
                             <Card sx={{ p: 1 }}>
                                 <Stack direction={"row"} justifyContent={"space-between"} pb={.35}>
                                     <Typography variant="body1">Date</Typography>
@@ -216,10 +217,9 @@ function CreatePrescription() {
                             </Card>
                         </Grid2>
                         <Grid2 size={5}>
+                            <Stack direction={"column"} gap={1} height={"100%"}>
 
-                            <Stack direction={"column"} gap={1}>
-
-                                <Card sx={{ p: 1 }}>
+                                <Card sx={{ p: 1, height: "100%" }}>
                                     <Box
                                         sx={{ pl: 1, pb: 1, pr: 1 }}
                                     >
@@ -242,7 +242,7 @@ function CreatePrescription() {
                                                 sx={{
                                                     display: "flex",
                                                     justifyContent: "end",
-                                                    gap: 1
+                                                    gap: 1,
                                                 }}
                                             >
                                                 <Tooltip title="Add record">
