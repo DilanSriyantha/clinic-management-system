@@ -1,7 +1,7 @@
 import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { Add, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { AssignPatientsDto, Patient, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
@@ -184,12 +184,16 @@ function PatientsList() {
         }
     }, [state.list, state.selectedIds]);
 
+    const handleSelectForPrescribe = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
+        navigate("/prescription-management/create", { state: { patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
+    }, [state.list, state.selectedIds]);
 
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onAssign: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onSelect: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
     function TableToolbar(props: TableToolbarProps) {
@@ -223,6 +227,12 @@ function PatientsList() {
                         <Button variant="contained" startIcon={<Add />} onClick={props.onAssign}>Assign</Button>
                     </Tooltip>
                     :
+                    location.state && location.state.for === For.SELECTING_PATIENT
+                    ?
+                    <Tooltip title="Assign">
+                        <Button variant="contained" startIcon={<Check />} onClick={props.onSelect}>Select</Button>
+                    </Tooltip>
+                    :
                     <>
                         {props.numSelected == 1 && (
                             <Tooltip title="Edit">
@@ -245,9 +255,9 @@ function PatientsList() {
     return (
         <>
             <PageTitle
-                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : "Patients"}
+                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : (location.state && location.state.for === For.SELECTING_PATIENT) ? "Select a patient" : "Patients"}
                 title={"Patients List"}
-                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? true : false}
+                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -267,7 +277,7 @@ function PatientsList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} onSelect={handleSelectForPrescribe} />
                     <DataGrid
                         rows={state.list}
                         columns={columns}
@@ -278,7 +288,7 @@ function PatientsList() {
                         rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
-                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? true : false}
+                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) ? true : false}
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
                         loading={state.loading}

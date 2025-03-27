@@ -1,6 +1,8 @@
 export enum For {
     ASSIGN_DOCTOR_TO_CLINIC,
-    ASSIGN_PATIENTS_TO_CLINIC
+    ASSIGN_PATIENTS_TO_CLINIC,
+    SELECTING_PATIENT,
+    SELECTING_CLINIC,
 };
 
 export namespace For {

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useCallback, useContext } from "react";
-import { AuthResponse } from "../types/AuthResponse";
+import { AuthResponse } from "../types";
 import useLocalStorage from "./useLocalStorage";
 
 interface AuthProviderType {
@@ -35,5 +35,5 @@ export const useAuth = (): [AuthResponse | null, (authResponse: AuthResponse | n
     if(!ctx) 
         throw new Error("useAuth() hook must be used within an AuthProvider");
 
-    return [ctx.user, ctx.setUser];
+    return [ctx.user as AuthResponse, ctx.setUser];
 };

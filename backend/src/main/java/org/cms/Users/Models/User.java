@@ -7,6 +7,7 @@ import lombok.*;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.Enums.Role;
 import org.cms.Enums.Status;
+import org.cms.PrescriptionManagement.Models.Prescription;
 import org.cms.ScheduleManagement.Models.Event;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -59,10 +60,13 @@ public class User implements UserDetails {
 
     private Float percentage;
 
-    @ManyToMany(mappedBy = "doctors")
+    @ManyToMany(mappedBy = "doctors", cascade = CascadeType.ALL)
     private List<Clinic> clinics = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prescription> prescriptions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

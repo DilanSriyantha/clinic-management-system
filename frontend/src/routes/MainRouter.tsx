@@ -21,6 +21,8 @@ const PatientsList = RouteLoader(lazy(() => import("../pages/PatientManagement/P
 const CreatePatient = RouteLoader(lazy(() => import("../pages/PatientManagement/CreatePatient")));
 const UpdatePatient = RouteLoader(lazy(() => import("../pages/PatientManagement/UpdatePatient")));
 
+const CreatePrescription = RouteLoader(lazy(() => import("../pages/PrescriptionManagement/CreatePrescription")));
+
 const MainRoutes: RouteObject[] = [
     {
         path: "/",
@@ -75,6 +77,10 @@ const MainRoutes: RouteObject[] = [
             {
                 path: "patient-management/update",
                 element: <UpdatePatient />
+            },
+            {
+                path: "prescription-management/create",
+                element: <CreatePrescription />
             },
             // billing
             {

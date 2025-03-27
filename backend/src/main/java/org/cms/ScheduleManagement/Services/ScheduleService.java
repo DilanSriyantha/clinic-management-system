@@ -46,7 +46,7 @@ public class ScheduleService {
     public Page<Event> getRelevantEvents(int userId, int page, int pageSize, String date) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return scheduleRepository.findAllByDateAndVisibilityOrOwnerId(Date.valueOf(date), EventVisibility.PUBLIC, userId, pageable);
+        return scheduleRepository.findRelevantPage(Date.valueOf(date), EventVisibility.PUBLIC, userId, pageable);
     }
 
     public Page<Event> getPublicEvents(int page, int pageSize, String date) {

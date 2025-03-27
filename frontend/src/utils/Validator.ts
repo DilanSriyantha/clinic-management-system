@@ -20,7 +20,7 @@ export const isValid = (object: any, exceptFields?: string[]): boolean => {
                 throw new Error("invalid telephone number");
         }
 
-        if(object[keys[i]] === null || object[keys[i]] === undefined)
+        if(object[keys[i]] === null || object[keys[i]] === undefined || object[keys[i]].length < 1)
             return false;
     }
 
