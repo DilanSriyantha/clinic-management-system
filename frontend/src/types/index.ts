@@ -39,15 +39,6 @@ export interface ClinicDetailsState {
     loading: boolean;
 };
 
-export interface ClinicListState {
-    list: Clinic[],
-    page: number;
-    pageSize: number;
-    totalElements: number;
-    totalPages: number;
-    loading: boolean;
-};
-
 export interface CreateClinicState {
     caption: string;
     description: string;

@@ -3,6 +3,7 @@ export enum For {
     ASSIGN_PATIENTS_TO_CLINIC,
     SELECTING_PATIENT,
     SELECTING_CLINIC,
+    SELECTING_PATIENT_FOR_APPOINTMENT,
 };
 
 export namespace For {

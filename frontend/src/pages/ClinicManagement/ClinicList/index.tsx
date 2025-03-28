@@ -2,15 +2,15 @@ import { Box, Container, IconButton, Pagination, Stack, Tooltip, Typography } fr
 import PageTitle from "../../../components/PageTitle";
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { useApi } from "../../../hooks/useApi";
-import { Clinic } from "../../../types/Clinic";
+import { Clinic } from "../../../types";
 import ClinicCard from "./ClinicCard";
 import SkeletonCard from "./SkeletonCard";
 import { ReplayOutlined } from "@mui/icons-material";
 import SearchBar from "../../../components/SearchBar";
 import Filter, { FilterOption } from "./Filter";
-import { ClinicListState } from "../../../types/ClinicListState";
 import { useAlert } from "../../../hooks/useAlert";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { For } from "../../../enums/For";
 
 const filterOptions: FilterOption[] = [
     { label: "Caption", value: 1 },
@@ -19,6 +19,15 @@ const filterOptions: FilterOption[] = [
     { label: "Time", value: 4 },
     { label: "Doctor", value: 5 },
 ];
+
+interface ClinicListState {
+    list: Clinic[],
+    page: number;
+    pageSize: number;
+    totalElements: number;
+    totalPages: number;
+    loading: boolean;
+};
 
 const initialState: ClinicListState = {
     list: [],
@@ -56,7 +65,11 @@ function ClinicList() {
 
     const api = useApi();
     const alert = useAlert();
+
     const navigate = useNavigate();
+    const location = useLocation();
+
+    console.log(location.state);
 
     useEffect(() => {
         fetchList();
@@ -90,13 +103,18 @@ function ClinicList() {
     }, [state.page]);
 
     const handleClinicClick = useCallback((clinicId: number): void => {
+        // console.log(state.list.filter(c => c.id === clinicId)); return;
+        if(location.state && location.state.for && location.state.for === For.SELECTING_CLINIC){
+            navigate("/appointment-management/create", { state: { ...location.state, clinic: state.list.filter(c => c.id === clinicId)[0]} });
+            return;
+        }
         navigate("clinic-details", { state: { clinicId: clinicId } });
-    }, []);
+    }, [state.list]);
 
     return (
         <>
             <PageTitle
-                subTitle="Clinic Management"
+                subTitle={ (location.state && location.state.for &&  location.state.for === For.SELECTING_CLINIC) ? "Select a clinic" : "Clinic Management"}
                 title="Clinics List"
                 endContent={
                     <Stack direction="row">
@@ -116,6 +134,7 @@ function ClinicList() {
                         <SearchBar />
                     </Stack>
                 }
+                backButton={(location.state && location.state.for && location.state.for === For.SELECTING_CLINIC) ? true : false}
             />
             <Container
                 sx={{

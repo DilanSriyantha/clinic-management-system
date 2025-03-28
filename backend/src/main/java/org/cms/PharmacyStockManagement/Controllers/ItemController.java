@@ -3,6 +3,7 @@ package org.cms.PharmacyStockManagement.Controllers;
 import org.cms.PharmacyStockManagement.DTOs.ItemCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.ItemDto;
 import org.cms.PharmacyStockManagement.Services.ItemService;
+import org.cms.Types.BasicResult;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,8 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/page")
-    public @ResponseBody ResponseEntity<Page<ItemDto>> handleGetPage(@RequestParam int page, @RequestParam int pageeSize) {
-        return ResponseEntity.ok(itemService.getPage(page, pageeSize));
+    public @ResponseBody ResponseEntity<Page<ItemDto>> handleGetPage(@RequestParam int page, @RequestParam int pageSize) {
+        return ResponseEntity.ok(itemService.getPage(page, pageSize));
     }
     
     @PostMapping("/create")
@@ -44,5 +45,10 @@ public class ItemController {
     @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResultSet> handleDelete(@RequestParam int itemId) {
         return ResponseEntity.ok(itemService.deleteItem(itemId));
+    }
+
+    @DeleteMapping("/deleteBatch")
+    public @ResponseBody ResponseEntity<BasicResult> handleDeleteBatch(@RequestBody int[] ids) {
+        return ResponseEntity.ok(itemService.deleteBatch(ids));
     }
 }

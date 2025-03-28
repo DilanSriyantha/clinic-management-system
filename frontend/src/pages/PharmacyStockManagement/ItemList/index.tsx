@@ -1,29 +1,33 @@
-import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Box, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
-import { AssignPatientsDto, Patient, User } from "../../../types";
+import { ItemDto, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types";
 import { useLocation, useNavigate } from "react-router";
-import { For } from "../../../enums/For";
 
 const columns: GridColDef[] = [
-    { field: "referenceId", headerName: "Ref.ID", width: 70 },
-    { field: "name", headerName: "Name", width: 130 },
-    { field: "age", headerName: "Age", width: 70 },
-    { field: "address", headerName: "Address", width: 130 },
-    { field: "email", headerName: "Email", width: 100 },
-    { field: "telephone", headerName: "Telephone", width: 100 },
-    { field: "allergiesNote", headerName: "AllergiesNote", width: 150 },
-    { field: "updatedAt", headerName: "Updated At", width: 100 },
+    {
+        field: "number",
+        headerName: "#",
+        width: 150,
+        valueGetter: (val, row, col, api) => `Item ${api.current.getRowId(row)}`
+    },
+    { field: "caption", headerName: "Caption", width: 130 },
+    { field: "description", headerName: "Description", width: 130 },
+    { field: "initialQty", headerName: "Initial Qty.", width: 70 },
+    { field: "currentQty", headerName: "current Qty.", width: 70 },
+    { field: "unitPurchasePrice", headerName: "Unit Pur. Price", width: 100 },
+    { field: "unitSellingPrice", headerName: "Unit Sel. Price", width: 100 },
+    { field: "updateAt", headerName: "Updated At", width: 100 },
 ];
 
-interface PatientListState {
+interface ItemListState {
     selectedIds: Set<GridRowId>,
-    list: Patient[];
+    list: ItemDto[];
     page: number;
     pageSize: number;
     totalPages: number;
@@ -46,17 +50,17 @@ enum ActionType {
     SET_LOADING,
 };
 
-const initialState: PatientListState = {
+const initialState: ItemListState = {
     selectedIds: new Set<GridRowId>(),
     list: [],
     page: 0,
     pageSize: 5,
     totalPages: 1,
     totalElements: 1,
-    loading: false,  
+    loading: false,
 };
 
-const reducer = (state: PatientListState, action: { type: ActionType, payload: any }): PatientListState => {
+const reducer = (state: ItemListState, action: { type: ActionType, payload: any }): ItemListState => {
     switch (action.type) {
         case ActionType.SET_SELECTED_IDS:
             return { ...state, selectedIds: action.payload };
@@ -77,7 +81,7 @@ const reducer = (state: PatientListState, action: { type: ActionType, payload: a
         case ActionType.SET_TOTAL_PAGES:
             return { ...state, totalPages: action.payload };
         case ActionType.SET_PAGINATION_INFO:
-            return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
+            return { ...state, list: action.payload.content, page: action.payload.pageable.pageNumber, pageSize: action.payload.pageable.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
         case ActionType.SET_LOADING:
@@ -91,7 +95,7 @@ const reducer = (state: PatientListState, action: { type: ActionType, payload: a
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function PatientsList() {
+function ItemList() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const location = useLocation();
@@ -100,8 +104,6 @@ function PatientsList() {
     const api = useApi();
     const alert = useAlert();
 
-    console.log(location.state);
-
     useEffect(() => {
         fetchUsers();
     }, [state.page, state.pageSize]);
@@ -109,20 +111,14 @@ function PatientsList() {
     const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try {
-            const res = await api.get<PageResponse<User>>("/patient-management/page", {
+            const res = await api.get<PageResponse<User>>("/pharmacy-stock-management/page", {
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
             });
             if (res) {
                 console.log(res.content);
                 dispatch({
-                    type: ActionType.SET_PAGINATION_INFO, payload: {
-                        list: res.content,
-                        page: res.number,
-                        pageSize: res.size,
-                        totalPages: res.totalPages,
-                        totalElements: res.totalElements
-                    }
+                    type: ActionType.SET_PAGINATION_INFO, payload: res
                 });
             }
         } catch (err) {
@@ -140,16 +136,13 @@ function PatientsList() {
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
         dispatch({
-            type: ActionType.SET_PAGINATION_INFO, payload: {
-                page: model.page,
-                pageSize: model.pageSize
-            }
+            type: ActionType.SET_PAGINATION_MODEL, payload: model
         });
     }
 
     const handleDelete = useCallback(async () => {
         try {
-            const res = await api.delete<any, BasicResultSet>("/patient-management/deleteBatch", undefined, Array.from(state.selectedIds));
+            const res = await api.delete<any, BasicResultSet>("/pharmacy-stock-management/deleteBatch", undefined, Array.from(state.selectedIds));
             if (res) {
                 alert.setSuccess(res.message);
                 dispatch({ type: ActionType.DELETE_SELECTED_ITEMS, payload: state.selectedIds });
@@ -161,47 +154,13 @@ function PatientsList() {
 
     const handleEdit = useCallback(() => {
         const patient = state.list.find((patient) => state.selectedIds.has(patient.id));
-        navigate("/patient-management/create", { state: patient });
-    }, [state.list, state.selectedIds]);
-
-    const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
-        const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
-
-        if (!doctorId) return;
-
-        try {
-            const res = await api.post<AssignPatientsDto, BasicResultSet>("/clinic-management/assignPatients", {
-                clinicId: location.state.clinicId,
-                patientIds: Array.from(state.selectedIds),
-            });
-            if (res) {
-                console.log(res);
-                alert.setSuccess("Patient assigned to the clinic successfully");
-                navigate(-1);
-            }
-        } catch (err) {
-            alert.setError(err instanceof Error ? err.message : "Unknown error");
-        }
-    }, [state.list, state.selectedIds]);
-
-    const handleSelectPatient = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
-        if(location.state && location.state.for && location.state.for === For.SELECTING_PATIENT){
-            navigate("/prescription-management/create", { state: { patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
-            return;
-        }
-
-        if(location.state && location.state.for && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) {
-            navigate("/appointment-management/create", { state: { ...location.state, patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
-            return;
-        }
+        navigate("/pharmacy-stock-management/create", { state: patient });
     }, [state.list, state.selectedIds]);
 
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
-        onAssign: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
-        onSelect: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
     function TableToolbar(props: TableToolbarProps) {
@@ -229,33 +188,18 @@ function PatientsList() {
                 >
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
-                {location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC
-                    ?
-                    <Tooltip title="Assign">
-                        <Button variant="contained" startIcon={<Add />} onClick={props.onAssign}>Assign</Button>
+                {props.numSelected == 1 && (
+                    <Tooltip title="Edit">
+                        <IconButton onClick={props.onEdit}>
+                            <Edit color="primary" />
+                        </IconButton>
                     </Tooltip>
-                    :
-                    (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for && For.SELECTING_PATIENT_FOR_APPOINTMENT)
-                    ?
-                    <Tooltip title="Assign">
-                        <Button variant="contained" startIcon={<Check />} onClick={props.onSelect}>Select</Button>
-                    </Tooltip>
-                    :
-                    <>
-                        {props.numSelected == 1 && (
-                            <Tooltip title="Edit">
-                                <IconButton onClick={props.onEdit}>
-                                    <Edit color="primary" />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                        <Tooltip title="Delete">
-                            <IconButton onClick={props.onDelete}>
-                                <Delete color="error" />
-                            </IconButton>
-                        </Tooltip>
-                    </>
-                }
+                )}
+                <Tooltip title="Delete">
+                    <IconButton onClick={props.onDelete}>
+                        <Delete color="error" />
+                    </IconButton>
+                </Tooltip>
             </Toolbar>
         );
     };
@@ -263,9 +207,8 @@ function PatientsList() {
     return (
         <>
             <PageTitle
-                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : (location.state && location.state.for === For.SELECTING_PATIENT || location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? "Select a patient" : "Patients"}
-                title={"Patients List"}
-                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
+                subTitle={"Pharmacy Stock Management"}
+                title={"Items List"}
             />
             <Card>
                 <Container sx={{
@@ -285,7 +228,7 @@ function PatientsList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} onSelect={handleSelectPatient} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
                     <DataGrid
                         rows={state.list}
                         columns={columns}
@@ -296,7 +239,6 @@ function PatientsList() {
                         rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
-                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
                         loading={state.loading}
@@ -307,4 +249,4 @@ function PatientsList() {
     );
 }
 
-export default PatientsList;
+export default ItemList;

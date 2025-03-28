@@ -1,9 +1,12 @@
 package org.cms.PharmacyStockManagement.Services;
 
+import java.util.Arrays;
+
 import org.cms.PharmacyStockManagement.DTOs.ItemCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.ItemDto;
 import org.cms.PharmacyStockManagement.Models.Item;
 import org.cms.PharmacyStockManagement.Repositories.ItemRepository;
+import org.cms.Types.BasicResult;
 import org.cms.Utils.BasicResultSet;
 import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +34,8 @@ public class ItemService {
 
         if(item == null)
             throw new InternalError("Error occurred when mapping ItemCreateRequest into Item");
+
+        item.setCurrentQty(item.getInitialQty());
 
         itemRepository.save(item);
 
@@ -66,5 +72,21 @@ public class ItemService {
             .resultCode(200)
             .message("Item deleted successfully.")
             .build();
+    }
+
+    @Transactional
+    public BasicResult deleteBatch(int[] ids) {
+        Iterable<Integer> batch = intsToIterable(ids);
+
+        itemRepository.deleteAllByIdInBatch(batch);
+
+        return BasicResult.builder()
+            .status(200)
+            .message("Batch deleted successfuly.")
+            .build();
+    }
+
+    private Iterable<Integer> intsToIterable(int[] arr) {
+        return () -> Arrays.stream(arr).iterator();
     }
 }

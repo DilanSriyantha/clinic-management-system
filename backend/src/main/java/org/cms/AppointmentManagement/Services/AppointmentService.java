@@ -1,11 +1,14 @@
 package org.cms.AppointmentManagement.Services;
 
+import java.util.Arrays;
+
 import org.cms.AppointmentManagement.DTOs.AppointmentCreateRequest;
 import org.cms.AppointmentManagement.DTOs.AppointmentDto;
 import org.cms.AppointmentManagement.Models.Appointment;
 import org.cms.AppointmentManagement.Repositories.AppointmentRepository;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.PatientMangement.Repositories.PatientRepository;
+import org.cms.Types.BasicResult;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
 import org.cms.Utils.ModelMapper;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,6 +31,10 @@ public class AppointmentService {
     private final UserRepository doctorRepository;
 
     private final ClinicRepository clinicRepository;
+
+    public Integer getMaxQueuePosition(int clinicId) {
+        return appointmentRepository.findMaxQueuePosition(clinicId);
+    }
 
     public Page<AppointmentDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
@@ -52,6 +60,7 @@ public class AppointmentService {
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
         appointment.setClinic(clinic);
+        appointment.setReferenceId(appointmentRepository.generateReferenceId());
 
         appointmentRepository.save(appointment);
 
@@ -88,5 +97,21 @@ public class AppointmentService {
             .resultCode(200)
             .message("Appointment deleted successfully")
             .build();
+    }
+
+    @Transactional
+    public BasicResult deleteBatch(int[] ids) {
+        Iterable<Integer> batch = intsToIterable(ids);
+
+        patientRepository.deleteAllByIdInBatch(batch);
+
+        return BasicResult.builder()
+            .status(200)
+            .message("Batch deleted successfuly.")
+            .build();
+    }
+
+    private Iterable<Integer> intsToIterable(int[] arr) {
+        return () -> Arrays.stream(arr).iterator();
     }
 }
