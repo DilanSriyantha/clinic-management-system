@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.cms.AppointmentManagement.Models.Appointment;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PrescriptionManagement.Models.Prescription;
@@ -63,6 +64,9 @@ public class Patient {
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Prescription> prescriptions;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments;
 
     @ManyToMany(mappedBy = "patients")
     private List<Clinic> clinics;

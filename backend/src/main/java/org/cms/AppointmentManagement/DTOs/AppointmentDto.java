@@ -1,7 +1,7 @@
-package org.cms.PrescriptionManagement.DTOs;
+package org.cms.AppointmentManagement.DTOs;
 
 import java.sql.Timestamp;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,23 +11,25 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrescriptionDto {
+public class AppointmentDto {
 
-    private int id;
+    private Integer id;
 
-    private int patientId;
+    private Integer patientId;
 
     private String patientName;
 
-    private String patientReferenceId;
+    private Integer clinicId;
 
-    private int doctorId;
+    private String clinicName;
+
+    private Integer doctorId;
 
     private String doctorName;
 
-    private String doctorReferenceId;
+    private Integer queuePosition;
 
-    private List<PrescriptionLineDto> prescriptionLines;
+    private String referenceId;
 
     private Timestamp createdAt;
 

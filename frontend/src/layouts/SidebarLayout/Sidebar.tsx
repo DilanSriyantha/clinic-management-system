@@ -17,7 +17,7 @@ import ReportingIcon from '../../assets/summarize_24dp_00_FILL0_wght400_GRAD0_op
 import BackupIcon from '../../assets/desktop_cloud_stack_24dp_00_FILL0_wght400_GRAD0_opsz24.svg';
 import UserButton from './UserButton';
 import AdvancedMenuItem from './AdvancedMenuItem';
-import { Accessible, GroupOutlined, InsertDriveFileTwoTone, LocalHospital, Medication } from '@mui/icons-material';
+import { Accessible, EditCalendar, GroupOutlined, InsertDriveFileTwoTone, LocalHospital, Medication } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
 import { Outlet } from 'react-router';
 
@@ -100,6 +100,22 @@ const menuOptions = [
             {
                 caption: "Create Clinic",
                 to: "clinic-management/create",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
+    },
+    {
+        caption: "Appointment Management",
+        icon: <EditCalendar htmlColor='#fff'/>,
+        children: [
+            {
+                caption: "Create Appointment",
+                to: "appointment-management/create",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Appointment List",
+                to: "appointment-management/list",
                 icon: <InsertDriveFileTwoTone />
             }
         ]

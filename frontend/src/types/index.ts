@@ -260,3 +260,45 @@ export interface PrescriptionCreateRequest {
 export interface PrescriptionLineDto {
     description: string;
 };
+
+export interface AppointmentDto {
+    id: number;
+    patientId: number;
+    patientName: string;
+    clinicId: number;
+    clinicName: string;
+    doctorId: number;
+    doctorName: string;
+    queuePosition: number;
+    referenceId: string;
+    createdAt: string;
+    uupdatedAt: string;
+};
+
+export interface AppointmentCreateRequest {
+    patientId: number;
+    clinicId: number;
+    doctorId: number;
+    queuePosition: number;
+};
+
+export interface ItemDto {
+    id: number;
+    caption: string;
+    description: string;
+    initialQty: number;
+    currentQty: number;
+    unitPurchasePrice: number;
+    unitSellingPrice: number;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+};
+
+export interface ItemCreateRequest {
+    caption: string;
+    description: string;
+    initialQty: number;
+    currentQty: number;
+    unitPurchasePrice: number;
+    unitSellingPrice: number;
+};
