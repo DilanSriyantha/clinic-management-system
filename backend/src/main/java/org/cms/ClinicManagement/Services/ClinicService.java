@@ -4,21 +4,18 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.cms.ClinicManagement.Controllers.ClinicsController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.DTOs.AssignPatientDto;
+import org.cms.ClinicManagement.DTOs.ClinicDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.Enums.Status;
-import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
+import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -54,9 +51,9 @@ public class ClinicService {
         return clinic.getDoctors();
     }
 
-    public Page<Clinic> getPage(int page, int pageSize, HttpServletResponse response) {
+    public Page<ClinicDto> getPage(int page, int pageSize, HttpServletResponse response) {
         var pageable = PageRequest.of(page, pageSize);
-        var dataPage = clinicRepository.findAll(pageable);
+        var dataPage = clinicRepository.findAll(pageable).map((clinic) -> ModelMapper.getInstance().map(clinic, ClinicDto.class));
 
         int totalPages = (int)Math.ceil((double)clinicRepository.count() / pageSize);
         response.setIntHeader("X-Total-Pages", totalPages);

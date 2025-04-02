@@ -263,9 +263,9 @@ function PatientsList() {
     return (
         <>
             <PageTitle
-                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : (location.state && location.state.for === For.SELECTING_PATIENT || location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? "Select a patient" : "Patients"}
+                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : (location.state && location.state.for === For.SELECTING_PATIENT || location.state && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? "Select a patient" : "Patients"}
                 title={"Patients List"}
-                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
+                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -296,7 +296,7 @@ function PatientsList() {
                         rowCount={state.totalElements}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
-                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
+                        disableMultipleRowSelection={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
                         sx={{ border: 0 }}
                         onRowSelectionModelChange={handleSelectRow}
                         loading={state.loading}

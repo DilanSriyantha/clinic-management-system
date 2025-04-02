@@ -27,7 +27,7 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/page")
-    public @ResponseBody ResponseEntity<Page<Patient>> getPage(@RequestParam int page, @RequestParam int pageSize) {
+    public @ResponseBody ResponseEntity<Page<PatientDto>> getPage(@RequestParam int page, @RequestParam int pageSize) {
         return ResponseEntity.ok(patientService.getPage(page, pageSize));
     }
     

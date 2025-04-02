@@ -17,7 +17,7 @@ public interface ScheduleRepository extends JpaRepository<Event, Integer> {
     Page<Event> findAllByDateAndVisibilityOrOwnerId(Date date, EventVisibility visibility, int ownerId, Pageable pageable);
 
     @Query(value = """
-            SELECT * FROM event e WHERE e.date=:date AND (e.visibility=:visibility OR e.owner_id=:ownerId)
+            SELECT * FROM event e WHERE e.date=:date AND (e.visibility='PUBLIC' OR e.owner_id=:ownerId)
             """, nativeQuery = true)
-    Page<Event> findRelevantPage(@Param("date") Date date, @Param("visibility") EventVisibility visibility, @Param("ownerId") int ownerId, Pageable pageable);
+    Page<Event> findRelevantPage(@Param("date") Date date, @Param("ownerId") int ownerId, Pageable pageable);
 }

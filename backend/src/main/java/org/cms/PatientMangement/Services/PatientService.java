@@ -8,12 +8,12 @@ import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
+import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +23,14 @@ import lombok.RequiredArgsConstructor;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    private final EntityManager entityManager;
-
-    public Page<Patient> getPage(int page, int pageSize) {
+    public Page<PatientDto> getPage(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        return patientRepository.findAll(pageable);
+        return patientRepository.findAll(pageable).map((patient) -> ModelMapper.getInstance().map(patient, PatientDto.class));
     }
 
     public BasicResult create(PatientDto patientDto) {
-        var patient = patientDto.toPatient();
+        var patient = ModelMapper.getInstance().map(patientDto, Patient.class);
 
         var referenceId = patientRepository.generateReferenceId();
         patient.setReferenceId(referenceId);

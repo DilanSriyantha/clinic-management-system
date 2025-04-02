@@ -26,7 +26,7 @@ public class ItemService {
     public Page<ItemDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return itemRepository.findAll(pageable).map(Item::toDto);
+        return itemRepository.findAll(pageable).map((item) -> ModelMapper.getInstance().map(item, ItemDto.class));
     }
 
     public BasicResultSet createItem(ItemCreateRequest request) {

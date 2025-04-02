@@ -1,5 +1,6 @@
 package org.cms.PrescriptionManagement.Controllers;
 
+import org.cms.PrescriptionManagement.DTOs.PrescriptionCreateRequest;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.PrescriptionManagement.Services.PrescriptionService;
 import org.cms.Utils.BasicResultSet;
@@ -31,8 +32,8 @@ public class PrescriptionController {
     }
 
     @PostMapping("/create")
-    public @ResponseBody ResponseEntity<BasicResultSet> handleCreatePrescription(@RequestBody PrescriptionDto prescriptionDto) {
-        return ResponseEntity.ok(prescriptionService.create(prescriptionDto));
+    public @ResponseBody ResponseEntity<BasicResultSet> handleCreatePrescription(@RequestBody PrescriptionCreateRequest request) {
+        return ResponseEntity.ok(prescriptionService.create(request));
     }
     
     @PutMapping("/update")

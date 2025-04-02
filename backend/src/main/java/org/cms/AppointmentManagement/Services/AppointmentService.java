@@ -39,7 +39,18 @@ public class AppointmentService {
     public Page<AppointmentDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return appointmentRepository.findAll(pageable).map(Appointment::toDto);
+        return appointmentRepository.findAll(pageable).map((appointment) -> {
+            var a = ModelMapper.getInstance().map(appointment, AppointmentDto.class);
+
+            a.setClinicId(appointment.getClinic().getId());
+            a.setClinicName(appointment.getClinic().getCaption());
+            a.setDoctorId(appointment.getDoctor().getId());
+            a.setDoctorName(appointment.getDoctor().getName());
+            a.setPatientId(appointment.getPatient().getId());
+            a.setPatientName(appointment.getPatient().getName());
+
+            return a;
+        });
     }
 
     public BasicResultSet createAppointment(AppointmentCreateRequest request) {

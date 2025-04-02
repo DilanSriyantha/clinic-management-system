@@ -58,17 +58,4 @@ public class Prescription {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
-
-    public static PrescriptionDto toDto(Prescription prescription) {
-        return PrescriptionDto.builder()
-            .id(prescription.getId())
-            .patientId(prescription.getPatient().getId())
-            .patientName(prescription.getPatient().getName())
-            .patientReferenceId(prescription.getPatient().getReferenceId())
-            .doctorId(prescription.getDoctor().getId())
-            .doctorName(prescription.getDoctor().getName())
-            .doctorReferenceId(prescription.getDoctor().getReferenceId())
-            .prescriptionLines(prescription.getPrescriptionLines().stream().map(pl -> ModelMapper.getInstance().map(pl, PrescriptionLineDto.class)).collect(Collectors.toList()))
-            .build();
-    }
 }

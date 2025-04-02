@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.DTOs.AssignPatientDto;
+import org.cms.ClinicManagement.DTOs.ClinicDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Services.ClinicService;
 import org.cms.Users.Models.User;
@@ -40,7 +41,7 @@ public class ClinicsController {
 
     @CrossOrigin(exposedHeaders = "X-Total-Pages")
     @GetMapping("/page")
-    public @ResponseBody ResponseEntity<Page<Clinic>> getPage(
+    public @ResponseBody ResponseEntity<Page<ClinicDto>> getPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int pageSize,
             HttpServletResponse response

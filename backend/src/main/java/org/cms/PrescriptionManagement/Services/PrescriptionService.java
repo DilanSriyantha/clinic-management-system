@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cms.PatientMangement.Repositories.PatientRepository;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionCreateRequest;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.PrescriptionManagement.Models.Prescription;
 import org.cms.PrescriptionManagement.Models.PrescriptionLine;
@@ -35,15 +36,25 @@ public class PrescriptionService {
     public Page<PrescriptionDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return prescriptionRepository.findAll(pageable).map(Prescription::toDto);
+        return prescriptionRepository.findAll(pageable).map((prescription) -> {
+            var p = ModelMapper.getInstance().map(prescription, PrescriptionDto.class);
+            p.setDoctorId(prescription.getDoctor().getId());
+            p.setDoctorName(prescription.getDoctor().getName());
+            p.setDoctorReferenceId(prescription.getDoctor().getReferenceId());
+            p.setPatientId(prescription.getPatient().getId());
+            p.setPatientName(prescription.getPatient().getName());
+            p.setPatientReferenceId(prescription.getPatient().getReferenceId());
+
+            return p;
+        });
     }
 
     @Transactional
-    public BasicResultSet create(PrescriptionDto prescriptionDto) {
-        var patient = patientRepository.findById(prescriptionDto.getPatientId())
+    public BasicResultSet create(PrescriptionCreateRequest request) {
+        var patient = patientRepository.findById(request.getPatientId())
             .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
-        var doctor = userRepository.findById(prescriptionDto.getDoctorId())
+        var doctor = userRepository.findById(request.getDoctorId())
             .orElseThrow(() -> new EntityNotFoundException("Doctor not found"));
 
         var prescription = new Prescription();
@@ -53,7 +64,7 @@ public class PrescriptionService {
         prescriptionRepository.save(prescription);
 
         List<PrescriptionLine> prescriptionLines = new ArrayList<>();
-        for(var line : prescriptionDto.getPrescriptionLines()) {
+        for(var line : request.getPrescriptionLines()) {
             var prescriptionLine = ModelMapper.getInstance().map(line,  PrescriptionLine.class);
 
             if(prescriptionLine == null)
