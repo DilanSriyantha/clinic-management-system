@@ -30,6 +30,9 @@ const AppointmentList = RouteLoader(lazy(() => import("../pages/AppointmentManag
 const CreateItem = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/CreateItem")));
 const ItemList = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/ItemList")));
 
+const CreateInvoice = RouteLoader(lazy(() => import("../pages/PharmacySalesManagement/CreateInvoice")));
+const InvoiceList = RouteLoader(lazy(() => import("../pages/PharmacySalesManagement/InvoiceList")));
+
 const MainRoutes: RouteObject[] = [
     {
         path: "/",
@@ -108,6 +111,14 @@ const MainRoutes: RouteObject[] = [
             {
                 path: "pharmacy-stock-management/list",
                 element: <ItemList />
+            },
+            {
+                path: "pharmacy-sales-management/create",
+                element: <CreateInvoice />
+            },
+            {
+                path: "pharmacy-sales-management/list",
+                element: <InvoiceList />
             },
             // billing
             {

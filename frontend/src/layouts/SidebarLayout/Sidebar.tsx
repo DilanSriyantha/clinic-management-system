@@ -157,12 +157,12 @@ const menuOptions = [
         children: [
             {
                 caption: "Create Invoice",
-                to: "pharmacy-sales-management/create-invoice",
+                to: "pharmacy-sales-management/create",
                 icon: <InsertDriveFileTwoTone />
             }, 
             {
                 caption: "Invoice List",
-                to: "pharmacy-sales-management/invoice-list",
+                to: "pharmacy-sales-management/list",
                 icon: <InsertDriveFileTwoTone />
             }
         ]
@@ -344,6 +344,7 @@ export default function Sidebar() {
                     zIndex: 5,
                     display: 'block',
                     flex: 1,
+                    height: "100%",
                 }}
                 open={open}
             >
