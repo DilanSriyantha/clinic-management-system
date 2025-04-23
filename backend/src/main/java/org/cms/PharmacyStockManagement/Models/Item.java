@@ -2,16 +2,20 @@ package org.cms.PharmacyStockManagement.Models;
 
 import java.sql.Timestamp;
 
-import org.cms.PharmacyStockManagement.DTOs.ItemDto;
+import org.cms.Enums.DrugCategory;
+import org.cms.Enums.DrugForm;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,12 +32,20 @@ public class Item {
     @GeneratedValue
     private Integer id;
 
-    @Formula("CONCAT('S', stock_id, '-I', id)")
+    @Column(unique = true)
     private String itemCode;
 
     private String caption;
 
     private String description;
+
+    private Integer strength;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    private DrugCategory category;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    private DrugForm form;
 
     private Integer initialQty;
 
@@ -52,17 +64,9 @@ public class Item {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    public static ItemDto toDto(Item item) {
-        return ItemDto.builder()
-            .id(item.id)
-            .caption(item.caption)
-            .description(item.description)
-            .initialQty(item.initialQty)
-            .currentQty(item.currentQty)
-            .unitPurchasePrice(item.unitPurchasePrice)
-            .unitSellingPrice(item.unitSellingPrice)
-            .createdAt(item.createdAt)
-            .updateAt(item.updateAt)
-            .build();
+    @PrePersist
+    @PreUpdate
+    public void generateItemCode() {
+        this.itemCode = String.format("%s-%s-%d-%s-%d", category.code(), caption, strength, form.code(), id);
     }
 }
