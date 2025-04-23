@@ -325,7 +325,7 @@ export interface InvoiceRecord {
 };
 
 export interface DrugCategoryOption {
-    id: string;
+    id: number;
     label: string;
 };
 

@@ -48,8 +48,8 @@ const reducer = (state: CreateItemState, action: { type: ActionType, payload: an
     }
 };
 
-const drugCategoryOptions: DrugCategoryOption[] = Object.values(DrugCategory).map(v => { return { id: v, label: v } });
-const drugFormOptions: DrugFormOption[] = Object.values(DrugForm).map(v => { return { id: v, label: v } });
+const drugCategoryOptions: DrugCategoryOption[] = Object.values(DrugCategory).map(v => { return { id: v as number, label: v.toString() } });
+const drugFormOptions: DrugFormOption[] = Object.values(DrugForm).map(v => { return { id: v as number, label: v.toString() } });
 
 function CreateItem() {
 

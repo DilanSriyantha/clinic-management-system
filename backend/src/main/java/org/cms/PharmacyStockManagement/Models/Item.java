@@ -41,10 +41,10 @@ public class Item {
 
     private Integer strength;
 
-    @Enumerated(value = EnumType.ORDINAL)
+    @Enumerated(value = EnumType.STRING)
     private DrugCategory category;
 
-    @Enumerated(value = EnumType.ORDINAL)
+    @Enumerated(value = EnumType.STRING)
     private DrugForm form;
 
     private Integer initialQty;
