@@ -10,7 +10,8 @@ import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRow
 import { InvoiceRecord, ItemDto } from '../../types';
 
 const columns: GridColDef[] = [
-    { field: "id", headerName: "Item Code", width: 70 },
+    { field: "id", headerName: "#", width: 70 },
+    { field: "itemCode", headerName: "Item Code", width: 170 },
     { field: "caption", headerName: "Caption", width: 130 },
     { field: "currentQty", headerName: "Curr.Qty", width: 70 },
     { field: "unitSellingPrice", headerName: "Unit Price", width: 70 }
@@ -37,7 +38,7 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
 
         if(!item) return;
 
-        setSelectedItem({ itemCode: item.id, description: item.caption, unitPrice: item.unitSellingPrice  });
+        setSelectedItem({ itemCode: item.itemCode, description: item.caption, unitPrice: item.unitSellingPrice  });
     }, [rows, selectedItem]);
 
     const handlePaginationModelChange = React.useCallback((model: GridPaginationModel, details: GridCallbackDetails<'pagination'>): void => {

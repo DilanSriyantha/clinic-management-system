@@ -1,4 +1,4 @@
-import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Add, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
@@ -10,12 +10,7 @@ import { PageResponse } from "../../../types";
 import { useLocation, useNavigate } from "react-router";
 
 const columns: GridColDef[] = [
-    {
-        field: "number",
-        headerName: "Item Code",
-        width: 150,
-        valueGetter: (val, row, col, api) => `Item ${api.current.getRowId(row)}`
-    },
+    { field: "itemCode", headerName: "Item Code", width: 170 },
     { field: "caption", headerName: "Caption", width: 130 },
     { field: "description", headerName: "Description", width: 130 },
     { field: "initialQty", headerName: "Initial Qty.", width: 70 },

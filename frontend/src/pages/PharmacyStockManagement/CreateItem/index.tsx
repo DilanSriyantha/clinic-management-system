@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Container, InputAdornment, TextField, Typography } from "@mui/material";
+import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useEffect, useReducer } from "react";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
@@ -22,6 +22,7 @@ const initialState: CreateItemState = {
         description: "",
         category: DrugCategory.OTHER,
         form: DrugForm.OTHER,
+        strength: 0,
         initialQty: 0,
         currentQty: 0,
         unitPurchasePrice: 0,
@@ -40,7 +41,7 @@ const reducer = (state: CreateItemState, action: { type: ActionType, payload: an
         case ActionType.SET_FIELD:
             return {...state, item: { ...state.item, [action.payload.name]: action.payload.value } };
         case ActionType.SET_ALL_FIELDS:
-            return { ...state, item: { stockId: action.payload.stockId, caption: action.payload.caption, description: action.payload.description, category: action.payload.category, form: action.payload.form, initialQty: action.payload.initialQty, currentQty: action.payload.currentQty, unitPurchasePrice: action.payload.unitPurchasePrice, unitSellingPrice: action.payload.unitSellingPrice } };
+            return { ...state, item: { stockId: action.payload.stockId, caption: action.payload.caption, description: action.payload.description, category: action.payload.category, form: action.payload.form, strength: action.payload.strength, initialQty: action.payload.initialQty, currentQty: action.payload.currentQty, unitPurchasePrice: action.payload.unitPurchasePrice, unitSellingPrice: action.payload.unitSellingPrice } };
         case ActionType.SET_LOADING:
             return {...state, isLoading: action.payload};
         default: 
@@ -48,8 +49,25 @@ const reducer = (state: CreateItemState, action: { type: ActionType, payload: an
     }
 };
 
-const drugCategoryOptions: DrugCategoryOption[] = Object.values(DrugCategory).map(v => { return { id: v as number, label: v.toString() } });
-const drugFormOptions: DrugFormOption[] = Object.values(DrugForm).map(v => { return { id: v as number, label: v.toString() } });
+const drugCategoryOptions: DrugCategoryOption[] = Object.keys(DrugCategory).filter(key => isNaN(Number(key))).reduce<DrugCategoryOption[]>((acc, val) => {
+    const label = val.split("_").map(t => {
+        return (t.substring(0, 1) + t.substring(1, t.length).toLowerCase());
+    }).join(" ");
+    const rec = { id: val, label: label };
+    acc.push(rec as DrugCategoryOption);
+    
+    return acc;
+}, []);
+
+const drugFormOptions: DrugFormOption[] = Object.keys(DrugForm).filter(key => isNaN(Number(key))).reduce<DrugFormOption[]>((acc, val) => {
+    const label = val.split("_").map(t => {
+        return (t.substring(0, 1) + t.substring(1, t.length).toLowerCase());
+    }).join(" ");
+    const rec = { id: val, label: label };
+    acc.push(rec as DrugFormOption);
+
+    return acc;
+}, []);
 
 function CreateItem() {
 
@@ -146,11 +164,11 @@ function CreateItem() {
     }, []);
 
     const handleCategoryChange = useCallback((event: SyntheticEvent<Element, Event>, value: DrugCategoryOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "form", value: details?.option.label } });
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "category", value: details?.option.id } });
     }, []);
 
     const handleFormChange = useCallback((event: SyntheticEvent<Element, Event>, value: DrugCategoryOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "form", value: details?.option.label } });
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "form", value: details?.option.id } });
     }, []);
 
     return (
@@ -189,15 +207,18 @@ function CreateItem() {
                             <Autocomplete
                                 // disablePortal
                                 options={drugCategoryOptions}
-                                renderInput={(params) => <TextField {...params} name="category" label="Category" />}
+                                renderInput={(params) => <TextField {...params} name="category" label="Category" value={state.item.category.toString()}/>}
                                 onChange={handleCategoryChange}
+                                value={drugCategoryOptions.find(op => op.id.match(state.item.category?.toString())) || null}
                             />
                             <Autocomplete
                                 // disablePortal
                                 options={drugFormOptions}
-                                renderInput={(params) => <TextField {...params} name="form" label="Form" />}
+                                renderInput={(params) => <TextField {...params} name="form" label="Form" value={state.item.form.toString()} />}
                                 onChange={handleFormChange}
+                                value={drugFormOptions.find(op => op.id.match(state.item.form.toString())) || null}
                             />
+                            <TextField onChange={handleTextFieldChange} name="strength" label="Strength (mg)" type="text" value={state.item.strength} />
                             <TextField onChange={handleTextFieldChange} name="initialQty" label="Initial Qty." type="number" value={state.item.initialQty} />
                             <TextField onChange={handleTextFieldChange} name="unitPurchasePrice" label="Unit Purchase Price" type="number" value={state.item.unitPurchasePrice} />
                             <TextField onChange={handleTextFieldChange} name="unitSellingPrice" label="Unit Selling Price" type="number" value={state.item.unitSellingPrice} />

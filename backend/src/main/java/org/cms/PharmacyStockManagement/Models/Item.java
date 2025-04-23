@@ -67,6 +67,6 @@ public class Item {
     @PrePersist
     @PreUpdate
     public void generateItemCode() {
-        this.itemCode = String.format("%s-%s-%d-%s-%d", category.code(), caption, strength, form.code(), id);
+        this.itemCode = String.format("%s-%s-%d-%s-%d", category.code(), caption.toUpperCase().substring(0, 3), strength, form.code(), id);
     }
 }

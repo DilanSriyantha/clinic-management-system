@@ -277,11 +277,15 @@ export interface AppointmentCreateRequest {
 
 export interface ItemDto {
     id: number;
+    itemCode: string;
     stockId: number;
     caption: string;
     description: string;
     initialQty: number;
     currentQty: number;
+    category: DrugCategory;
+    form: DrugForm;
+    strength: number;
     unitPurchasePrice: number;
     unitSellingPrice: number;
     createdAt: Timestamp;
@@ -294,6 +298,7 @@ export interface ItemCreateRequest {
     description: string;
     category: DrugCategory;
     form: DrugForm;
+    strength: number;
     initialQty: number;
     currentQty: number;
     unitPurchasePrice: number;
@@ -317,7 +322,7 @@ export interface StockCreateRequest {
 
 export interface InvoiceRecord {
     id?: number;
-    itemCode: number;
+    itemCode: string;
     description: string;
     unitPrice: number;
     quantity?: number;
@@ -325,7 +330,7 @@ export interface InvoiceRecord {
 };
 
 export interface DrugCategoryOption {
-    id: number;
+    id: string;
     label: string;
 };
 

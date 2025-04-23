@@ -10,7 +10,7 @@ import MultipleItemsDialog from "../../../components/MultipleItemsDialog";
 
 interface Row {
     id: number;
-    itemCode: number;
+    itemCode: string;
     description: string;
     unitPrice: number;
     quantity: number;

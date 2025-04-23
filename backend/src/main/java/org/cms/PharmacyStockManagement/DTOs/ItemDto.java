@@ -2,6 +2,9 @@ package org.cms.PharmacyStockManagement.DTOs;
 
 import java.sql.Timestamp;
 
+import org.cms.Enums.DrugCategory;
+import org.cms.Enums.DrugForm;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +20,17 @@ public class ItemDto {
 
     private Integer stockId;
 
+    private String itemCode;
+
     private String caption;
 
     private String description;
+
+    private DrugCategory category;
+
+    private DrugForm form;
+
+    private Integer strength;
 
     private Integer initialQty;
 

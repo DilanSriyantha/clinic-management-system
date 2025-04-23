@@ -24,6 +24,8 @@ public class ItemCreateRequest {
 
     private DrugForm form;
 
+    private Integer strength;
+
     private Integer initialQty;
 
     private Integer currentQty;
