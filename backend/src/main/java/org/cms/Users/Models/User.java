@@ -7,6 +7,7 @@ import lombok.*;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.Enums.Role;
 import org.cms.Enums.Status;
+import org.cms.InvoiceManagement.Models.Invoice;
 import org.cms.PrescriptionManagement.Models.Prescription;
 import org.cms.ScheduleManagement.Models.Event;
 import org.hibernate.annotations.CreationTimestamp;
@@ -68,6 +69,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pharmacist", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Invoice> invoices = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Status status;

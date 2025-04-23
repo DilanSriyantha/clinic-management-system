@@ -1,24 +1,17 @@
 import { Button, Card, Divider, Grid2, Stack, TextField, Typography } from "@mui/material";
 import InvoiceTable from "../../../components/InvoiceTable";
 import moment from "moment";
-import { Add } from "@mui/icons-material";
-import { ChangeEvent, KeyboardEvent, useCallback, useReducer } from "react";
+import { Add, Send } from "@mui/icons-material";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "react";
 import { useAlert } from "../../../hooks/useAlert";
-import { useApi } from "../../../hooks/useApi";
-import { InvoiceRecord, ItemDto, PageResponse } from "../../../types";
+import { BasicResultSet, useApi } from "../../../hooks/useApi";
+import { InvoiceCreateRequest, InvoiceRecord, InvoiceRecordCreateRequest, ItemDto, PageResponse } from "../../../types";
 import MultipleItemsDialog from "../../../components/MultipleItemsDialog";
-
-interface Row {
-    id: number;
-    itemCode: string;
-    description: string;
-    unitPrice: number;
-    quantity: number;
-    total: number;
-};
+import { useAuth } from "../../../hooks/useAuth";
 
 interface CreateInvoiceState {
-    rows: Row[];
+    invoiceNumber: number;
+    rows: InvoiceRecord[];
     matchingItems: ItemDto[];
     itemCode: number;
     quantity: number;
@@ -33,10 +26,13 @@ enum ActionType {
     UPDATE_SUBTOTAL,
     SET_MATCHING_ITEMS,
     START_LOADING,
-    STOP_LOADING
+    STOP_LOADING,
+    SET_INVOICE_NUMBER,
+    RESET
 };
 
 const initialState: CreateInvoiceState = {
+    invoiceNumber: -1,
     rows: [],
     matchingItems: [],
     itemCode: 0,
@@ -61,6 +57,10 @@ const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload:
             return { ...state, loading: true };
         case ActionType.STOP_LOADING:
             return { ...state, loading: false };
+        case ActionType.SET_INVOICE_NUMBER:
+            return { ...state, invoiceNumber: action.payload }
+        case ActionType.RESET:
+            return { ...initialState }
         default:
             return state;
     }
@@ -72,6 +72,23 @@ function CreateInvoice() {
 
     const api = useApi();
     const alert = useAlert();
+    const [user] = useAuth();
+
+    useEffect(() => {
+        fetchNextInvoiceNumber();
+    }, []);
+
+    const fetchNextInvoiceNumber = useCallback(async () => {
+        try{
+            const res = await api.get<number>("/invoice/nextInvoiceNumber");
+            if(res) 
+                dispatch({ type: ActionType.SET_INVOICE_NUMBER, payload: res});
+        }catch(err) {
+            console.log(err);
+            dispatch({ type: ActionType.START_LOADING, payload: null });
+            alert.setError(err instanceof Error ? err.message : "An unknown error occurred.");
+        }
+    }, []);
 
     const handleAddRecord = useCallback((item: InvoiceRecord | undefined) => {
         if(!item) return;
@@ -118,6 +135,38 @@ function CreateInvoice() {
         handleAddRecord(item);
     }, [state.rows, state.matchingItems]);
 
+    const onAdd = useCallback(() => {
+        fetchItems();
+    }, [state.itemCode]);
+
+    const onSubmit = useCallback(async () => {
+        dispatch({ type: ActionType.START_LOADING, payload: null });
+        try{
+            const res = await api.post<InvoiceCreateRequest, BasicResultSet>("/invoice/create", {
+                number: state.invoiceNumber,
+                date: moment(Date.now()).format("YYYY-MM-DD"),
+                subTotal: state.subtotal,
+                pharmacistId: user!.user.id,
+                records: state.rows.map(r => {
+                    return {
+                        itemId: r.itemId,
+                        quantity: Number(r.quantity),
+                        total: r.total
+                    } as InvoiceRecordCreateRequest;
+                }),
+            });
+            if(res) {
+                dispatch({ type: ActionType.RESET, payload: null });
+                alert.setSuccess(res.message);
+                fetchNextInvoiceNumber();
+            }
+        } catch(err) {
+            console.log(err);
+            dispatch({ type: ActionType.STOP_LOADING, payload: null });
+            alert.setError(err instanceof Error ? err.message : "Unknown error.");
+        }
+    }, [state]);
+
     return (
         <>
             <Stack direction={"row"} gap={1} sx={{ height: "100%", width: "100%", pb: 2 }}>
@@ -147,7 +196,7 @@ function CreateInvoice() {
                                 <Card sx={{ p: 1, height: "100%" }}>
                                     <Typography variant="h6">Invoice</Typography>
                                     <Divider />
-                                    <Typography pt={2} variant="h3">128</Typography>
+                                    <Typography pt={2} variant="h3">{state.invoiceNumber}</Typography>
                                 </Card>
                             </Grid2>
                             <Grid2 size={12}>
@@ -163,9 +212,12 @@ function CreateInvoice() {
                                     <Divider />
                                     <form onKeyDown={handleKeyDown}>
                                         <Stack direction={"column"} sx={{ pt: 2, height: "100%" }} gap={1}>
-                                            <TextField type="text" label="Item Code" name="itemCode" onChange={handleInput}/>
-                                            <TextField type="number" label="Quantity" name="quantity" onChange={handleInput}/>
-                                            <Button variant="contained" startIcon={<Add />} loading={state.loading} loadingPosition="start" onClick={fetchItems}>Add</Button>
+                                            <TextField type="text" label="Item Code" name="itemCode" onChange={handleInput} value={state.itemCode}/>
+                                            <TextField type="number" label="Quantity" name="quantity" onChange={handleInput} value={state.quantity}/>
+                                            <Stack direction={"column"} gap={1}>
+                                                <Button variant="outlined" startIcon={<Add />} loading={state.loading} loadingPosition="start" onClick={onAdd}>Add</Button>
+                                                <Button variant="contained" startIcon={<Send />} loading={state.loading} loadingPosition="start" onClick={onSubmit}>Submit</Button>
+                                            </Stack>
                                         </Stack>
                                     </form>
                                 </Card>

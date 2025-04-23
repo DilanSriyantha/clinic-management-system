@@ -38,7 +38,7 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
 
         if(!item) return;
 
-        setSelectedItem({ itemCode: item.itemCode, description: item.caption, unitPrice: item.unitSellingPrice  });
+        setSelectedItem({ itemId: item.id, itemCode: item.itemCode, description: item.caption, unitPrice: item.unitSellingPrice, quantity: 0, total: 0  });
     }, [rows, selectedItem]);
 
     const handlePaginationModelChange = React.useCallback((model: GridPaginationModel, details: GridCallbackDetails<'pagination'>): void => {
