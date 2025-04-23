@@ -2,6 +2,8 @@ import { GridRowId } from "@mui/x-data-grid";
 import { Role } from "../enums/Role";
 import { Status } from "../enums/Status";
 import { instanceOf } from "../utils/TypeChecker";
+import { DrugCategory } from "../enums/DrugCategory";
+import { DrugForm } from "../enums/DrugForm";
 
 export interface AuthResponse {
     accessToken: string;
@@ -290,6 +292,8 @@ export interface ItemCreateRequest {
     stockId: number;
     caption: string;
     description: string;
+    category: DrugCategory;
+    form: DrugForm;
     initialQty: number;
     currentQty: number;
     unitPurchasePrice: number;
@@ -319,3 +323,10 @@ export interface InvoiceRecord {
     quantity?: number;
     total?: number;
 };
+
+export interface DrugCategoryOption {
+    id: string;
+    label: string;
+};
+
+export type DrugFormOption = DrugCategoryOption;

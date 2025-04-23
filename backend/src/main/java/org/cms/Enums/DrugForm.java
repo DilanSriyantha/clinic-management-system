@@ -3,17 +3,15 @@ package org.cms.Enums;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.val;
-
 public enum DrugForm {
     TABLET("TAB"),
     CAPSULE("CAP"),
     SYRUP("SYP"),
-    SUSPENSION("INJ"),
-    INJECTION("CRM"),
-    CREAM("OINT"),
-    OINTMENT("GEL"),
-    GEL("SOL"),
+    SUSPENSION("SUSP"),
+    INJECTION("INJ"),
+    CREAM("CRM"),
+    OINTMENT("OINT"),
+    GEL("GEL"),
     SOLUTION("SOL"),
     DROPS("DROPS"),
     LOZENGES("LOZ"),
