@@ -172,13 +172,13 @@ const menuOptions = [
         icon: <img src={InventoryIcon} />,
         children: [
             {
-                caption: "Create Item",
-                to: "pharmacy-stock-management/create",
+                caption: "Create Stock",
+                to: "pharmacy-stock-management/create-stock",
                 icon: <InsertDriveFileTwoTone />
             },
             {
-                caption: "Items List",
-                to: "pharmacy-stock-management/list",
+                caption: "Stocks List",
+                to: "pharmacy-stock-management/list-stocks",
                 icon: <InsertDriveFileTwoTone />
             }
         ]

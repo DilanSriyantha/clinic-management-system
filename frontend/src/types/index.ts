@@ -275,6 +275,7 @@ export interface AppointmentCreateRequest {
 
 export interface ItemDto {
     id: number;
+    stockId: number;
     caption: string;
     description: string;
     initialQty: number;
@@ -286,10 +287,35 @@ export interface ItemDto {
 };
 
 export interface ItemCreateRequest {
+    stockId: number;
     caption: string;
     description: string;
     initialQty: number;
     currentQty: number;
     unitPurchasePrice: number;
     unitSellingPrice: number;
+};
+
+export interface StockDto {
+    id: number;
+    caption: string;
+    vendor: string;
+    date: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+}
+
+export interface StockCreateRequest {
+    caption: string;
+    vendor: string;
+    date: string;
+};
+
+export interface InvoiceRecord {
+    id?: number;
+    itemCode: number;
+    description: string;
+    unitPrice: number;
+    quantity?: number;
+    total?: number;
 };

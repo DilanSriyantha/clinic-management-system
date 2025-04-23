@@ -1,5 +1,7 @@
 package org.cms.PharmacyStockManagement.DTOs;
 
+import java.sql.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,19 +11,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemCreateRequest {
-
-    private Integer stockId;
+public class StockDto {
+    
+    private Integer id;
 
     private String caption;
 
-    private String description;
+    private String vendor;
 
-    private Integer initialQty;
+    private String date;
 
-    private Integer currentQty;
+    private Timestamp createdAt;
 
-    private Float unitPurchasePrice;
-
-    private Float unitSellingPrice;
+    private Timestamp updatedAt;
 }

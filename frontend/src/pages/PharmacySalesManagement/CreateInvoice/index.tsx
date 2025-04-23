@@ -1,48 +1,16 @@
 import { Button, Card, Divider, Grid2, Stack, TextField, Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
 import InvoiceTable from "../../../components/InvoiceTable";
 import moment from "moment";
 import { Add } from "@mui/icons-material";
-import { ChangeEvent, useCallback, useReducer } from "react";
-import { isValid } from "../../../utils/Validator";
-
-const columns: GridColDef<Row[]>[] = [
-    {
-        field: "recordNumber",
-        headerName: "#",
-        width: 70,
-        valueGetter: (val, row, col, api) => api.current.getRowId(row)
-    },
-    {
-        field: "itemCode",
-        headerName: "Item Code",
-        width: 150
-    },
-    {
-        field: "description",
-        headerName: "Description",
-        width: 200,
-    },
-    {
-        field: "unitPrice",
-        headerName: "Unit Price",
-        width: 100
-    },
-    {
-        field: "quantity",
-        headerName: "Quantity",
-        width: 70
-    },
-    {
-        field: "total",
-        headerName: "Total",
-        width: 100
-    }
-];
+import { ChangeEvent, KeyboardEvent, useCallback, useReducer } from "react";
+import { useAlert } from "../../../hooks/useAlert";
+import { useApi } from "../../../hooks/useApi";
+import { InvoiceRecord, ItemDto, PageResponse } from "../../../types";
+import MultipleItemsDialog from "../../../components/MultipleItemsDialog";
 
 interface Row {
     id: number;
-    itemCode: string;
+    itemCode: number;
     description: string;
     unitPrice: number;
     quantity: number;
@@ -51,23 +19,30 @@ interface Row {
 
 interface CreateInvoiceState {
     rows: Row[];
-    itemCode: string;
+    matchingItems: ItemDto[];
+    itemCode: number;
     quantity: number;
     subtotal: number;
+    loading: boolean;
 };
 
 enum ActionType {
     SET_FIELD,
     ADD_ROW,
     REMOVE_ROWS,
-    UPDATE_SUBTOTAL
+    UPDATE_SUBTOTAL,
+    SET_MATCHING_ITEMS,
+    START_LOADING,
+    STOP_LOADING
 };
 
 const initialState: CreateInvoiceState = {
     rows: [],
-    itemCode: "",
+    matchingItems: [],
+    itemCode: 0,
     quantity: 0,
     subtotal: 0,
+    loading: false
 };
 
 const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload: any }): CreateInvoiceState => {
@@ -80,6 +55,12 @@ const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload:
             return { ...state, rows: state.rows.filter((row) => !action.payload.includes(row.id)), subtotal: state.rows.reduce((acc, row) => {if(!action.payload.includes(row.id)) return acc + row.total; else return acc;}, 0) }
         case ActionType.UPDATE_SUBTOTAL:
             return { ...state, subtotal: action.payload };
+        case ActionType.SET_MATCHING_ITEMS:
+            return { ...state, matchingItems: action.payload, loading: false };
+        case ActionType.START_LOADING: 
+            return { ...state, loading: true };
+        case ActionType.STOP_LOADING:
+            return { ...state, loading: false };
         default:
             return state;
     }
@@ -89,11 +70,17 @@ function CreateInvoice() {
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const handleAddRecord = useCallback(() => {
-        if(!isValid(state, ["rows"])) return;
+    const api = useApi();
+    const alert = useAlert();
 
-        dispatch({ type: ActionType.ADD_ROW, payload: { id: Math.random(), itemCode: state.itemCode, description: "Panadol", unitPrice: 5, quantity: state.quantity, total: (5*state.quantity) } });
-    }, [state]);
+    const handleAddRecord = useCallback((item: InvoiceRecord | undefined) => {
+        if(!item) return;
+
+        item.quantity = state.quantity;
+        item.total = item.unitPrice*state.quantity;
+
+        dispatch({ type: ActionType.ADD_ROW, payload: item });
+    }, [state.quantity, state.rows]);
 
     const handleInput = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: event.target.name, value: event.target.value } });
@@ -103,59 +90,92 @@ function CreateInvoice() {
         dispatch({ type: ActionType.REMOVE_ROWS, payload: ids });
     }, [state.rows]);
 
+    const fetchItems = useCallback(async () => {
+        console.log(state.itemCode);
+        dispatch({ type: ActionType.START_LOADING, payload: null });
+        try{
+            const res = await api.get<PageResponse<ItemDto>>("/pharmacy-stock-management/items/getByItemCode", {
+                page: "0",
+                pageSize: "5",
+                itemCode: `${state.itemCode}`
+            });
+            if(res)
+                dispatch({ type: ActionType.SET_MATCHING_ITEMS, payload: res.content });
+        }catch(err){
+            console.log(err);
+            dispatch({ type: ActionType.STOP_LOADING, payload: null });
+            alert.setError(err instanceof Error ? err.message : "Unknown error.");
+        }
+    }, [state.itemCode]);
+
+    const handleKeyDown = useCallback((event: KeyboardEvent<HTMLFormElement>): void => {
+        if(!event.key.match("Enter")) return;
+        fetchItems();
+    }, [state.itemCode]);
+
+    const closeItemsDialog = useCallback((item: InvoiceRecord | undefined) => {
+        dispatch({ type: ActionType.SET_MATCHING_ITEMS, payload: [] });
+        handleAddRecord(item);
+    }, [state.rows, state.matchingItems]);
+
     return (
-        <Stack direction={"row"} gap={1} sx={{ height: "100%", width: "100%", pb: 2 }}>
-            <Grid2 container size={12} spacing={1} sx={{ height: "100%", width: "100%" }}>
-                <Grid2 size={8} >
-                    <Card sx={{ height: "100%", width: "100%" }}>
-                        <InvoiceTable
-                            sx={{
-                                width: "100%",
-                                height: "100%",
-                            }}
-                            rows={state.rows}
-                            onDelete={handleDelete}
-                        />
-                    </Card>
-                </Grid2>
-                <Grid2 size={4}>
-                    <Grid2 container size={12} spacing={1} sx={{ height: "100%" }}>
-                        <Grid2 size={12}>
-                            <Card sx={{ p: 1, height: "100%" }}>
-                                <Typography variant="h6">Date</Typography>
-                                <Divider />
-                                <Typography pt={2} variant="h3">{moment(Date.now()).format("YYYY/MM/DD")}</Typography>
-                            </Card>
-                        </Grid2>
-                        <Grid2 size={12}>
-                            <Card sx={{ p: 1, height: "100%" }}>
-                                <Typography variant="h6">Invoice</Typography>
-                                <Divider />
-                                <Typography pt={2} variant="h3">128</Typography>
-                            </Card>
-                        </Grid2>
-                        <Grid2 size={12}>
-                            <Card sx={{ p: 1, height: "100%" }}>
-                                <Typography variant="h6">Subtotal</Typography>
-                                <Divider />
-                                <Typography pt={2} variant="h3">{`LKR ${state.subtotal.toFixed(2)}`}</Typography>
-                            </Card>
-                        </Grid2>
-                        <Grid2 size={12}>
-                            <Card sx={{ p: 1, height: "100%" }}>
-                                <Typography variant="h6">Info</Typography>
-                                <Divider />
-                                <Stack direction={"column"} sx={{ pt: 2, height: "100%" }} gap={1}>
-                                    <TextField type="text" label="Item Code" name="itemCode" onChange={handleInput}/>
-                                    <TextField type="number" label="Quantity" name="quantity" onChange={handleInput}/>
-                                    <Button variant="contained" startIcon={<Add />} onClick={handleAddRecord}>Add</Button>
-                                </Stack>
-                            </Card>
+        <>
+            <Stack direction={"row"} gap={1} sx={{ height: "100%", width: "100%", pb: 2 }}>
+                <Grid2 container size={12} spacing={1} sx={{ height: "100%", width: "100%" }}>
+                    <Grid2 size={8} >
+                        <Card sx={{ height: "100%", width: "100%" }}>
+                            <InvoiceTable
+                                sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                }}
+                                rows={state.rows}
+                                onDelete={handleDelete}
+                            />
+                        </Card>
+                    </Grid2>
+                    <Grid2 size={4}>
+                        <Grid2 container size={12} spacing={1} sx={{ height: "100%" }}>
+                            <Grid2 size={12}>
+                                <Card sx={{ p: 1, height: "100%" }}>
+                                    <Typography variant="h6">Date</Typography>
+                                    <Divider />
+                                    <Typography pt={2} variant="h3">{moment(Date.now()).format("YYYY/MM/DD")}</Typography>
+                                </Card>
+                            </Grid2>
+                            <Grid2 size={12}>
+                                <Card sx={{ p: 1, height: "100%" }}>
+                                    <Typography variant="h6">Invoice</Typography>
+                                    <Divider />
+                                    <Typography pt={2} variant="h3">128</Typography>
+                                </Card>
+                            </Grid2>
+                            <Grid2 size={12}>
+                                <Card sx={{ p: 1, height: "100%" }}>
+                                    <Typography variant="h6">Subtotal</Typography>
+                                    <Divider />
+                                    <Typography pt={2} variant="h3">{`LKR ${state.subtotal.toFixed(2)}`}</Typography>
+                                </Card>
+                            </Grid2>
+                            <Grid2 size={12}>
+                                <Card sx={{ p: 1, height: "100%" }}>
+                                    <Typography variant="h6">Info</Typography>
+                                    <Divider />
+                                    <form onKeyDown={handleKeyDown}>
+                                        <Stack direction={"column"} sx={{ pt: 2, height: "100%" }} gap={1}>
+                                            <TextField type="text" label="Item Code" name="itemCode" onChange={handleInput}/>
+                                            <TextField type="number" label="Quantity" name="quantity" onChange={handleInput}/>
+                                            <Button variant="contained" startIcon={<Add />} loading={state.loading} loadingPosition="start" onClick={fetchItems}>Add</Button>
+                                        </Stack>
+                                    </form>
+                                </Card>
+                            </Grid2>
                         </Grid2>
                     </Grid2>
                 </Grid2>
-            </Grid2>
-        </Stack>
+            </Stack>
+            <MultipleItemsDialog rows={state.matchingItems} open={state.matchingItems.length > 0} onClose={closeItemsDialog} />
+        </>
     );
 }
 

@@ -4,11 +4,14 @@ import java.sql.Timestamp;
 
 import org.cms.PharmacyStockManagement.DTOs.ItemDto;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +28,9 @@ public class Item {
     @GeneratedValue
     private Integer id;
 
+    @Formula("CONCAT('S', stock_id, '-I', id)")
+    private String itemCode;
+
     private String caption;
 
     private String description;
@@ -36,6 +42,9 @@ public class Item {
     private Float unitPurchasePrice;
 
     private Float unitSellingPrice;
+
+    @ManyToOne
+    private Stock stock;
 
     @CreationTimestamp
     private Timestamp createdAt;

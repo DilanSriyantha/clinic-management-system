@@ -4,6 +4,7 @@ export enum For {
     SELECTING_PATIENT,
     SELECTING_CLINIC,
     SELECTING_PATIENT_FOR_APPOINTMENT,
+    CREATING_PATIENT_ON_THE_FLY,
 };
 
 export namespace For {

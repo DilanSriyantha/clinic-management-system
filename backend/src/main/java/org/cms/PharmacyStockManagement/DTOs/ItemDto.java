@@ -15,6 +15,8 @@ public class ItemDto {
 
     private Integer id;
 
+    private Integer stockId;
+
     private String caption;
 
     private String description;

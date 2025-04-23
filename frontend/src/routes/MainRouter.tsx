@@ -27,6 +27,9 @@ const PrescriptionList = RouteLoader(lazy(() => import("../pages/PrescriptionMan
 const CreateAppointment = RouteLoader(lazy(() => import("../pages/AppointmentManagement/CreateAppointment")));
 const AppointmentList = RouteLoader(lazy(() => import("../pages/AppointmentManagement/AppointmentList")));
 
+const CreateStock = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/CreateStock")));
+const StockList = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/StockList")));
+
 const CreateItem = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/CreateItem")));
 const ItemList = RouteLoader(lazy(() => import("../pages/PharmacyStockManagement/ItemList")));
 
@@ -105,11 +108,19 @@ const MainRoutes: RouteObject[] = [
                 element: <AppointmentList />
             },
             {
-                path: "pharmacy-stock-management/create",
+                path: "pharmacy-stock-management/create-stock",
+                element: <CreateStock />
+            },
+            {
+                path: "pharmacy-stock-management/list-stocks",
+                element: <StockList />
+            },
+            {
+                path: "pharmacy-stock-management/create-item",
                 element: <CreateItem />
             }, 
             {
-                path: "pharmacy-stock-management/list",
+                path: "pharmacy-stock-management/list-items",
                 element: <ItemList />
             },
             {

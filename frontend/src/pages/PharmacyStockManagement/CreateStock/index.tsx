@@ -4,24 +4,22 @@ import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { isValid } from "../../../utils/Validator";
 import { useAlert } from "../../../hooks/useAlert";
-import { ItemCreateRequest } from "../../../types";
+import { StockCreateRequest } from "../../../types";
 import { useLocation } from "react-router";
+import moment, { Moment } from "moment";
+import { DatePicker, DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 
-interface CreateItemState {
+interface CreateStockState {
     isLoading: boolean;
-    item: ItemCreateRequest;
+    stock: StockCreateRequest;
 };
 
-const initialState: CreateItemState = {
+const initialState: CreateStockState = {
     isLoading: false,
-    item: {
-        stockId: -1,
+    stock: {
         caption: "",
-        description: "",
-        initialQty: 0,
-        currentQty: 0,
-        unitPurchasePrice: 0,
-        unitSellingPrice: 0
+        vendor: "",
+        date: moment(Date.now()).format("yyyy-MM-DD")
     },
 };
 
@@ -31,40 +29,32 @@ enum ActionType {
     SET_LOADING,
 };
 
-const reducer = (state: CreateItemState, action: { type: ActionType, payload: any }): CreateItemState => {
-    switch(action.type){
+const reducer = (state: CreateStockState, action: { type: ActionType, payload: any }): CreateStockState => {
+    switch (action.type) {
         case ActionType.SET_FIELD:
-            return {...state, item: { ...state.item, [action.payload.name]: action.payload.value } };
+            return { ...state, stock: { ...state.stock, [action.payload.name]: action.payload.value } };
         case ActionType.SET_ALL_FIELDS:
-            return { ...state, item: { stockId: action.payload.stockId, caption: action.payload.caption, description: action.payload.description, initialQty: action.payload.initialQty, currentQty: action.payload.currentQty, unitPurchasePrice: action.payload.unitPurchasePrice, unitSellingPrice: action.payload.unitSellingPrice } };
+            return { ...state, stock: { caption: action.payload.caption, vendor: action.payload.vendor, date: action.payload.date } };
         case ActionType.SET_LOADING:
-            return {...state, isLoading: action.payload};
-        default: 
+            return { ...state, isLoading: action.payload };
+        default:
             return state;
     }
 };
 
-function CreateItem() {
+function CreateStock() {
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const location = useLocation();
 
-    console.log(location.state);
-
     const api = useApi();
     const alert = useAlert();
 
     useEffect(() => {
-        if(location.state && location.state.item){
-            dispatch({ type: ActionType.SET_ALL_FIELDS, payload: location.state.item });
-            return;
-        }
+        if (!location.state) return;
 
-        if(location.state && location.state.stock){
-            dispatch({ type: ActionType.SET_FIELD, payload: { name: "stockId", value: location.state.stock.id } });
-            return
-        }
+        dispatch({ type: ActionType.SET_ALL_FIELDS, payload: location.state });
     }, []);
 
     console.log(location.state);
@@ -74,52 +64,50 @@ function CreateItem() {
     }, [state]);
 
     const handleSubmit = useCallback(async () => {
-        try{
-            if(!isValid(state, ["loading"])){
+        try {
+            if (!isValid(state, ["loading"])) {
                 alert.setWarning("Please enter the required information to continue");
                 return;
             }
 
-            if(location.state && location.state.item){
-                updateItem();
+            if (location.state) {
+                updateStock();
                 return;
             }
 
-            createItem();
-        }catch(err){
+            createStock();
+        } catch (err) {
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
 
     }, [state]);
 
-    const createItem = useCallback(async () => {
-        try{
-            const res = await api.post<ItemCreateRequest, BasicResultSet>("/pharmacy-stock-management/items/create", state.item);
-            if(res){
+    const createStock = useCallback(async () => {
+        try {
+            const res = await api.post<StockCreateRequest, BasicResultSet>("/pharmacy-stock-management/stocks/create", state.stock);
+            if (res) {
                 console.log(res);
-                alert.setSuccess("Item created successfully");
+                alert.setSuccess("Stock created successfully");
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
     }, [state]);
 
-    const updateItem = useCallback(async () => {
-        if(!location.state) return;
+    const updateStock = useCallback(async () => {
+        if (!location.state) return;
 
-        if(!location.state.item) return;
-
-        try{
-            const res = await api.put<ItemCreateRequest, BasicResultSet>("/pharmacy-stock-management/items/update", {
-                itemId: `${location.state.item.id}`,
-            }, state.item);
-            if(res){
+        try {
+            const res = await api.put<StockCreateRequest, BasicResultSet>("/pharmacy-stock-management/stocks/update", {
+                stockId: `${location.state.id}`,
+            }, state.stock);
+            if (res) {
                 console.log(res);
-                alert.setSuccess("Item updated successfully.");
+                alert.setSuccess("Stock updated successfully.");
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
@@ -130,7 +118,7 @@ function CreateItem() {
     }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
-        if(e.key.match("Enter"))
+        if (e.key.match("Enter"))
             handleSubmit();
     }
 
@@ -138,12 +126,16 @@ function CreateItem() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
+    const handleDatePickerChange = useCallback((value: Moment | null, context: PickerChangeHandlerContext<DateValidationError>): void => {
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "date", value: value } });
+    }, []);
+
     return (
         <>
             <PageTitle
                 subTitle="Pharmacy Stock Management"
-                title={location.state && location.state.item ? "Update Item" : "Create Item"}
-                backButton={true}
+                title={location.state ? "Update Stock" : "Create Stock"}
+                backButton={location.state ? true : false}
             />
             <Card>
                 <Container sx={{
@@ -169,11 +161,9 @@ function CreateItem() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField onChange={handleTextFieldChange} name="caption" label="Caption" type="text" value={state.item.caption} />
-                            <TextField onChange={handleTextFieldChange} name="description" label="Description" type="text" value={state.item.description} />
-                            <TextField onChange={handleTextFieldChange} name="initialQty" label="Initial Qty." type="number" value={state.item.initialQty} />
-                            <TextField onChange={handleTextFieldChange} name="unitPurchasePrice" label="Unit Purchase Price" type="number" value={state.item.unitPurchasePrice} />
-                            <TextField onChange={handleTextFieldChange} name="unitSellingPrice" label="Unit Selling Price" type="number" value={state.item.unitSellingPrice} />
+                            <TextField onChange={handleTextFieldChange} name="caption" label="Caption" type="text" value={state.stock.caption} />
+                            <TextField onChange={handleTextFieldChange} name="vendor" label="Vendor" type="text" value={state.stock.vendor} />
+                            <DatePicker onChange={handleDatePickerChange} name="date" label="Date" defaultValue={moment(new Date)} value={state.stock.date.length > 0 ? moment(Date.parse(state.stock.date)) : moment(new Date)} />
                         </Box>
                     </form>
                     <Box sx={{
@@ -190,4 +180,4 @@ function CreateItem() {
     );
 }
 
-export default CreateItem;
+export default CreateStock;

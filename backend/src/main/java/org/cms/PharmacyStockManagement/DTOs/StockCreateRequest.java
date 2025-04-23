@@ -9,19 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemCreateRequest {
-
-    private Integer stockId;
-
+public class StockCreateRequest {
+    
     private String caption;
 
-    private String description;
+    private String vendor;
 
-    private Integer initialQty;
-
-    private Integer currentQty;
-
-    private Float unitPurchasePrice;
-
-    private Float unitSellingPrice;
+    private String date;
 }

@@ -1,9 +1,9 @@
-import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Box, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Add, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
-import { ItemDto, User } from "../../../types";
+import { StockDto, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types";
@@ -12,22 +12,19 @@ import { useLocation, useNavigate } from "react-router";
 const columns: GridColDef[] = [
     {
         field: "number",
-        headerName: "Item Code",
+        headerName: "Stock Code",
         width: 150,
-        valueGetter: (val, row, col, api) => `Item ${api.current.getRowId(row)}`
+        valueGetter: (val, row, col, api) => `Stock ${api.current.getRowId(row)}`
     },
     { field: "caption", headerName: "Caption", width: 130 },
-    { field: "description", headerName: "Description", width: 130 },
-    { field: "initialQty", headerName: "Initial Qty.", width: 70 },
-    { field: "currentQty", headerName: "current Qty.", width: 70 },
-    { field: "unitPurchasePrice", headerName: "Unit Pur. Price", width: 100 },
-    { field: "unitSellingPrice", headerName: "Unit Sel. Price", width: 100 },
-    { field: "updateAt", headerName: "Updated At", width: 100 },
+    { field: "vendor", headerName: "Vendor", width: 130 },
+    { field: "date", headerName: "Date", width: 100 },
+    { field: "updatedAt", headerName: "Updated At", width: 100 },
 ];
 
-interface ItemListState {
+interface StockListState {
     selectedIds: Set<GridRowId>,
-    list: ItemDto[];
+    list: StockDto[];
     page: number;
     pageSize: number;
     totalPages: number;
@@ -41,7 +38,7 @@ enum ActionType {
     REMOVE_FROM_SELECTED_IDS,
     CLEAR_SELECTED_IDS,
     SET_LIST,
-    DELETE_SELECTED_ITEMS,
+    DELETE_SELECTED_StockS,
     SET_PAGE,
     SET_PAGE_SIZE,
     SET_TOTAL_PAGES,
@@ -50,7 +47,7 @@ enum ActionType {
     SET_LOADING,
 };
 
-const initialState: ItemListState = {
+const initialState: StockListState = {
     selectedIds: new Set<GridRowId>(),
     list: [],
     page: 0,
@@ -60,7 +57,7 @@ const initialState: ItemListState = {
     loading: false,
 };
 
-const reducer = (state: ItemListState, action: { type: ActionType, payload: any }): ItemListState => {
+const reducer = (state: StockListState, action: { type: ActionType, payload: any }): StockListState => {
     switch (action.type) {
         case ActionType.SET_SELECTED_IDS:
             return { ...state, selectedIds: action.payload };
@@ -72,8 +69,8 @@ const reducer = (state: ItemListState, action: { type: ActionType, payload: any 
             return { ...state, selectedIds: newSet };
         case ActionType.SET_LIST:
             return { ...state, list: action.payload };
-        case ActionType.DELETE_SELECTED_ITEMS:
-            return { ...state, list: state.list.filter((item) => !state.selectedIds.has(item.id)) };
+        case ActionType.DELETE_SELECTED_StockS:
+            return { ...state, list: state.list.filter((Stock) => !state.selectedIds.has(Stock.id)) };
         case ActionType.SET_PAGE:
             return { ...state, page: action.payload };
         case ActionType.SET_PAGE_SIZE:
@@ -95,7 +92,7 @@ const reducer = (state: ItemListState, action: { type: ActionType, payload: any 
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-function ItemList() {
+function StockList() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const location = useLocation();
@@ -105,16 +102,15 @@ function ItemList() {
     const alert = useAlert();
 
     useEffect(() => {
-        fetchItems();
+        fetchUsers();
     }, [state.page, state.pageSize]);
 
-    const fetchItems = useCallback(async () => {
+    const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try {
-            const res = await api.get<PageResponse<User>>("/pharmacy-stock-management/items/page", {
+            const res = await api.get<PageResponse<User>>("/pharmacy-stock-management/stocks/page", {
                 page: `${state.page}`,
-                pageSize: `${state.pageSize}`,
-                stockId: `${location.state.id}`
+                pageSize: `${state.pageSize}`
             });
             if (res) {
                 console.log(res.content);
@@ -132,11 +128,7 @@ function ItemList() {
     }, [state.selectedIds]);
 
     const handleReloadClick = useCallback(() => {
-        fetchItems();
-    }, []);
-
-    const handleCreateItem = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
-        navigate("/pharmacy-stock-management/create-item", { state: { stock: location.state } })
+        fetchUsers();
     }, []);
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
@@ -147,26 +139,30 @@ function ItemList() {
 
     const handleDelete = useCallback(async () => {
         try {
-            const res = await api.delete<any, BasicResultSet>("/pharmacy-stock-management/items/deleteBatch", {
-                stockId: `${location.state.id}`
-            }, Array.from(state.selectedIds));
+            const res = await api.delete<any, BasicResultSet>("/pharmacy-stock-management/stocks/deleteBatch", undefined, Array.from(state.selectedIds));
             if (res) {
                 alert.setSuccess(res.message);
-                dispatch({ type: ActionType.DELETE_SELECTED_ITEMS, payload: state.selectedIds });
+                dispatch({ type: ActionType.DELETE_SELECTED_StockS, payload: state.selectedIds });
             }
         } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
     }, [state.selectedIds, state.list]);
 
+    const handleAddItems = useCallback(() => {
+        const stock = state.list.find((stock) => state.selectedIds.has(stock.id));
+        navigate("/pharmacy-stock-management/list-items", { state: stock });
+    }, [state.list, state.selectedIds]);
+
     const handleEdit = useCallback(() => {
-        const item = state.list.find((item) => state.selectedIds.has(item.id));
-        navigate("/pharmacy-stock-management/create-item", { state: { item: item } });
+        const stock = state.list.find((stock) => state.selectedIds.has(stock.id));
+        navigate("/pharmacy-stock-management/create-stock", { state: stock });
     }, [state.list, state.selectedIds]);
 
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onAddItems: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
@@ -196,11 +192,18 @@ function ItemList() {
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
                 {props.numSelected == 1 && (
-                    <Tooltip title="Edit">
-                        <IconButton onClick={props.onEdit}>
-                            <Edit color="primary" />
-                        </IconButton>
-                    </Tooltip>
+                    <>
+                        <Tooltip title="Add Items">
+                            <IconButton onClick={props.onAddItems}>
+                                <Add color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                            <IconButton onClick={props.onEdit}>
+                                <Edit color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                    </>
                 )}
                 <Tooltip title="Delete">
                     <IconButton onClick={props.onDelete}>
@@ -215,8 +218,7 @@ function ItemList() {
         <>
             <PageTitle
                 subTitle={"Pharmacy Stock Management"}
-                title={"Items List"}
-                backButton={true}
+                title={"Stocks List"}
             />
             <Card>
                 <Container sx={{
@@ -226,9 +228,7 @@ function ItemList() {
                     pb: 2
                 }}>
                     <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start" }}>
-                        <Stack
-                            direction={"row"}
-                            gap={1}
+                        <Box
                             sx={{ pb: 2 }}
                         >
                             <Tooltip title="Reload">
@@ -236,12 +236,9 @@ function ItemList() {
                                     <ReplayOutlined />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title="Create new item">
-                                <Button variant="contained" startIcon={<Add />} onClick={handleCreateItem}>Create</Button>
-                            </Tooltip>
-                        </Stack>
+                        </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onAddItems={handleAddItems} onEdit={handleEdit} />
                     <DataGrid
                         rows={state.list}
                         columns={columns}
@@ -262,4 +259,4 @@ function ItemList() {
     );
 }
 
-export default ItemList;
+export default StockList;

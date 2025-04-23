@@ -103,7 +103,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = (props) => {
 
                         return (
                             <TableRow
-                                key={row.id}
+                                key={Math.random()}
                                 hover
                                 onClick={(event) => handleClick(event, row.id)}
                                 role="checkbox"
@@ -126,8 +126,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = (props) => {
                                 </TableCell>
                                 <TableCell align="right">{row.itemCode}</TableCell>
                                 <TableCell align="right">{row.description}</TableCell>
-                                <TableCell align="right">{row.quantity}</TableCell>
                                 <TableCell align="right">{row.unitPrice.toFixed(2)}</TableCell>
+                                <TableCell align="right">{row.quantity}</TableCell>
                                 <TableCell align="right">{row.total.toFixed(2)}</TableCell>
                             </TableRow>
                         )

@@ -100,8 +100,6 @@ function PatientsList() {
     const api = useApi();
     const alert = useAlert();
 
-    console.log(location.state);
-
     useEffect(() => {
         fetchUsers();
     }, [state.page, state.pageSize]);
@@ -136,6 +134,10 @@ function PatientsList() {
 
     const handleReloadClick = useCallback(() => {
         fetchUsers();
+    }, []);
+
+    const handleAddClick = useCallback(() => {
+        navigate("/patient-management/create", { state: { ...location.state, for: For.CREATING_PATIENT_ON_THE_FLY } });
     }, []);
 
     function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
@@ -185,6 +187,7 @@ function PatientsList() {
     }, [state.list, state.selectedIds]);
 
     const handleSelectPatient = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
+        console.log(location.state);
         if(location.state && location.state.for && location.state.for === For.SELECTING_PATIENT){
             navigate("/prescription-management/create", { state: { patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
             return;
@@ -281,6 +284,11 @@ function PatientsList() {
                             <Tooltip title="Reload">
                                 <IconButton onClick={handleReloadClick}>
                                     <ReplayOutlined />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Create new customer">
+                                <IconButton onClick={handleAddClick}>
+                                    <Add />
                                 </IconButton>
                             </Tooltip>
                         </Box>

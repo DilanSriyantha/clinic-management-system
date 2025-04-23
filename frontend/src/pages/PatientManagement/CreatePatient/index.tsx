@@ -7,8 +7,10 @@ import moment from "moment";
 import { isValid } from "../../../utils/Validator";
 import { useAlert } from "../../../hooks/useAlert";
 import { useAuth } from "../../../hooks/useAuth";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { PatientDto } from "../../../DTOs";
+import { For } from "../../../enums/For";
+import { instanceOf } from "../../../utils/TypeChecker";
 
 interface CreatePatientState {
     name: string;
@@ -54,12 +56,15 @@ function CreatePatient() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     const api = useApi();
     const alert = useAlert();
 
     useEffect(() => {
         if(!location.state) return;
+
+        if(!instanceOf(location.state, Object.keys(PatientDto))) return;
 
         dispatch({ type: ActionType.SET_ALL_FIELDS, payload: location.state });
     }, []);
@@ -75,7 +80,7 @@ function CreatePatient() {
                 return;
             }
 
-            if(location.state){
+            if(location.state && instanceOf(location.state, Object.keys(PatientDto))){
                 updatePatientAsync();
                 return;
             }
@@ -85,7 +90,6 @@ function CreatePatient() {
             console.log(err);
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
-
     }, [state]);
 
     const createPatientAsync = useCallback(async () => {
@@ -94,6 +98,9 @@ function CreatePatient() {
             if(res){
                 console.log(res);
                 alert.setSuccess("Patient created successfully");
+                
+                if(location.state && location.state.for === For.CREATING_PATIENT_ON_THE_FLY)
+                    navigate("/patient-management/list", { state: {...location.state, for: For.SELECTING_PATIENT} });
             }
         }catch(err){
             console.log(err);
@@ -139,7 +146,7 @@ function CreatePatient() {
         <>
             <PageTitle
                 subTitle="Patient Management"
-                title={location.state ? "Update Patient" : "Create Patient"}
+                title={location.state && location.state.for !== For.CREATING_PATIENT_ON_THE_FLY ? "Update Patient" : "Create Patient"}
                 backButton={location.state ? true : false}
             />
             <Card>

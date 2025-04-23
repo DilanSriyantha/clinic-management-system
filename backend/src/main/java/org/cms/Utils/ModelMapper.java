@@ -38,4 +38,27 @@ public class ModelMapper {
             return null;
         }
     }
+
+    public <T> T fill(Object src, T dest) {
+        try{
+            Field[] srcFields = src.getClass().getDeclaredFields();
+            Field[] destFields = dest.getClass().getDeclaredFields();
+
+            for(var srcField : srcFields) {
+                for(var destField : destFields) {
+                    if(!destField.getName().equals(srcField.getName())) continue;
+
+                    srcField.setAccessible(true);
+                    destField.setAccessible(true);
+
+                    destField.set(dest, srcField.get(src));
+                }
+            }
+
+            return dest;
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
 }
