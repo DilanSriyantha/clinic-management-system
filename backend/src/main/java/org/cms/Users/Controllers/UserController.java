@@ -8,6 +8,7 @@ import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Services.UserService;
 import org.cms.Utils.BasicResultSet;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,26 @@ public class UserController {
     ) {
         System.out.println(request.getHeader("Authorization"));
         return ResponseEntity.ok(userService.getPage(role, page, pageSize, response));
+    }
+    
+    @GetMapping(path = "/searchByEmail")
+    public @ResponseBody ResponseEntity<Page<User>> handleSearchByEmail(@RequestParam int page, @RequestParam int pageSize, @RequestParam String email) {
+        return ResponseEntity.ok(userService.searchByEmail(page, pageSize, email));
+    }
+
+    @GetMapping(path = "/searchByName")
+    public @ResponseBody ResponseEntity<Page<User>> handleSearchByName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String name) {
+        return ResponseEntity.ok(userService.searchByName(page, pageSize, name));
+    }
+
+    @GetMapping(path = "/searchByRefId")
+    public @ResponseBody ResponseEntity<Page<User>> handleSearchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String referenceId) {
+        return ResponseEntity.ok(userService.searchByReferenceId(page, pageSize, referenceId));
+    }
+
+    @GetMapping(path = "/searchByPhoneNumber")
+    public @ResponseBody ResponseEntity<Page<User>> handleSearchByPhoneNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String phoneNumber) {
+        return ResponseEntity.ok(userService.searchByPhoneNumber(page, pageSize, phoneNumber));
     }
 
     @GetMapping(path = "/byRole")

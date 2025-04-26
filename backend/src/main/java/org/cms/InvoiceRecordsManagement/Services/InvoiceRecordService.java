@@ -25,10 +25,10 @@ public class InvoiceRecordService {
 
     private final ItemRepository itemRepository;
 
-    public Page<InvoiceRecordDto> getPage(int page, int pageSize) {
+    public Page<InvoiceRecordDto> getPage(int page, int pageSize, int invoiceId) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return invoiceRecordRepository.findAll(pageable).map((invoiceRecord) -> {
+        return invoiceRecordRepository.findAllByInvoiceId(pageable, invoiceId).map((invoiceRecord) -> {
             var ir = ModelMapper.getInstance().map(invoiceRecord, InvoiceRecordDto.class);
             ir.setInvoiceId(invoiceRecord.getInvoice().getId());
             ir.setInvoiceNumber(invoiceRecord.getInvoice().getNumber());

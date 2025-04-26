@@ -1,7 +1,5 @@
 package org.cms.InvoiceManagement.Controllers;
 
-import java.util.List;
-
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
 import org.cms.InvoiceManagement.DTOs.InvoiceDto;
 import org.cms.InvoiceManagement.Services.InvoiceService;
@@ -37,6 +35,21 @@ public class InvoiceController {
     @GetMapping("/page")
     public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleGetPage(@RequestParam int page, @RequestParam int pageSize) {
         return ResponseEntity.ok(invoiceService.getPage(page, pageSize));
+    }
+
+    @GetMapping("/searchByNumber")
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam int number) {
+        return ResponseEntity.ok(invoiceService.searchByNumber(page, pageSize, number));
+    }
+
+    @GetMapping("/searchByDate")
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, @RequestParam String date) {
+
+    }
+
+    @GetMapping("/searchByCreatorName")
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByCreatorName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String creatorName) {
+        
     }
 
     @PostMapping("/create")

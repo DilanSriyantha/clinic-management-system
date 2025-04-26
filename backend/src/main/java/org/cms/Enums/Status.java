@@ -23,7 +23,7 @@ public enum Status {
         return map.get(value);
     }
 
-    private int getValue() {
+    public int getValue() {
         return value;
     }
 }

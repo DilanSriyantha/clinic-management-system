@@ -322,6 +322,7 @@ export interface StockCreateRequest {
 
 export interface InvoiceRecord {
     id?: number;
+    itemId: number;
     itemCode: string;
     description: string;
     unitPrice: number;
@@ -358,4 +359,20 @@ export interface InvoiceRecordDto {
     total: number;
     createdAt: Timestamp;
     updatedAt: Timestamp;
+};
+
+export interface CreateInvoiceRequest {
+    number: number;
+    date: string;
+    subTotal: number;
+    pharmacistId: number;
+    records: CreateInvoiceRecordRequest[];
+};
+
+export interface CreateInvoiceRecordRequest {
+    invoiceId: number;
+    invoiceNumber: number;
+    itemId: number;
+    quantity: number;
+    total: number;
 };

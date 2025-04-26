@@ -5,7 +5,7 @@ import { Add, Send } from "@mui/icons-material";
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "react";
 import { useAlert } from "../../../hooks/useAlert";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
-import { InvoiceCreateRequest, InvoiceRecord, InvoiceRecordCreateRequest, ItemDto, PageResponse } from "../../../types";
+import { CreateInvoiceRequest, InvoiceRecord, CreateInvoiceRecordRequest, ItemDto, PageResponse } from "../../../types";
 import MultipleItemsDialog from "../../../components/MultipleItemsDialog";
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -48,7 +48,7 @@ const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload:
         case ActionType.ADD_ROW:
             return { ...state, rows: [...state.rows, action.payload], subtotal: state.subtotal+action.payload.total };
         case ActionType.REMOVE_ROWS:
-            return { ...state, rows: state.rows.filter((row) => !action.payload.includes(row.id)), subtotal: state.rows.reduce((acc, row) => {if(!action.payload.includes(row.id)) return acc + row.total; else return acc;}, 0) }
+            return { ...state, rows: state.rows.filter((row) => !action.payload.includes(row.id)), subtotal: state.rows.reduce((acc, row) => {if(!action.payload.includes(row.id)) return acc + (row.total ? row.total : 0); else return acc;}, 0) }
         case ActionType.UPDATE_SUBTOTAL:
             return { ...state, subtotal: action.payload };
         case ActionType.SET_MATCHING_ITEMS:
@@ -142,7 +142,7 @@ function CreateInvoice() {
     const onSubmit = useCallback(async () => {
         dispatch({ type: ActionType.START_LOADING, payload: null });
         try{
-            const res = await api.post<InvoiceCreateRequest, BasicResultSet>("/invoice/create", {
+            const res = await api.post<CreateInvoiceRequest, BasicResultSet>("/invoice/create", {
                 number: state.invoiceNumber,
                 date: moment(Date.now()).format("YYYY-MM-DD"),
                 subTotal: state.subtotal,
@@ -152,7 +152,7 @@ function CreateInvoice() {
                         itemId: r.itemId,
                         quantity: Number(r.quantity),
                         total: r.total
-                    } as InvoiceRecordCreateRequest;
+                    } as CreateInvoiceRecordRequest;
                 }),
             });
             if(res) {

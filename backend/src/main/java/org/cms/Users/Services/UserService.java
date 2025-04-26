@@ -8,6 +8,7 @@ import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,6 +41,30 @@ public class UserService {
 
     public Iterable<User> getByRole(String role) {
         return userRepository.findAllByRole(Role.valueOf(role));
+    }
+
+    public Page<User> searchByEmail(int page, int pageSize, String email) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return userRepository.searchByEmail(pageable, "%" + email + "%");
+    }
+
+    public Page<User> searchByName(int page, int pageSize, String name) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return userRepository.searchByName(pageable, "%" + name + "%");
+    }
+
+    public Page<User> searchByReferenceId(int page, int pageSize, String refId) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return userRepository.searchByRefId(pageable, "%" + refId + "%");
+    }
+
+    public Page<User> searchByPhoneNumber(int page, int pageSize, String phoneNumber) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return userRepository.searchByPhoneNum(pageable, "%" + phoneNumber + "%");
     }
 
     public User create(User user) {

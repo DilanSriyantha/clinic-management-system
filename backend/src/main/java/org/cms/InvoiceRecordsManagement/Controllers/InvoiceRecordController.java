@@ -28,8 +28,8 @@ public class InvoiceRecordController {
     private final InvoiceRecordService invoiceRecordService;
 
     @GetMapping("/page")
-    public @ResponseBody ResponseEntity<Page<InvoiceRecordDto>> handleGetPage(@RequestParam int page, @RequestParam int pageSize) {
-        return ResponseEntity.ok(invoiceRecordService.getPage(page, pageSize));
+    public @ResponseBody ResponseEntity<Page<InvoiceRecordDto>> handleGetPage(@RequestParam int page, @RequestParam int pageSize, @RequestParam int invoiceId) {
+        return ResponseEntity.ok(invoiceRecordService.getPage(page, pageSize, invoiceId));
     }
     
     @PostMapping("/create")
