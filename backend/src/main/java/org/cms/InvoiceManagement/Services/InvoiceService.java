@@ -1,6 +1,7 @@
 package org.cms.InvoiceManagement.Services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
@@ -96,5 +97,20 @@ public class InvoiceService {
             .resultCode(200)
             .message("Invoice deleted successfully")
             .build();
+    }
+
+    public BasicResultSet deleteBatch(int[] selectedIds) {
+        var iterator = intsToIterable(selectedIds);
+
+        invoiceRecordRepository.deleteAllByIdInBatch(iterator);
+
+        return BasicResultSet.builder()
+            .resultCode(200)
+            .message("Invoices are deleted successfully")
+            .build();
+    }
+
+    private Iterable<Integer> intsToIterable(int[] ints) {
+        return () -> Arrays.stream(ints).iterator();
     }
 }

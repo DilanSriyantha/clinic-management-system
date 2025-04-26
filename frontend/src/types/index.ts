@@ -322,12 +322,11 @@ export interface StockCreateRequest {
 
 export interface InvoiceRecord {
     id?: number;
-    itemId: number;
     itemCode: string;
     description: string;
     unitPrice: number;
-    quantity: number;
-    total: number;
+    quantity?: number;
+    total?: number;
 };
 
 export interface DrugCategoryOption {
@@ -337,16 +336,26 @@ export interface DrugCategoryOption {
 
 export type DrugFormOption = DrugCategoryOption;
 
-export interface InvoiceCreateRequest {
+export interface InvoiceDto {  
+    id: number;
     number: number;
     date: string;
     subTotal: number;
     pharmacistId: number;
-    records: InvoiceRecordCreateRequest[];
+    pharmacistName: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 };
 
-export interface InvoiceRecordCreateRequest {
+export interface InvoiceRecordDto {
+    id: number;
+    invoiceId: number;
+    invoiceNumber: number;
     itemId: number;
+    itemCaption: string;
+    itemSellingPrice: number;
     quantity: number;
     total: number;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 };

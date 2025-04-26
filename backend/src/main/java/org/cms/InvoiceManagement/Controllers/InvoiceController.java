@@ -1,5 +1,7 @@
 package org.cms.InvoiceManagement.Controllers;
 
+import java.util.List;
+
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
 import org.cms.InvoiceManagement.DTOs.InvoiceDto;
 import org.cms.InvoiceManagement.Services.InvoiceService;
@@ -46,4 +48,9 @@ public class InvoiceController {
     public @ResponseBody ResponseEntity<BasicResultSet> handleDelete(@RequestParam int invoiceId) {
         return ResponseEntity.ok(invoiceService.delete(invoiceId));
     } 
+
+    @DeleteMapping("/deleteBatch")
+    public @ResponseBody ResponseEntity<BasicResultSet> handleDeletebatch(@RequestBody int[] selectedIds) {
+        return ResponseEntity.ok(invoiceService.deleteBatch(selectedIds));
+    }
 }
