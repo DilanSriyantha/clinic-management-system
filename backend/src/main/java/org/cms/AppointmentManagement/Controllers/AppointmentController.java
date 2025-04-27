@@ -38,6 +38,41 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getPage(page, pageSize));
     }
 
+    @GetMapping("/searchByRefId")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String refId) {
+        return ResponseEntity.ok(appointmentService.searchByRefId(page, pageSize, refId));
+    }
+
+    @GetMapping("/searchByClinic")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByClinic(@RequestParam int page, @RequestParam int pageSize, @RequestParam String clinicName) {
+        return ResponseEntity.ok(appointmentService.searchByClinic(page, pageSize, clinicName));
+    }
+
+    @GetMapping("/searchByDoctor")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByDoctor(@RequestParam int page, @RequestParam int pageSize, @RequestParam String doctorName) {
+        return ResponseEntity.ok(appointmentService.searchByDoctor(page, pageSize, doctorName));
+    }
+
+    @GetMapping("/searchByPatientName")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByPatientName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String patientName) {
+        return ResponseEntity.ok(appointmentService.searchByPatientName(page, pageSize, patientName));
+    }
+
+    @GetMapping("/searchByPatientTelephone")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByTelephone(@RequestParam int page, @RequestParam int pageSize, @RequestParam String patientTelephone) {
+        return ResponseEntity.ok(appointmentService.searchByPatientTelephone(page, pageSize, patientTelephone));
+    }
+
+    @GetMapping("/searchByPatientRefId")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByPatientRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String patientRefId) {
+        return ResponseEntity.ok(appointmentService.searchByPatientRefId(page, pageSize, patientRefId));
+    }
+
+    @GetMapping("/searchByDate")
+    public @ResponseBody ResponseEntity<Page<AppointmentDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, @RequestParam String date) {
+        return ResponseEntity.ok(appointmentService.searchByDate(page, pageSize, date));
+    }
+
     @PostMapping("/create")
     public @ResponseBody ResponseEntity<BasicResultSet> handleCreateAppointm(@RequestBody AppointmentCreateRequest request) {
         return ResponseEntity.ok(appointmentService.createAppointment(request));

@@ -1,6 +1,7 @@
 package org.cms.AppointmentManagement.Services;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import org.cms.AppointmentManagement.DTOs.AppointmentCreateRequest;
 import org.cms.AppointmentManagement.DTOs.AppointmentDto;
@@ -32,15 +33,8 @@ public class AppointmentService {
 
     private final ClinicRepository clinicRepository;
 
-    public Integer getMaxQueuePosition(int clinicId) {
-        return appointmentRepository.findMaxQueuePosition(clinicId);
-    }
-
-    public Page<AppointmentDto> getPage(int page, int pageSize) {
-        var pageable = PageRequest.of(page, pageSize);
-
-        return appointmentRepository.findAll(pageable).map((appointment) -> {
-            var a = ModelMapper.getInstance().map(appointment, AppointmentDto.class);
+    private final Function<Appointment, AppointmentDto> rowMapper = (appointment) -> {
+        var a = ModelMapper.getInstance().map(appointment, AppointmentDto.class);
 
             a.setClinicId(appointment.getClinic().getId());
             a.setClinicName(appointment.getClinic().getCaption());
@@ -50,7 +44,58 @@ public class AppointmentService {
             a.setPatientName(appointment.getPatient().getName());
 
             return a;
-        });
+    };
+
+    public Integer getMaxQueuePosition(int clinicId) {
+        return appointmentRepository.findMaxQueuePosition(clinicId);
+    }
+
+    public Page<AppointmentDto> getPage(int page, int pageSize) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.findAll(pageable).map(rowMapper);
+    }
+    
+    public Page<AppointmentDto> searchByRefId(int page, int pageSize, String refId) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByRefId(pageable, "%" + refId + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByClinic(int page, int pageSize, String clinicName) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByClinic(pageable, "%" + clinicName + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByDoctor(int page, int pageSize, String doctorName) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByDoctor(pageable, "%" + doctorName + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByPatientName(int page, int pageSize, String patientName) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByPatientName(pageable, "%" + patientName + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByPatientTelephone(int page, int pageSize, String patientTelephone) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByPatientTelephone(pageable, "%" + patientTelephone + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByPatientRefId(int page, int pageSize, String patientRefId) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByPatientRefId(pageable, "%" + patientRefId + "%").map(rowMapper);
+    }
+
+    public Page<AppointmentDto> searchByDate(int page, int pageSize, String date) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return appointmentRepository.searchByDate(pageable, "%" + date + "%").map(rowMapper);
     }
 
     public BasicResultSet createAppointment(AppointmentCreateRequest request) {

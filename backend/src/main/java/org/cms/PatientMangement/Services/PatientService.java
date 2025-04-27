@@ -1,6 +1,7 @@
 package org.cms.PatientMangement.Services;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.Models.Patient;
@@ -20,12 +21,39 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PatientService {
+
     private final PatientRepository patientRepository;
+
+    private final Function<Patient, PatientDto> rowMapper = (patient) -> ModelMapper.getInstance().map(patient, PatientDto.class);
 
     public Page<PatientDto> getPage(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        return patientRepository.findAll(pageable).map((patient) -> ModelMapper.getInstance().map(patient, PatientDto.class));
+        return patientRepository.findAll(pageable).map(rowMapper);
+    }
+
+    public Page<PatientDto> searchByName(int page, int pageSize, String name) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return patientRepository.searchByName(pageable, "%" + name + "%").map(rowMapper);
+    }
+
+    public Page<PatientDto> searchByRefId(int page, int pageSize, String refId) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return patientRepository.searchByRefId(pageable,"%" + refId + "%").map(rowMapper);
+    }
+
+    public Page<PatientDto> searchByEmail(int page, int pageSize, String email) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return patientRepository.searchByEmail(pageable, "%" + email + "%").map(rowMapper);
+    }
+
+    public Page<PatientDto> searchByTelephone(int page, int pageSize, String telephone) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return patientRepository.searchByTelephone(pageable, "%" + telephone + "%").map(rowMapper);
     }
 
     public BasicResult create(PatientDto patientDto) {

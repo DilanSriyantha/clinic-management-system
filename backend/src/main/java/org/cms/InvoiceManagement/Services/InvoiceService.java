@@ -3,6 +3,7 @@ package org.cms.InvoiceManagement.Services;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
 import org.cms.InvoiceManagement.DTOs.InvoiceDto;
@@ -33,6 +34,15 @@ public class InvoiceService {
 
     private final ItemRepository itemRepository;
 
+    private final Function<Invoice, InvoiceDto> rowMapper = (invoice) -> {
+        var i = ModelMapper.getInstance().map(invoice, InvoiceDto.class);
+
+        i.setPharmacistId(invoice.getPharmacist().getId());
+        i.setPharmacistName(invoice.getPharmacist().getName());
+
+        return i;
+    };
+
     public Integer getNextInvoiceNumber() {
         return invoiceRepository.findNextInvoiceNumber();
     }
@@ -40,13 +50,25 @@ public class InvoiceService {
     public Page<InvoiceDto> getPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return invoiceRepository.findAll(pageable).map((invoice) -> {
-            var i = ModelMapper.getInstance().map(invoice, InvoiceDto.class);
-            i.setPharmacistId(invoice.getPharmacist().getId());
-            i.setPharmacistName(invoice.getPharmacist().getName());
+        return invoiceRepository.findAll(pageable).map(rowMapper);
+    }
 
-            return i;
-        });
+    public Page<InvoiceDto> searchByNumber(int page, int pageSize, String number) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return invoiceRepository.searchByNumber(pageable, number).map(rowMapper);
+    }
+
+    public Page<InvoiceDto> searchByDate(int page, int pageSize, String date) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return invoiceRepository.searchByDate(pageable, "%" + date + "%").map(rowMapper);
+    }
+
+    public Page<InvoiceDto> searchByCreatorName(int page, int pageSize, String creatorName) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return invoiceRepository.searchByCreatorName(pageable, "%" + creatorName + "%").map(rowMapper);
     }
 
     public BasicResultSet create(InvoiceCreateRequest request) {

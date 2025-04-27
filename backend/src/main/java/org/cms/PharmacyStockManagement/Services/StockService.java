@@ -3,6 +3,7 @@ package org.cms.PharmacyStockManagement.Services;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.cms.PharmacyStockManagement.DTOs.ItemCreateRequest;
@@ -18,6 +19,7 @@ import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -28,47 +30,61 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class StockService {
+
     private final ItemRepository itemRepository;
     
     private final StockRepository stockRepository;
 
+    private final Function<Stock, StockDto> stockRowMapper = (stock) -> ModelMapper.getInstance().map(stock, StockDto.class);
+
+    private final Function<Item, ItemDto> itemRowMapper = (item) -> {
+        var itemDto = ModelMapper.getInstance().map(item, ItemDto.class);
+
+        itemDto.setStockId(item.getStock().getId());
+
+        return itemDto;
+    };
+
     public Page<ItemDto> getItemsPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return itemRepository.findAll(pageable).map((item) -> {
-            var itemDto = ModelMapper.getInstance().map(item, ItemDto.class);
-            itemDto.setStockId(item.getStock().getId());
-
-            return itemDto;
-        });
+        return itemRepository.findAll(pageable).map(itemRowMapper);
     }
 
     public Page<ItemDto> getItemsPageByStock(int page, int pageSize, int stockId) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return itemRepository.findAllByStockId(pageable, stockId).map((item) -> {
-            var itemDto = ModelMapper.getInstance().map(item, ItemDto.class);
-            itemDto.setStockId(item.getStock().getId());
-
-            return itemDto;
-        });
+        return itemRepository.findAllByStockId(pageable, stockId).map(itemRowMapper);
     }
 
     public Page<ItemDto> getItemsByCode(int page, int pageSize, String itemCode) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return itemRepository.findAllByItemCode(pageable, itemCode).map((item) -> {
-            var itemDto = ModelMapper.getInstance().map(item, ItemDto.class);
-            itemDto.setStockId(item.getStock().getId());
-
-            return itemDto;
-        });
+        return itemRepository.findAllByItemCode(pageable, itemCode).map(itemRowMapper);
     }
 
     public Page<StockDto> getStocksPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return stockRepository.findAll(pageable).map((stock) -> ModelMapper.getInstance().map(stock, StockDto.class));
+        return stockRepository.findAll(pageable).map(stockRowMapper);
+    }
+
+    public Page<StockDto> searchByCaption(int page, int pageSize, String caption) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return stockRepository.searchStockByCaption(pageable, "%" + caption + "%").map();
+    }
+
+    public Page<StockDto> searchByVendor(int page, int pageSize, String vendor) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return stockRepository.searchByVendor(pageable, "%" + vendor + "%");
+    }
+
+    public Page<StockDto> searchByDate(int page, int pageSize, String date) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return stockRepository.searchByDate(pageable, "%" + date + "%");
     }
 
     public BasicResultSet createItem(ItemCreateRequest request) {

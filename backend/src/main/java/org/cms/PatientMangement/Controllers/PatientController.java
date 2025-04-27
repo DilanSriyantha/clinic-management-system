@@ -30,6 +30,26 @@ public class PatientController {
     public @ResponseBody ResponseEntity<Page<PatientDto>> getPage(@RequestParam int page, @RequestParam int pageSize) {
         return ResponseEntity.ok(patientService.getPage(page, pageSize));
     }
+
+    @GetMapping("/searchByName")
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String name) {
+        return ResponseEntity.ok(patientService.searchByName(page, pageSize, name));
+    }
+    
+    @GetMapping("/searchByRefId")
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String refId) {
+        return ResponseEntity.ok(patientService.searchByRefId(page, pageSize, refId));
+    }
+
+    @GetMapping("/searchByEmail")
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByEmail(@RequestParam int page, @RequestParam int pageSize, @RequestParam String email) {
+        return ResponseEntity.ok(patientService.searchByEmail(page, pageSize, email));
+    }
+
+    @GetMapping("/searchByPhoneNumber")
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByPhoneNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String phoneNumber) {
+        return ResponseEntity.ok(patientService.searchByTelephone(page, pageSize, phoneNumber));
+    }
     
     @PostMapping("/create")
     public @ResponseBody ResponseEntity<BasicResult> create(@RequestBody PatientDto patientDto) {
