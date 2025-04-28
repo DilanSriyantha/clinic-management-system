@@ -19,7 +19,6 @@ import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -63,28 +62,52 @@ public class StockService {
         return itemRepository.findAllByItemCode(pageable, itemCode).map(itemRowMapper);
     }
 
+    public Page<ItemDto> searchItemByCaption(int page, int pageSize, String caption) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return itemRepository.searchItemByCaption(pageable, "%" + caption + "%").map(itemRowMapper);
+    }
+
+    public Page<ItemDto> searchItemByCategory(int page, int pageSize, String category) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return itemRepository.searchItemByCategory(pageable, "%" + category + "%").map(itemRowMapper);
+    }
+
+    public Page<ItemDto> searchItemByForm(int page, int pageSize, String form) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return itemRepository.searchItemByForm(pageable, "%" + form + "%").map(itemRowMapper);
+    }
+
+    public Page<ItemDto> searchItemStrength(int page, int pageSize, String strength) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return itemRepository.searchItemByStrength(pageable, "%" + strength + "%").map(itemRowMapper);
+    }
+
     public Page<StockDto> getStocksPage(int page, int pageSize) {
         var pageable = PageRequest.of(page, pageSize);
 
         return stockRepository.findAll(pageable).map(stockRowMapper);
     }
 
-    public Page<StockDto> searchByCaption(int page, int pageSize, String caption) {
+    public Page<StockDto> searchStockByCaption(int page, int pageSize, String caption) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return stockRepository.searchStockByCaption(pageable, "%" + caption + "%").map();
+        return stockRepository.searchStockByCaption(pageable, "%" + caption + "%").map(stockRowMapper);
     }
 
-    public Page<StockDto> searchByVendor(int page, int pageSize, String vendor) {
+    public Page<StockDto> searchStockByVendor(int page, int pageSize, String vendor) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return stockRepository.searchByVendor(pageable, "%" + vendor + "%");
+        return stockRepository.searchStockByVendor(pageable, "%" + vendor + "%").map(stockRowMapper);
     }
 
-    public Page<StockDto> searchByDate(int page, int pageSize, String date) {
+    public Page<StockDto> searchStockByDate(int page, int pageSize, String date) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return stockRepository.searchByDate(pageable, "%" + date + "%");
+        return stockRepository.searchStockByDate(pageable, "%" + date + "%").map(stockRowMapper);
     }
 
     public BasicResultSet createItem(ItemCreateRequest request) {

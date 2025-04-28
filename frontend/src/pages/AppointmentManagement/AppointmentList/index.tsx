@@ -2,11 +2,12 @@ import { Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { Card, Container, Stack, Box, Tooltip, IconButton, Toolbar, alpha, Typography } from "@mui/material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import PageTitle from "../../../components/PageTitle";
-import { For } from "../../../enums/For";
-import { act, MouseEvent, useEffect, useReducer } from "react";
+import { MouseEvent, useEffect, useReducer } from "react";
 import { AppointmentDto } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
+import Filter from "../../../components/Filter";
+import { SearchBy } from "../../../enums/SearchBy";
 
 const columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -205,7 +206,23 @@ function AppointmentList() {
                     pt: 2,
                     pb: 2
                 }}>
-                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start" }}>
+                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start", alignItems: "center" }}>
+                        <Box
+                            sx={{ pb: 2 }}
+                        >
+                            <Filter 
+                                options={[
+                                    { label: "Reference ID", value: SearchBy.REF_ID },
+                                    { label: "Clinic", value: SearchBy.CLINIC },
+                                    { label: "Doctor", value: SearchBy.DOCTOR },
+                                    { label: "Patient Name", value: SearchBy.PATIENT_NAME },
+                                    { label: "Patient Telephone", value: SearchBy.PATIENT_TELEPHONE },
+                                    { label: "Patient Reference ID", value: SearchBy.PATIENT_TELEPHONE },
+                                    { label: "Date", value: SearchBy.DATE }
+                                ]}
+                                onSubmit={(o, sk) => console.log(o.value, sk)}
+                            />
+                        </Box>
                         <Box
                             sx={{ pb: 2 }}
                         >

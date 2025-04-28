@@ -1,6 +1,5 @@
 package org.cms.AppointmentManagement.Repositories;
 
-import org.cms.AppointmentManagement.DTOs.AppointmentDto;
 import org.cms.AppointmentManagement.Models.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +48,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             ) AS t WHERE t.reference_id=:refId
 
             """, nativeQuery = true)
-    Page<Appointment> searchByRefId(PageRequest pageable, String refId);
+    Page<Appointment> searchByRefId(PageRequest pageable, @Param("refId") String refId);
 
     @Query(value = """
             SELECT * FROM (
@@ -76,7 +75,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             ) AS t WHERE t.clinic_name=:clinicName
 
             """, nativeQuery = true)
-    Page<Appointment> searchByClinic(PageRequest pageable, String clinicName);
+    Page<Appointment> searchByClinic(PageRequest pageable, @Param("clinicName") String clinicName);
 
     @Query(value = """
             SELECT * FROM (
@@ -103,7 +102,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             ) AS t WHERE t.doctor_name=:doctorName
 
             """, nativeQuery = true)
-    Page<Appointment> searchByDoctor(PageRequest pageable, String doctorName);
+    Page<Appointment> searchByDoctor(PageRequest pageable, @Param("doctorName") String doctorName);
 
     @Query(value = """
             SELECT * FROM (
@@ -130,7 +129,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             ) AS t WHERE t.patient_name=:patientName
 
             """, nativeQuery = true)
-    Page<Appointment> searchByPatientName(PageRequest pageable, String patientName);
+    Page<Appointment> searchByPatientName(PageRequest pageable, @Param("patientName") String patientName);
 
     @Query(value = """
             SELECT * FROM (
@@ -157,7 +156,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             ) AS t WHERE t.doctor_name=:doctorName
 
             """, nativeQuery = true)
-    Page<Appointment> searchByPatientTelephone(PageRequest pageable, String patientTelephone);
+    Page<Appointment> searchByPatientTelephone(PageRequest pageable, @Param("doctorName") String patientTelephone);
 
     @Query(value = """
         SELECT * FROM (
@@ -184,7 +183,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
         ) AS t WHERE t.patient_ref_id=:patientRefId
 
         """, nativeQuery = true)
-    Page<Appointment> searchByPatientRefId(PageRequest pageable, String patientRefId);
+    Page<Appointment> searchByPatientRefId(PageRequest pageable, @Param("patientRefId") String patientRefId);
 
     @Query(value = """
         SELECT * FROM (
@@ -211,5 +210,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
         ) AS t WHERE t.created_at=:date
 
         """, nativeQuery = true)
-    Page<Appointment> searchByDate(PageRequest pageable, String date);
+    Page<Appointment> searchByDate(PageRequest pageable, @Param("date") String date);
 }

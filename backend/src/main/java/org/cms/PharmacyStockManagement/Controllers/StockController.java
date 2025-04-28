@@ -50,17 +50,17 @@ public class StockController {
 
     @GetMapping("/stocks/searchByCaption")
     public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByCaption(@RequestParam int page, @RequestParam int pageSize, @RequestParam String caption) {
-        return ResponseEntity.ok(stockService.searchByCaption(page, pageSize, "%" + caption + "%"));
+        return ResponseEntity.ok(stockService.searchStockByCaption(page, pageSize, "%" + caption + "%"));
     }
 
     @GetMapping("/stocks/searchByVendor")
     public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByVendor(@RequestParam int page, @RequestParam int pageSize, @RequestParam String vendor) {
-        return ResponseEntity.ok(stockService.searchByVendor(page, pageSize, vendor));
+        return ResponseEntity.ok(stockService.searchStockByVendor(page, pageSize, vendor));
     }
 
     @GetMapping("/stocks/searchByDate")
     public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, String date) {
-        return ResponseEntity.ok(stockService.searchByDate(page, pageSize, date));
+        return ResponseEntity.ok(stockService.searchStockByDate(page, pageSize, date));
     }
     
     @PostMapping("/items/create")
