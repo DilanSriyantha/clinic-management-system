@@ -3,11 +3,13 @@ package org.cms.Users.Services;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.Enums.Role;
+import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
+import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,10 @@ import org.springframework.stereotype.Service;
 
 import javax.security.auth.login.CredentialException;
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,45 +32,44 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public Iterable<User> getAll() {
-        return userRepository.findAll();
+    private final Function<User, UserDto> rowMapper = (user) -> ModelMapper.getInstance().map(user, UserDto.class);
+
+    public List<UserDto> getAll() {
+        return userRepository.findAll().stream().map(rowMapper).collect(Collectors.toList());
     }
 
-    public Iterable<User> getPage(String role, int page, int pageSize, HttpServletResponse response) {
+    public Page<UserDto> getPage(String role, int page, int pageSize, HttpServletResponse response) {
         Pageable pageable = PageRequest.of(page, pageSize);
 
-        final int totalPages = (int)Math.ceil((double)userRepository.count() / pageSize);
-        response.setIntHeader("X-Total-Pages", totalPages);
-
-        return userRepository.findAllByRole(Role.valueOf(role), pageable);
+        return userRepository.findAllByRole(Role.valueOf(role), pageable).map(rowMapper);
     }
 
-    public Iterable<User> getByRole(String role) {
-        return userRepository.findAllByRole(Role.valueOf(role));
+    public List<UserDto> getByRole(String role) {
+        return userRepository.findAllByRole(Role.valueOf(role)).stream().map(rowMapper).collect(Collectors.toList());
     }
 
-    public Page<User> searchByEmail(int page, int pageSize, String email) {
+    public Page<UserDto> searchByEmail(String role, int page, int pageSize, String email) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return userRepository.searchByEmail(pageable, "%" + email + "%");
+        return userRepository.searchByEmail(pageable, role, "%" + email + "%").map(rowMapper);
     }
 
-    public Page<User> searchByName(int page, int pageSize, String name) {
+    public Page<UserDto> searchByName(String role, int page, int pageSize, String name) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return userRepository.searchByName(pageable, "%" + name + "%");
+        return userRepository.searchByName(pageable, role, "%" + name + "%").map(rowMapper);
     }
 
-    public Page<User> searchByReferenceId(int page, int pageSize, String refId) {
+    public Page<UserDto> searchByReferenceId(String role, int page, int pageSize, String refId) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return userRepository.searchByRefId(pageable, "%" + refId + "%");
+        return userRepository.searchByRefId(pageable, role, "%" + refId + "%").map(rowMapper);
     }
 
-    public Page<User> searchByPhoneNumber(int page, int pageSize, String phoneNumber) {
+    public Page<UserDto> searchByTelephone(String role, int page, int pageSize, String phoneNumber) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return userRepository.searchByPhoneNum(pageable, "%" + phoneNumber + "%");
+        return userRepository.searchByTelephone(pageable, role, "%" + phoneNumber + "%").map(rowMapper);
     }
 
     public User create(User user) {

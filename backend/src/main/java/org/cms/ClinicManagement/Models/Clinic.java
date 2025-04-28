@@ -21,10 +21,6 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id"
-)
 public class Clinic {
 
     @Id
@@ -36,20 +32,9 @@ public class Clinic {
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "clinic_doctor",
-            joinColumns = @JoinColumn(name = "clinic_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctor_id")
-    )
-    // inform the json serializer that this entity is the owner of doctors in order to prevent infinite recursion.
     private List<User> doctors = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "clinic_patient",
-        joinColumns = @JoinColumn(name = "clinic_id"),
-        inverseJoinColumns = @JoinColumn(name = "patient_id")
-    )
     private List<Patient> patients = new ArrayList<>();
 
     private String dayOfWeek;

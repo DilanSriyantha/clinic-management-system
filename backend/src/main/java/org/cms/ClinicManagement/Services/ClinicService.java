@@ -5,6 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.DTOs.AssignPatientDto;
 import org.cms.ClinicManagement.DTOs.ClinicDto;
@@ -12,6 +17,7 @@ import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.Enums.Status;
 import org.cms.PatientMangement.Repositories.PatientRepository;
+import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.User;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
@@ -19,6 +25,7 @@ import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +37,22 @@ public class ClinicService {
 
     private final PatientRepository patientRepository;
 
+    private final Function<Clinic, ClinicDto> rowMapper = (clinic) -> {
+        var c = ModelMapper.getInstance().map(clinic, ClinicDto.class);
+
+        var doctorDtos = StreamSupport.stream(getDoctorsByClinic(clinic.getId()).spliterator(), false).collect(Collectors.toList()).stream().map((doc) -> ModelMapper.getInstance().map(doc, UserDto.class)).collect(Collectors.toList());
+
+        c.setDoctors(doctorDtos);
+
+        return c;
+    };
+
     public Iterable<Clinic> getAll() {
         return clinicRepository.findAll();
     }
 
-    public Clinic get(int clinicId) {
-        var clinic = clinicRepository.findById(clinicId)
+    public ClinicDto get(int clinicId) {
+        var clinic = clinicRepository.findById(clinicId).map(rowMapper)
                 .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
 
         var doctors = clinic.getDoctors();
@@ -53,12 +70,32 @@ public class ClinicService {
 
     public Page<ClinicDto> getPage(int page, int pageSize, HttpServletResponse response) {
         var pageable = PageRequest.of(page, pageSize);
-        var dataPage = clinicRepository.findAll(pageable).map((clinic) -> ModelMapper.getInstance().map(clinic, ClinicDto.class));
+        
+        return clinicRepository.findAll(pageable).map(rowMapper);
+    }
 
-        int totalPages = (int)Math.ceil((double)clinicRepository.count() / pageSize);
-        response.setIntHeader("X-Total-Pages", totalPages);
+    public Page<ClinicDto> searchByCaption(int page, int pageSize, String caption) {
+        var pageable = PageRequest.of(page, pageSize);
 
-        return dataPage;
+        return clinicRepository.searchByCaption(pageable, "%" + caption + "%").map(rowMapper);
+    }
+
+    public Page<ClinicDto> searchByDOW(int page, int pageSize, String dow) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return clinicRepository.searchByDOW(pageable, "%" + dow + "%").map(rowMapper);
+    }
+
+    public Page<ClinicDto> searchByTime(int page, int pageSize, String time) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return clinicRepository.searchByTime(pageable, "%" + time + "%").map(rowMapper);
+    }
+
+    public Page<ClinicDto> searchByDoctorName(int page, int pageSize, String doctorName) {
+        var pageable = PageRequest.of(page, pageSize);
+
+        return clinicRepository.searchByDoctorName(pageable, "%" + doctorName + "%").map(rowMapper);
     }
 
     public Clinic create(Clinic clinic) {

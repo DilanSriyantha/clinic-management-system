@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
+    
     Page<Item> findAllByStockId(PageRequest pageable, int stockId);
     Page<Item> findAllByItemCode(PageRequest pageable, String itemCode);
 

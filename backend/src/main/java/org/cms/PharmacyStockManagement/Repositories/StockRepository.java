@@ -9,18 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface StockRepository extends JpaRepository<Stock, Integer> {
 
-    @Query(value = """
-            SELECT * FROM stock AS s WHERE s.caption LIKE :caption
-            """, nativeQuery = true)
+    @Query(value = "SELECT * FROM stock AS s WHERE s.caption LIKE :caption", nativeQuery = true)
     Page<Stock> searchStockByCaption(Pageable pageable, @Param("caption") String caption);
 
-    @Query(value = """
-            SELECT * FROM stock AS s WHERE s.vendor LIKE :vendor
-            """, nativeQuery = true)
+    @Query(value = "SELECT * FROM stock AS s WHERE s.vendor LIKE :vendor", nativeQuery = true)
     Page<Stock> searchStockByVendor(Pageable pageable, @Param("vendor") String vendor);
 
-    @Query(value = """
-            SELECT * FROM stock AS s WHERE s.date LIKE :date
-            """, nativeQuery = true)
+    @Query(value = "SELECT * FROM stock AS s WHERE s.date LIKE :date", nativeQuery = true)
     Page<Stock> searchStockByDate(Pageable pageable, @Param("date") String date);
 }

@@ -42,25 +42,45 @@ public class StockController {
     public @ResponseBody ResponseEntity<Page<ItemDto>> handleGetItemsByCode(@RequestParam int page, @RequestParam int pageSize, @RequestParam String itemCode) {
         return ResponseEntity.ok(stockService.getItemsByCode(page, pageSize, itemCode));
     }
+
+    @GetMapping("/items/searchByCaption")
+    public @ResponseBody ResponseEntity<Page<ItemDto>> handleSearchItemByCaption(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchItemByCaption(page, pageSize, searchKey));
+    }
     
+    @GetMapping("/items/searchByCategory")
+    public @ResponseBody ResponseEntity<Page<ItemDto>> handleSearchItemByCategory(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchItemByCategory(page, pageSize, searchKey));
+    }
+    
+    @GetMapping("/items/searchByForm")
+    public @ResponseBody ResponseEntity<Page<ItemDto>> handleSearchItemByForm(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchItemByForm(page, pageSize, searchKey));
+    }
+
+    @GetMapping("/items/searchByStrength")
+    public @ResponseBody ResponseEntity<Page<ItemDto>> handleSearchItemByStrength(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchItemByStrength(page, pageSize, searchKey));
+    }
+
     @GetMapping("/stocks/page")
     public @ResponseBody ResponseEntity<Page<StockDto>> handleGetStocksPage(@RequestParam int page, @RequestParam int pageSize) {
         return ResponseEntity.ok(stockService.getStocksPage(page, pageSize));
     }
 
     @GetMapping("/stocks/searchByCaption")
-    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByCaption(@RequestParam int page, @RequestParam int pageSize, @RequestParam String caption) {
-        return ResponseEntity.ok(stockService.searchStockByCaption(page, pageSize, "%" + caption + "%"));
+    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchStockByCaption(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchStockByCaption(page, pageSize, "%" + searchKey + "%"));
     }
 
     @GetMapping("/stocks/searchByVendor")
-    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByVendor(@RequestParam int page, @RequestParam int pageSize, @RequestParam String vendor) {
-        return ResponseEntity.ok(stockService.searchStockByVendor(page, pageSize, vendor));
+    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByVendor(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(stockService.searchStockByVendor(page, pageSize, searchKey));
     }
 
     @GetMapping("/stocks/searchByDate")
-    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, String date) {
-        return ResponseEntity.ok(stockService.searchStockByDate(page, pageSize, date));
+    public @ResponseBody ResponseEntity<Page<StockDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, String searchKey) {
+        return ResponseEntity.ok(stockService.searchStockByDate(page, pageSize, searchKey));
     }
     
     @PostMapping("/items/create")

@@ -42,7 +42,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                     p.name AS pharmacist_name
                 FROM invoice i
                 INNER JOIN user p ON p.id = i.pharmacist_id
-            ) AS t WHERE t.date=:date
+            ) AS t WHERE t.date LIKE :date
             """, nativeQuery = true)
     Page<Invoice> searchByDate(Pageable pageable, @Param("date") String date);
 
@@ -59,7 +59,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
                     p.name AS pharmacist_name
                 FROM invoice i
                 INNER JOIN user p ON p.id = i.pharmacist_id
-            ) AS t WHERE t.pharmacist_name=:creatorName
+            ) AS t WHERE t.pharmacist_name LIKE :creatorName
             """, nativeQuery = true)
     Page<Invoice> searchByCreatorName(Pageable pageable, @Param("creatorName") String creatorName);
 }

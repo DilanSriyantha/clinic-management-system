@@ -1,12 +1,14 @@
 import { ReplayOutlined, Delete, ListAlt } from "@mui/icons-material";
-import { Card, Container, Stack, Tooltip, IconButton, Toolbar, alpha, Typography, List } from "@mui/material";
-import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { Card, Container, Stack, Tooltip, IconButton, Toolbar, alpha, Typography } from "@mui/material";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { InvoiceDto, PageResponse } from "../../../types";
 import { useAlert } from "../../../hooks/useAlert";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useNavigate } from "react-router";
+import { SearchBy } from "../../../enums/SearchBy";
+import Filter, { FilterOption } from "../../../components/Filter";
 
 interface InvoiceListState {
     loading: boolean;
@@ -15,6 +17,8 @@ interface InvoiceListState {
     page: number;
     pageSize: number;
     totalElements: number | undefined;
+    searchKey: string;
+    searchBy: SearchBy;
 };
 
 enum ActionType {
@@ -24,7 +28,8 @@ enum ActionType {
     SET_PAGE,
     SET_PAGE_SIZE,
     SET_PAGINATION_MODEL,
-    SET_SELECTED_IDS
+    SET_SELECTED_IDS,
+    SET_SEARCH_KEY
 };
 
 const initialState: InvoiceListState = {
@@ -33,7 +38,9 @@ const initialState: InvoiceListState = {
     selectedIds: new Set<GridRowId>(),
     page: 0,
     pageSize: 5,
-    totalElements: 0
+    totalElements: 0,
+    searchKey: "",
+    searchBy: SearchBy.NUMBER
 };
 
 const reducer = (state: InvoiceListState, action: { type: ActionType, payload: any }): InvoiceListState => {
@@ -48,18 +55,25 @@ const reducer = (state: InvoiceListState, action: { type: ActionType, payload: a
             return { ...state, loading: false };
         case ActionType.SET_SELECTED_IDS:
             return { ...state, selectedIds: action.payload };
+        case ActionType.SET_SEARCH_KEY:
+            return { ...state, searchKey: action.payload.searchKey, searchBy: action.payload.searchBy };
         default:
             return state;
     };
 };
 
 const columns: GridColDef[] = [
-    { field: "id", headerName: "#" },
     { field: "number", headerName: "Inv.#" },
     { field: "subTotal", headerName: "Sub Total" },
     { field: "pharmacistName", headerName: "Pharmacist" },
     { field: "createdAt", headerName: "Created At" },
     { field: "updatedAt", headerName: "Updated At" }
+];
+
+const filterOptions: FilterOption[] = [
+    { value: SearchBy.NUMBER, label: "Invoice Number" },
+    { value: SearchBy.DATE, label: "Date" },
+    { value: SearchBy.CREATOR_NAME, label: "Creator" }
 ];
 
 const paginationModel = { page: 0, pageSize: 5 };
@@ -80,15 +94,24 @@ function InvoiceList() {
 
     useEffect(() => {
         fetchInvoices();
-    }, []);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const fetchInvoices = useCallback(async () => {
         dispatch({ type: ActionType.START_LOADING, payload: null });
+
+        const endpoint = state.searchKey.length < 1 ? "/invoice/page" : "/invoice" + SearchBy.getEndpoint(state.searchBy);
+
+        const options: Record<string, string> = state.searchKey.length < 1 ? {
+            page: `${state.page}`,
+            pageSize: `${state.pageSize}`
+        } : {
+            page: `${state.page}`,
+            pageSize: `${state.pageSize}`,
+            searchKey: state.searchKey
+        };  
+
         try {
-            const res = await api.get<PageResponse<InvoiceDto>>("/invoice/page", {
-                page: `${state.page}`,
-                pageSize: `${state.pageSize}`
-            });
+            const res = await api.get<PageResponse<InvoiceDto>>(endpoint, options);
             if (res)
                 dispatch({ type: ActionType.SET_LIST, payload: res });
         } catch (err) {
@@ -96,7 +119,7 @@ function InvoiceList() {
             alert.setError(err instanceof Error ? err.message : "An unknown error occurred");
             dispatch({ type: ActionType.STOP_LOADING, payload: null });
         }
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const deleteInvoice = useCallback(async () => {
         dispatch({ type: ActionType.START_LOADING, payload: null });
@@ -113,15 +136,15 @@ function InvoiceList() {
         }
     }, [state.selectedIds]);
 
-    const handleReloadClick = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
+    const handleReloadClick = useCallback((): void => {
         fetchInvoices();
     }, []);
 
-    const handleDelete = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
+    const handleDelete = useCallback((): void => {
         deleteInvoice();
     }, []);
 
-    const handleSelected = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
+    const handleSelected = useCallback((): void => {
         const invoice = state.list.find(inv => state.selectedIds.has(inv.id));
         if (!invoice) {
             alert.setError("Invoice could not be resolved.");
@@ -130,14 +153,18 @@ function InvoiceList() {
         navigate("/pharmacy-sales-management/list/invoice-records", { state: { inv: invoice } });
     }, [state.selectedIds, state.list]);
 
-    const onPaginationModelChange = useCallback((model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void => {
+    const onPaginationModelChange = useCallback((model: GridPaginationModel): void => {
         dispatch({ type: ActionType.SET_PAGINATION_MODEL, payload: { page: model.page, pageSize: model.pageSize } });
         fetchInvoices();
     }, [state.page, state.pageSize]);
 
-    const handleSelectRow = useCallback((rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails<any>): void => {
+    const handleSelectRow = useCallback((rowSelectionModel: GridRowSelectionModel): void => {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(rowSelectionModel) });
     }, [state.selectedIds]);
+
+    const handleFilterSubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
+        dispatch({ type: ActionType.SET_SEARCH_KEY, payload: { searchKey: searchKey, searchBy: option.value } });
+    }, []);
 
     function TableToolbar(props: TableToolbarProps) {
         if (!props.numSelected)
@@ -198,6 +225,10 @@ function InvoiceList() {
                             gap={1}
                             sx={{ pb: 2 }}
                         >
+                            <Filter
+                                options={filterOptions}
+                                onSubmit={handleFilterSubmit}
+                            />
                             <Tooltip title="Reload">
                                 <IconButton onClick={handleReloadClick}>
                                     <ReplayOutlined />

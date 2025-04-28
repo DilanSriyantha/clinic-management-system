@@ -80,7 +80,7 @@ public class StockService {
         return itemRepository.searchItemByForm(pageable, "%" + form + "%").map(itemRowMapper);
     }
 
-    public Page<ItemDto> searchItemStrength(int page, int pageSize, String strength) {
+    public Page<ItemDto> searchItemByStrength(int page, int pageSize, String strength) {
         var pageable = PageRequest.of(page, pageSize);
 
         return itemRepository.searchItemByStrength(pageable, "%" + strength + "%").map(itemRowMapper);

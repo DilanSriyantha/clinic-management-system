@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cms.Enums.Status;
+import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.Models.Patient;
+import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.User;
 
 import lombok.AllArgsConstructor;
@@ -25,9 +27,9 @@ public class ClinicDto {
 
     private String description;
 
-    private List<User> doctors = new ArrayList<>();
+    private List<UserDto> doctors;
 
-    private List<Patient> patients = new ArrayList<>();
+    private List<PatientDto> patients;
 
     private String dayOfWeek;
 

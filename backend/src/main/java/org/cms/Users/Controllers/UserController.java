@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.Users.Models.User;
+import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
 import org.cms.Users.Services.UserService;
@@ -11,6 +12,8 @@ import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import javax.security.auth.login.CredentialException;
 
@@ -21,19 +24,19 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(path = "/create")
+    @PostMapping("/create")
     public @ResponseBody User createUser(@RequestBody User user) {
         return userService.create(user);
     }
 
-    @GetMapping(path = "/all")
-    public @ResponseBody ResponseEntity<Iterable<User>> getAllUsers() {
+    @GetMapping("/all")
+    public @ResponseBody ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAll());
     }
 
     @CrossOrigin(exposedHeaders = "X-Total-Pages")
-    @GetMapping(path = "/page")
-    public @ResponseBody ResponseEntity<Iterable<User>> getPage(
+    @GetMapping("/page")
+    public @ResponseBody ResponseEntity<Page<UserDto>> getPage(
             @RequestParam(defaultValue = "ADMIN") String role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int pageSize,
@@ -44,47 +47,47 @@ public class UserController {
         return ResponseEntity.ok(userService.getPage(role, page, pageSize, response));
     }
     
-    @GetMapping(path = "/searchByEmail")
-    public @ResponseBody ResponseEntity<Page<User>> handleSearchByEmail(@RequestParam int page, @RequestParam int pageSize, @RequestParam String email) {
-        return ResponseEntity.ok(userService.searchByEmail(page, pageSize, email));
+    @GetMapping("/searchByEmail")
+    public @ResponseBody ResponseEntity<Page<UserDto>> handleSearchByEmail(@RequestParam(defaultValue = "ADMIN") String role, @RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(userService.searchByEmail(role, page, pageSize, searchKey));
     }
 
-    @GetMapping(path = "/searchByName")
-    public @ResponseBody ResponseEntity<Page<User>> handleSearchByName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String name) {
-        return ResponseEntity.ok(userService.searchByName(page, pageSize, name));
+    @GetMapping("/searchByName")
+    public @ResponseBody ResponseEntity<Page<UserDto>> handleSearchByName(@RequestParam(defaultValue = "ADMIN") String role, @RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(userService.searchByName(role, page, pageSize, searchKey));
     }
 
-    @GetMapping(path = "/searchByRefId")
-    public @ResponseBody ResponseEntity<Page<User>> handleSearchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String referenceId) {
-        return ResponseEntity.ok(userService.searchByReferenceId(page, pageSize, referenceId));
+    @GetMapping("/searchByRefId")
+    public @ResponseBody ResponseEntity<Page<UserDto>> handleSearchByRefId(@RequestParam(defaultValue = "ADMIN") String role, @RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(userService.searchByReferenceId(role, page, pageSize, searchKey));
     }
 
-    @GetMapping(path = "/searchByPhoneNumber")
-    public @ResponseBody ResponseEntity<Page<User>> handleSearchByPhoneNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String phoneNumber) {
-        return ResponseEntity.ok(userService.searchByPhoneNumber(page, pageSize, phoneNumber));
+    @GetMapping("/searchByTelephone")
+    public @ResponseBody ResponseEntity<Page<UserDto>> handleSearchByTelephone(@RequestParam(defaultValue = "ADMIN") String role, @RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(userService.searchByTelephone(role, page, pageSize, searchKey));
     }
 
-    @GetMapping(path = "/byRole")
-    public @ResponseBody Iterable<User> getUsersByRole(@RequestParam String role) {
+    @GetMapping("/byRole")
+    public @ResponseBody Iterable<UserDto> getUsersByRole(@RequestParam String role) {
         return userService.getByRole(role);
     }
 
-    @DeleteMapping(path = "/delete")
+    @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResultSet> deleteUser(@RequestBody Iterable<Integer> ids) {
         return ResponseEntity.ok(userService.delete(ids));
     }
 
-    @PutMapping(path = "/update")
+    @PutMapping("/update")
     public @ResponseBody ResponseEntity<BasicResultSet> updateUser(@RequestBody User user, @RequestParam int userId) {
         return ResponseEntity.ok(userService.update(user, userId));
     }
 
-    @PutMapping(path = "/resetPassword")
+    @PutMapping("/resetPassword")
     public @ResponseBody ResponseEntity<BasicResultSet> resetPassword(@RequestBody SoftPasswordResetRequest request, @RequestParam int userId) throws CredentialException {
         return ResponseEntity.ok(userService.resetPassword(userId, request));
     }
 
-    @PutMapping(path = "/hardResetPassword")
+    @PutMapping("/hardResetPassword")
     public @ResponseBody ResponseEntity<BasicResultSet> hardResetPassword(@RequestBody HardPasswordResetRequest request, @RequestParam int userId) {
         return ResponseEntity.ok(userService.hardPasswordReset(userId, request));
     }

@@ -45,7 +45,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
                 INNER JOIN user u ON u.id = a.doctor_id
                 INNER JOIN clinic c ON c.id = a.clinic_id
                 INNER JOIN patient p ON p.id = a.patient_id
-            ) AS t WHERE t.reference_id=:refId
+            ) AS t WHERE t.reference_id LIKE :refId
 
             """, nativeQuery = true)
     Page<Appointment> searchByRefId(PageRequest pageable, @Param("refId") String refId);
@@ -72,7 +72,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
                 INNER JOIN user u ON u.id = a.doctor_id
                 INNER JOIN clinic c ON c.id = a.clinic_id
                 INNER JOIN patient p ON p.id = a.patient_id
-            ) AS t WHERE t.clinic_name=:clinicName
+            ) AS t WHERE t.clinic_name LIKE :clinicName
 
             """, nativeQuery = true)
     Page<Appointment> searchByClinic(PageRequest pageable, @Param("clinicName") String clinicName);
@@ -99,7 +99,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
                 INNER JOIN user u ON u.id = a.doctor_id
                 INNER JOIN clinic c ON c.id = a.clinic_id
                 INNER JOIN patient p ON p.id = a.patient_id
-            ) AS t WHERE t.doctor_name=:doctorName
+            ) AS t WHERE t.doctor_name LIKE :doctorName
 
             """, nativeQuery = true)
     Page<Appointment> searchByDoctor(PageRequest pageable, @Param("doctorName") String doctorName);
@@ -126,7 +126,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
                 INNER JOIN user u ON u.id = a.doctor_id
                 INNER JOIN clinic c ON c.id = a.clinic_id
                 INNER JOIN patient p ON p.id = a.patient_id
-            ) AS t WHERE t.patient_name=:patientName
+            ) AS t WHERE t.patient_name LIKE :patientName
 
             """, nativeQuery = true)
     Page<Appointment> searchByPatientName(PageRequest pageable, @Param("patientName") String patientName);
@@ -153,10 +153,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
                 INNER JOIN user u ON u.id = a.doctor_id
                 INNER JOIN clinic c ON c.id = a.clinic_id
                 INNER JOIN patient p ON p.id = a.patient_id
-            ) AS t WHERE t.doctor_name=:doctorName
+            ) AS t WHERE t.patient_telephone LIKE :telephone
 
             """, nativeQuery = true)
-    Page<Appointment> searchByPatientTelephone(PageRequest pageable, @Param("doctorName") String patientTelephone);
+    Page<Appointment> searchByPatientTelephone(PageRequest pageable, @Param("telephone") String patientTelephone);
 
     @Query(value = """
         SELECT * FROM (
@@ -180,7 +180,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             INNER JOIN user u ON u.id = a.doctor_id
             INNER JOIN clinic c ON c.id = a.clinic_id
             INNER JOIN patient p ON p.id = a.patient_id
-        ) AS t WHERE t.patient_ref_id=:patientRefId
+        ) AS t WHERE t.patient_ref_id LIKE :patientRefId
 
         """, nativeQuery = true)
     Page<Appointment> searchByPatientRefId(PageRequest pageable, @Param("patientRefId") String patientRefId);
@@ -207,7 +207,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             INNER JOIN user u ON u.id = a.doctor_id
             INNER JOIN clinic c ON c.id = a.clinic_id
             INNER JOIN patient p ON p.id = a.patient_id
-        ) AS t WHERE t.created_at=:date
+        ) AS t WHERE t.created_at LIKE :date
 
         """, nativeQuery = true)
     Page<Appointment> searchByDate(PageRequest pageable, @Param("date") String date);

@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router";
 import PageTitle from "../../../components/PageTitle";
 import { Status } from "../../../enums/Status";
 import { ClinicDetailsState, Patient } from "../../../types";
-import { MouseEvent, useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer } from "react";
 import { User } from "../../../types";
 import DoctorSection from "./DoctorsSection";
 import { Delete, LocalHospital } from "@mui/icons-material";
@@ -107,7 +107,7 @@ function ClinicDetails() {
         }
     }, [state.doctors]);
 
-    const handleDeleteClick = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
+    const handleDeleteClick = useCallback((): void => {
         const clinicId: number | undefined = location.state.clinicId;
 
         if(!clinicId){

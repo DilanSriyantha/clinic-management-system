@@ -4,6 +4,7 @@ import { Status } from "../enums/Status";
 import { instanceOf } from "../utils/TypeChecker";
 import { DrugCategory } from "../enums/DrugCategory";
 import { DrugForm } from "../enums/DrugForm";
+import { SearchBy } from "../enums/SearchBy";
 
 export interface AuthResponse {
     accessToken: string;
@@ -210,6 +211,8 @@ export interface UsersListState {
     pageSize: number;
     totalPages: number;
     totalElements: number;
+    searchKey: string;
+    searchBy: SearchBy;
     loading: boolean;
 };
 

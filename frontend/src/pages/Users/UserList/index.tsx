@@ -1,8 +1,8 @@
-import { alpha, Box, Button, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Button, Card, Chip, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
-import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
@@ -13,6 +13,8 @@ import { RoleItem } from "../../../types";
 import { UsersListState } from "../../../types";
 import { For } from "../../../enums/For";
 import { AssignDoctorDto } from "../../../DTOs";
+import Filter, { FilterOption } from "../../../components/Filter";
+import { SearchBy } from "../../../enums/SearchBy";
 
 const recep_columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -45,6 +47,13 @@ const roles: RoleItem[] = [
     { value: Role.PHARMACIST, label: Role[3] }
 ];
 
+const filterOptions: FilterOption[] = [
+    { value: SearchBy.EMAIL, label: "E-mail" },
+    { value: SearchBy.NAME, label: "Name" },
+    { value: SearchBy.REF_ID, label: "Ref.ID" },
+    { value: SearchBy.TELEPHONE, label: "Telephone" }
+];
+
 const initialState: UsersListState = {
     role: Role.DOCTOR,
     selectedIds: new Set<GridRowId>(),
@@ -53,6 +62,8 @@ const initialState: UsersListState = {
     pageSize: 5,
     totalPages: 1,
     totalElements: 0,
+    searchKey: "",
+    searchBy: SearchBy.EMAIL,
     loading: false,
 };
 
@@ -69,6 +80,7 @@ enum ActionType {
     SET_TOTAL_PAGES,
     SET_PAGINATION_INFO,
     SET_PAGINATION_MODEL,
+    SET_SEARCH_KEY,
     SET_LOADING,
 };
 
@@ -98,6 +110,8 @@ const reducer = (state: UsersListState, action: { type: ActionType, payload: any
             return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
+        case ActionType.SET_SEARCH_KEY:
+            return { ...state, searchKey: action.payload.searchKey, searchBy: action.payload.searchBy };
         case ActionType.SET_LOADING: 
             if(state.loading === action.payload)
                 return { ...state };
@@ -120,16 +134,23 @@ function UsersList() {
     
     useEffect(() => {
         fetchUsers();
-    }, [state.role, state.page, state.pageSize]);
+    }, [state.role, state.page, state.pageSize, state.searchKey]);
 
     const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try{
-            const res = await api.get<PageResponse<User>>("/users/page", {
+            const endpoint = state.searchKey.length < 1 ? "/users/page" : "/users" + SearchBy.getEndpoint(state.searchBy);
+            const options: Record<string, string> = state.searchKey.length < 1 ? {
                 role: Role[state.role],
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
-            });
+            } : {
+                role: Role[state.role],
+                page: `${state.page}`,
+                pageSize: `${state.pageSize}`,
+                searchKey: state.searchKey
+            };
+            const res = await api.get<PageResponse<User>>(endpoint, options);
             if(res){
                 console.log(res.content);
                 dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
@@ -143,7 +164,7 @@ function UsersList() {
         }catch(err){
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
-    }, [state.page, state.pageSize, state.role]);
+    }, [state.page, state.pageSize, state.role, state.searchKey, state.searchBy]);
 
     const handleRoleChange = useCallback((item: RoleItem) => {
         if (state.role === item.value)
@@ -158,14 +179,14 @@ function UsersList() {
 
     const handleReloadClick = useCallback(() => {
         fetchUsers();
-    }, [state.role]);
+    }, []);
 
-    function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
+    const onPaginationModelChange = useCallback((model: GridPaginationModel): void => {
         dispatch({ type: ActionType.SET_PAGINATION_INFO, payload: {
             page: model.page,
             pageSize: model.pageSize
         } });
-    }
+    }, []);
 
     const handleDelete = useCallback(async() => {
         try{
@@ -184,7 +205,7 @@ function UsersList() {
         navigate("update", { state: { user } });
     }, [state.list, state.selectedIds]);
 
-    const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
+    const handleAssign = useCallback(async (): Promise<void> => {
         const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
 
         if(!doctorId) return;
@@ -203,6 +224,10 @@ function UsersList() {
             alert.setError(err instanceof Error ? err.message : "Unknown error");
         }
     }, [state.list, state.selectedIds]);
+
+    const handleSearchKeySubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
+        dispatch({ type: ActionType.SET_SEARCH_KEY, payload: { searchKey: searchKey, searchBy: option.value } });
+    }, [state.searchKey]);
 
 
     interface TableToolbarProps {
@@ -276,7 +301,7 @@ function UsersList() {
                     pt: 2,
                     pb: 2
                 }}>
-                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start" }}>
+                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", textAlign: "start", alignItems: "center" }}>
                         <Stack direction="row" flexWrap="wrap" pb={2} gap={1}>
                             {   location.state && location.state.for === For.ASSIGN_DOCTOR_TO_CLINIC
                                 ?
@@ -297,15 +322,22 @@ function UsersList() {
                                     })
                             }
                         </Stack>
-                        <Box 
+                        <Stack 
                             sx={{ pb: 2 }}
+                            direction={"row"}
+                            gap={1}
+                            alignItems={"center"}
                         >
+                            <Filter 
+                                options={filterOptions}
+                                onSubmit={handleSearchKeySubmit}
+                            />
                             <Tooltip title="Reload">
                                 <IconButton onClick={handleReloadClick}>
                                     <ReplayOutlined />
                                 </IconButton>
                             </Tooltip>
-                        </Box>
+                        </Stack>
                     </Stack>
                     <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} />
                     <DataGrid

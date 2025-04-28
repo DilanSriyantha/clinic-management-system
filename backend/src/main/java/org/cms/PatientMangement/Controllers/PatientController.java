@@ -1,7 +1,6 @@
 package org.cms.PatientMangement.Controllers;
 
 import org.cms.PatientMangement.DTOs.PatientDto;
-import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Services.PatientService;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
@@ -32,23 +31,23 @@ public class PatientController {
     }
 
     @GetMapping("/searchByName")
-    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String name) {
-        return ResponseEntity.ok(patientService.searchByName(page, pageSize, name));
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(patientService.searchByName(page, pageSize, searchKey));
     }
     
     @GetMapping("/searchByRefId")
-    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String refId) {
-        return ResponseEntity.ok(patientService.searchByRefId(page, pageSize, refId));
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByRefId(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(patientService.searchByRefId(page, pageSize, searchKey));
     }
 
     @GetMapping("/searchByEmail")
-    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByEmail(@RequestParam int page, @RequestParam int pageSize, @RequestParam String email) {
-        return ResponseEntity.ok(patientService.searchByEmail(page, pageSize, email));
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByEmail(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(patientService.searchByEmail(page, pageSize, searchKey));
     }
 
-    @GetMapping("/searchByPhoneNumber")
-    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByPhoneNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String phoneNumber) {
-        return ResponseEntity.ok(patientService.searchByTelephone(page, pageSize, phoneNumber));
+    @GetMapping("/searchByTelephone")
+    public @ResponseBody ResponseEntity<Page<PatientDto>> searchByPhoneNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(patientService.searchByTelephone(page, pageSize, searchKey));
     }
     
     @PostMapping("/create")

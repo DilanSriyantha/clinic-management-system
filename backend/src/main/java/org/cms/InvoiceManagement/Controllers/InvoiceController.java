@@ -36,18 +36,18 @@ public class InvoiceController {
     }
 
     @GetMapping("/searchByNumber")
-    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String number) {
-        return ResponseEntity.ok(invoiceService.searchByNumber(page, pageSize, number));
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByNumber(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(invoiceService.searchByNumber(page, pageSize, searchKey));
     }
 
     @GetMapping("/searchByDate")
-    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, @RequestParam String date) {
-        return ResponseEntity.ok(invoiceService.searchByDate(page, pageSize, date));
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByDate(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(invoiceService.searchByDate(page, pageSize, searchKey));
     }
 
     @GetMapping("/searchByCreatorName")
-    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByCreatorName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String creatorName) {
-        return ResponseEntity.ok(invoiceService.searchByCreatorName(page, pageSize, creatorName));
+    public @ResponseBody ResponseEntity<Page<InvoiceDto>> handleSearchByCreatorName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(invoiceService.searchByCreatorName(page, pageSize, searchKey));
     }
 
     @PostMapping("/create")

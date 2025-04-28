@@ -1,12 +1,12 @@
 import { Delete, Edit, ReplayOutlined } from "@mui/icons-material";
 import { Card, Container, Stack, Box, Tooltip, IconButton, Toolbar, alpha, Typography } from "@mui/material";
-import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import PageTitle from "../../../components/PageTitle";
-import { MouseEvent, useEffect, useReducer } from "react";
+import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { AppointmentDto } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
-import Filter from "../../../components/Filter";
+import Filter, { FilterOption } from "../../../components/Filter";
 import { SearchBy } from "../../../enums/SearchBy";
 
 const columns: GridColDef[] = [
@@ -18,6 +18,16 @@ const columns: GridColDef[] = [
     { field: "updatedAt", headerName: "Updated At", width: 100 },
 ];
 
+const filterOptions: FilterOption[] = [
+    { label: "Reference ID", value: SearchBy.REF_ID },
+    { label: "Clinic", value: SearchBy.CLINIC },
+    { label: "Doctor", value: SearchBy.DOCTOR },
+    { label: "Patient Name", value: SearchBy.PATIENT_NAME },
+    { label: "Patient Telephone", value: SearchBy.PATIENT_TELEPHONE },
+    { label: "Patient Reference ID", value: SearchBy.PATIENT_TELEPHONE },
+    { label: "Date", value: SearchBy.DATE }
+];
+
 interface AppointmentListState {
     isLoading: boolean;
     list: AppointmentDto[];
@@ -26,6 +36,8 @@ interface AppointmentListState {
     pageSize: number;
     totalPages: number;
     totalElements: number;
+    searchKey: string;
+    searchBy: SearchBy;
 };
 
 enum ActionType {
@@ -40,6 +52,7 @@ enum ActionType {
     SET_TOTAL_PAGES,
     SET_PAGINATION_INFO,
     SET_PAGINATION_MODEL,
+    SET_SEARCH_KEY,
     SET_LOADING,
 };
 
@@ -50,6 +63,8 @@ const initialState: AppointmentListState = {
     pageSize: 5,
     totalPages: 1,
     totalElements: 1,
+    searchKey: "",
+    searchBy: SearchBy.REF_ID,
     isLoading: false,
 };
 
@@ -79,6 +94,8 @@ const reducer = (state: AppointmentListState, action: { type: ActionType, payloa
             return { ...state, list: action.payload.content, page: action.payload.pageable.pageNumber, pageSize: action.payload.pageable.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, isLoading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, isLoading: true };
+        case ActionType.SET_SEARCH_KEY:
+            return { ...state, searchKey: action.payload.searchKey, searchBy: action.payload.searchBy };
         case ActionType.SET_LOADING:
             return { ...state, isLoading: action.payload };
         default:
@@ -95,34 +112,41 @@ function AppointmentList() {
 
     useEffect(() => {
         fetchAppointments();
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
-    function handleReloadClick(event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void {
+    function handleReloadClick(): void {
         fetchAppointments();
     }
 
-    function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
+    function onPaginationModelChange(model: GridPaginationModel): void {
         dispatch({ type: ActionType.SET_PAGINATION_MODEL, payload: model });
     }
 
-    function handleSelectRow(ids: GridRowSelectionModel, details: GridCallbackDetails<any>): void {
+    function handleSelectRow(ids: GridRowSelectionModel): void {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
     }
 
-    function handleDelete(event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void {
+    function handleDelete(): void {
         deleteAppointment();
     }
 
-    function handleEdit(event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void {
+    function handleEdit(): void {
         throw new Error("Function not implemented.");
     }
 
     async function fetchAppointments() {
         try {
-            const res = await api.get<AppointmentDto>("/appointment-management/page", {
+            const endpoint = state.searchKey.length < 1 ? "/appointment-management/page" : "/appointment-management" + SearchBy.getEndpoint(state.searchBy);
+            const options: Record<string, string> = state.searchKey.length < 1 ? {
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
-            });
+            } : {
+                page: `${state.page}`,
+                pageSize: `${state.pageSize}`,
+                searchKey: state.searchKey
+            };
+
+            const res = await api.get<AppointmentDto>(endpoint, options);
 
             if (res) {
                 console.log(res);
@@ -193,6 +217,10 @@ function AppointmentList() {
         );
     };
 
+    const handleFilterSubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
+        dispatch({ type: ActionType.SET_SEARCH_KEY, payload: { searchKey: searchKey, searchBy: option.value } });
+    }, []);
+
     return (
         <>
             <PageTitle
@@ -211,16 +239,8 @@ function AppointmentList() {
                             sx={{ pb: 2 }}
                         >
                             <Filter 
-                                options={[
-                                    { label: "Reference ID", value: SearchBy.REF_ID },
-                                    { label: "Clinic", value: SearchBy.CLINIC },
-                                    { label: "Doctor", value: SearchBy.DOCTOR },
-                                    { label: "Patient Name", value: SearchBy.PATIENT_NAME },
-                                    { label: "Patient Telephone", value: SearchBy.PATIENT_TELEPHONE },
-                                    { label: "Patient Reference ID", value: SearchBy.PATIENT_TELEPHONE },
-                                    { label: "Date", value: SearchBy.DATE }
-                                ]}
-                                onSubmit={(o, sk) => console.log(o.value, sk)}
+                                options={filterOptions}
+                                onSubmit={handleFilterSubmit}
                             />
                         </Box>
                         <Box

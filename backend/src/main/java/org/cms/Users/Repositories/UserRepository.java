@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 // this will be auto implemented by Spring into a Bean called userRepository
@@ -23,18 +24,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByRoleAndReferenceId(Role role, String referenceId);
     Optional<User> findByReferenceId(String refId);
     Optional<User> findByEmail(String email);
-    Iterable<User> findAllByRole(Role role);
+    List<User> findAllByRole(Role role);
     Page<User> findAllByRole(Role role, Pageable pageable);
 
-    @Query(value = "SELECT * FROM user AS u WHERE u.email LIKE :email", nativeQuery = true)
-    Page<User> searchByEmail(Pageable pageable, @Param("email") String email);
+    @Query(value = "SELECT * FROM user AS u WHERE u.role = :role AND u.email LIKE :email", nativeQuery = true)
+    Page<User> searchByEmail(Pageable pageable, @Param("role") String role, @Param("email") String email);
 
-    @Query(value = "SELECT * FROM user AS u WHERE u.name LIKE :name", nativeQuery = true)
-    Page<User> searchByName(Pageable pageable, @Param("name") String name);
+    @Query(value = "SELECT * FROM user AS u WHERE u.role = :role AND u.name LIKE :name", nativeQuery = true)
+    Page<User> searchByName(Pageable pageable, @Param("role") String role, @Param("name") String name);
 
-    @Query(value = "SELECT * FROM user AS u WHERE u.referenceId LIKE :referenceId", nativeQuery = true)
-    Page<User> searchByRefId(Pageable pageable, @Param("referenceId") String referenceId);
+    @Query(value = "SELECT * FROM user AS u WHERE u.role = :role AND u.referenceId LIKE :referenceId", nativeQuery = true)
+    Page<User> searchByRefId(Pageable pageable, @Param("role") String role, @Param("referenceId") String referenceId);
     
-    @Query(value = "SELECT * FROM user AS u WHERE u.telephone LIKE :telephone", nativeQuery = true)
-    Page<User> searchByPhoneNum(Pageable pageable, @Param("telephone") String telephone);
+    @Query(value = "SELECT * FROM user AS u WHERE u.role = :role AND u.telephone LIKE :telephone", nativeQuery = true)
+    Page<User> searchByTelephone(Pageable pageable, @Param("role") String role, @Param("telephone") String telephone);
 }

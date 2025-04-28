@@ -1,14 +1,16 @@
-import { alpha, Box, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
+import { alpha, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Add, Check, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
-import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { AssignPatientsDto, Patient, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types";
 import { useLocation, useNavigate } from "react-router";
 import { For } from "../../../enums/For";
+import Filter, { FilterOption } from "../../../components/Filter";
+import { SearchBy } from "../../../enums/SearchBy";
 
 const columns: GridColDef[] = [
     { field: "referenceId", headerName: "Ref.ID", width: 70 },
@@ -21,6 +23,13 @@ const columns: GridColDef[] = [
     { field: "updatedAt", headerName: "Updated At", width: 100 },
 ];
 
+const filterOptions: FilterOption[] = [
+    { value: SearchBy.EMAIL, label: "E-mail" },
+    { value: SearchBy.NAME, label: "Name" },
+    { value: SearchBy.REF_ID, label: "Ref.ID" },
+    { value: SearchBy.TELEPHONE, label: "Telephone" }
+];
+
 interface PatientListState {
     selectedIds: Set<GridRowId>,
     list: Patient[];
@@ -28,6 +37,8 @@ interface PatientListState {
     pageSize: number;
     totalPages: number;
     totalElements: number;
+    searchKey: string;
+    searchBy: SearchBy;
     loading: boolean;
 };
 
@@ -43,6 +54,7 @@ enum ActionType {
     SET_TOTAL_PAGES,
     SET_PAGINATION_INFO,
     SET_PAGINATION_MODEL,
+    SET_SEARCH_KEY,
     SET_LOADING,
 };
 
@@ -53,6 +65,8 @@ const initialState: PatientListState = {
     pageSize: 5,
     totalPages: 1,
     totalElements: 1,
+    searchKey: "",
+    searchBy: SearchBy.EMAIL,
     loading: false,  
 };
 
@@ -80,6 +94,8 @@ const reducer = (state: PatientListState, action: { type: ActionType, payload: a
             return { ...state, list: action.payload.list, page: action.payload.page, pageSize: action.payload.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
+        case ActionType.SET_SEARCH_KEY:
+            return { ...state, searchKey: action.payload.searchKey, searchBy: action.payload.searchBy };
         case ActionType.SET_LOADING:
             if (state.loading === action.payload)
                 return { ...state };
@@ -101,16 +117,23 @@ function PatientsList() {
     const alert = useAlert();
 
     useEffect(() => {
+        console.log(state.searchKey);
         fetchUsers();
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const fetchUsers = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try {
-            const res = await api.get<PageResponse<User>>("/patient-management/page", {
+            const endpoint = state.searchKey.length < 1 ? "/patient-management/page" : "/patient-management" + SearchBy.getEndpoint(state.searchBy);
+            const options: Record<string, string> = state.searchKey.length < 1 ? {
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`
-            });
+            } : {
+                page: `${state.page}`,
+                pageSize: `${state.pageSize}`,
+                searchKey: state.searchKey
+            };
+            const res = await api.get<PageResponse<User>>(endpoint, options);
             if (res) {
                 console.log(res.content);
                 dispatch({
@@ -126,7 +149,7 @@ function PatientsList() {
         } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const handleSelectRow = useCallback((ids: GridRowSelectionModel) => {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
@@ -140,7 +163,7 @@ function PatientsList() {
         navigate("/patient-management/create", { state: { ...location.state, for: For.CREATING_PATIENT_ON_THE_FLY } });
     }, []);
 
-    function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
+    function onPaginationModelChange(model: GridPaginationModel): void {
         dispatch({
             type: ActionType.SET_PAGINATION_INFO, payload: {
                 page: model.page,
@@ -166,7 +189,7 @@ function PatientsList() {
         navigate("/patient-management/create", { state: patient });
     }, [state.list, state.selectedIds]);
 
-    const handleAssign = useCallback(async (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): Promise<void> => {
+    const handleAssign = useCallback(async (): Promise<void> => {
         const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
 
         if (!doctorId) return;
@@ -186,7 +209,7 @@ function PatientsList() {
         }
     }, [state.list, state.selectedIds]);
 
-    const handleSelectPatient = useCallback((event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent> | undefined): void => {
+    const handleSelectPatient = useCallback((): void => {
         console.log(location.state);
         if(location.state && location.state.for && location.state.for === For.SELECTING_PATIENT){
             navigate("/prescription-management/create", { state: { patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
@@ -199,13 +222,17 @@ function PatientsList() {
         }
     }, [state.list, state.selectedIds]);
 
+    const handleFilterSubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
+        dispatch({ type: ActionType.SET_SEARCH_KEY, payload: { searchKey: searchKey, searchBy: option.value } });
+    }, []);
+
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onAssign: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onSelect: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
-    }
+    };
 
     function TableToolbar(props: TableToolbarProps) {
         if (!props.numSelected)
@@ -277,21 +304,21 @@ function PatientsList() {
                     pt: 2,
                     pb: 2
                 }}>
-                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start" }}>
-                        <Box
-                            sx={{ pb: 2 }}
-                        >
-                            <Tooltip title="Reload">
-                                <IconButton onClick={handleReloadClick}>
-                                    <ReplayOutlined />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Create new customer">
-                                <IconButton onClick={handleAddClick}>
-                                    <Add />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
+                    <Stack sx={{ display: "flex", flexDirection: "row", justifyContent: "end", textAlign: "start", alignItems: "center", pb: 2, gap: 1 }}>
+                        <Filter
+                            options={filterOptions}
+                            onSubmit={handleFilterSubmit}
+                        />
+                        <Tooltip title="Reload">
+                            <IconButton onClick={handleReloadClick}>
+                                <ReplayOutlined />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Create new customer">
+                            <IconButton onClick={handleAddClick}>
+                                <Add />
+                            </IconButton>
+                        </Tooltip>
                     </Stack>
                     <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onAssign={handleAssign} onSelect={handleSelectPatient} />
                     <DataGrid

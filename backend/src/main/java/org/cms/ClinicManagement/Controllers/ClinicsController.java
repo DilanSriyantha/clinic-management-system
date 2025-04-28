@@ -30,7 +30,7 @@ public class ClinicsController {
     }
 
     @GetMapping("/byId")
-    public @ResponseBody ResponseEntity<Clinic> get(@RequestParam int clinicId) {
+    public @ResponseBody ResponseEntity<ClinicDto> get(@RequestParam int clinicId) {
         return ResponseEntity.ok(clinicService.get(clinicId));
     }
 
@@ -47,6 +47,26 @@ public class ClinicsController {
             HttpServletResponse response
     ) {
         return ResponseEntity.ok(clinicService.getPage(page, pageSize, response));
+    }
+
+    @GetMapping("/searchByCaption")
+    public @ResponseBody ResponseEntity<Page<ClinicDto>> handleSearchByCaption(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(clinicService.searchByCaption(page, pageSize, searchKey));
+    }
+
+    @GetMapping("/searchByDayOfWeek")
+    public @ResponseBody ResponseEntity<Page<ClinicDto>> handleSearchByDOW(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(clinicService.searchByDOW(page, pageSize, searchKey));
+    }
+
+    @GetMapping("/searchByTime")
+    public @ResponseBody ResponseEntity<Page<ClinicDto>> handleSearchByTime(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(clinicService.searchByTime(page, pageSize, searchKey));
+    }
+
+    @GetMapping("/searchByDoctor")
+    public @ResponseBody ResponseEntity<Page<ClinicDto>> handleSearchByDoctorName(@RequestParam int page, @RequestParam int pageSize, @RequestParam String searchKey) {
+        return ResponseEntity.ok(clinicService.searchByDoctorName(page, pageSize, searchKey));
     }
 
     @PostMapping("/create")

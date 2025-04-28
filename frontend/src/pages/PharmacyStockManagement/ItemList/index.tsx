@@ -2,12 +2,14 @@ import { alpha, Button, Card, Container, IconButton, Stack, Toolbar, Tooltip, Ty
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
 import { Add, Delete, Edit, ReplayOutlined } from "@mui/icons-material";
-import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import { ItemDto, User } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { PageResponse } from "../../../types";
 import { useLocation, useNavigate } from "react-router";
+import Filter, { FilterOption } from "../../../components/Filter";
+import { SearchBy } from "../../../enums/SearchBy";
 
 const columns: GridColDef[] = [
     { field: "itemCode", headerName: "Item Code", width: 170 },
@@ -20,6 +22,13 @@ const columns: GridColDef[] = [
     { field: "updateAt", headerName: "Updated At", width: 100 },
 ];
 
+const filterOptions: FilterOption[] = [
+    { value: SearchBy.CAPTION, label: "Caption" },
+    { value: SearchBy.CATEGORY, label: "Category" },
+    { value: SearchBy.FORM, label: "Form" },
+    { value: SearchBy.STRENGTH, label: "Strength" }
+];
+
 interface ItemListState {
     selectedIds: Set<GridRowId>,
     list: ItemDto[];
@@ -27,6 +36,8 @@ interface ItemListState {
     pageSize: number;
     totalPages: number;
     totalElements: number;
+    searchKey: string;
+    searchBy: SearchBy;
     loading: boolean;
 };
 
@@ -42,6 +53,7 @@ enum ActionType {
     SET_TOTAL_PAGES,
     SET_PAGINATION_INFO,
     SET_PAGINATION_MODEL,
+    SET_SEARCH_KEY,
     SET_LOADING,
 };
 
@@ -52,6 +64,8 @@ const initialState: ItemListState = {
     pageSize: 5,
     totalPages: 1,
     totalElements: 1,
+    searchKey: "",
+    searchBy: SearchBy.CAPTION,
     loading: false,
 };
 
@@ -79,6 +93,8 @@ const reducer = (state: ItemListState, action: { type: ActionType, payload: any 
             return { ...state, list: action.payload.content, page: action.payload.pageable.pageNumber, pageSize: action.payload.pageable.pageSize, totalPages: action.payload.totalPages, totalElements: action.payload.totalElements, loading: false };
         case ActionType.SET_PAGINATION_MODEL:
             return { ...state, page: action.payload.page, pageSize: action.payload.pageSize, loading: true };
+        case ActionType.SET_SEARCH_KEY:
+            return { ...state, searchKey: action.payload.searchKey, searchBy: action.payload.searchBy };
         case ActionType.SET_LOADING:
             if (state.loading === action.payload)
                 return { ...state };
@@ -101,16 +117,25 @@ function ItemList() {
 
     useEffect(() => {
         fetchItems();
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const fetchItems = useCallback(async () => {
         dispatch({ type: ActionType.SET_LOADING, payload: true });
         try {
-            const res = await api.get<PageResponse<User>>("/pharmacy-stock-management/items/page", {
+            const endpoint = state.searchKey.length < 1 ? "/pharmacy-stock-management/items/page" : "/pharmacy-stock-management/items" + SearchBy.getEndpoint(state.searchBy);
+
+            const options: Record<string, string> = state.searchKey.length < 1 ? {
                 page: `${state.page}`,
                 pageSize: `${state.pageSize}`,
                 stockId: `${location.state.id}`
-            });
+            } : {
+                page: `${state.page}`,
+                pageSize: `${state.pageSize}`,
+                stockId: `${location.state.id}`,
+                searchKey: state.searchKey
+            }
+
+            const res = await api.get<PageResponse<User>>(endpoint, options);
             if (res) {
                 console.log(res.content);
                 dispatch({
@@ -120,7 +145,7 @@ function ItemList() {
         } catch (err) {
             alert.setError(`${err instanceof Error ? err.message : "Unknown error"}`);
         }
-    }, [state.page, state.pageSize]);
+    }, [state.page, state.pageSize, state.searchKey]);
 
     const handleSelectRow = useCallback((ids: GridRowSelectionModel) => {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
@@ -130,11 +155,11 @@ function ItemList() {
         fetchItems();
     }, []);
 
-    const handleCreateItem = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
+    const handleCreateItem = useCallback((): void => {
         navigate("/pharmacy-stock-management/create-item", { state: { stock: location.state } })
     }, []);
 
-    function onPaginationModelChange(model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void {
+    function onPaginationModelChange(model: GridPaginationModel): void {
         dispatch({
             type: ActionType.SET_PAGINATION_MODEL, payload: model
         });
@@ -158,6 +183,10 @@ function ItemList() {
         const item = state.list.find((item) => state.selectedIds.has(item.id));
         navigate("/pharmacy-stock-management/create-item", { state: { item: item } });
     }, [state.list, state.selectedIds]);
+
+    const handleFilterSubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
+        dispatch({ type: ActionType.SET_SEARCH_KEY, payload: { searchKey: searchKey, searchBy: option.value } });
+    }, []);
 
     interface TableToolbarProps {
         numSelected?: number;
@@ -225,7 +254,12 @@ function ItemList() {
                             direction={"row"}
                             gap={1}
                             sx={{ pb: 2 }}
+                            alignItems={"center"}
                         >
+                            <Filter
+                                options={filterOptions}
+                                onSubmit={handleFilterSubmit}
+                            />
                             <Tooltip title="Reload">
                                 <IconButton onClick={handleReloadClick}>
                                     <ReplayOutlined />
