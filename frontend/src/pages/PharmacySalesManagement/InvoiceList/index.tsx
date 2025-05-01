@@ -194,7 +194,7 @@ function InvoiceList() {
                 {!(props.numSelected < 1) && (
                     <Tooltip title="View records">
                         <IconButton onClick={props.onSelected}>
-                            <ListAlt color="info" />
+                            <ListAlt color="primary" />
                         </IconButton>
                     </Tooltip>)}
                 <Tooltip title="Delete">

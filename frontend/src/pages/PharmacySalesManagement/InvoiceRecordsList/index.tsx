@@ -97,7 +97,8 @@ function InvoiceRecordsList() {
         try {
             const res = await api.get<PageResponse<InvoiceDto>>("/invoice-records/page", {
                 page: `${state.page}`,
-                pageSize: `${state.pageSize}`
+                pageSize: `${state.pageSize}`,
+                invoiceId: inv.id,
             });
             if (res)
                 dispatch({ type: ActionType.SET_LIST, payload: res });

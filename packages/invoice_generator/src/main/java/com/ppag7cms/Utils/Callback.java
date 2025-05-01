@@ -1,4 +1,4 @@
-package com.ppag7cms.Utils.PdfUtility;
+package com.ppag7cms.Utils;
 
 public interface Callback <T> {
     void onSuccess(T data);

@@ -1,21 +1,34 @@
 package com.ppag7cms.Utils.PdfUtility;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+
+import java.awt.image.BufferedImage;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.ppag7cms.Helpers.FileHelper;
 import com.ppag7cms.Models.Invoice;
+import com.ppag7cms.Utils.Callback;
 
 public class PdfUtility {
     
@@ -27,7 +40,23 @@ public class PdfUtility {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                
+                String validFilename = fileName.replaceAll("[:|?*<\">+\\[\\]/']", "_");
+
+                File file = FileHelper.createEmptyFile(filePath, validFilename);
+
+                FileOutputStream fos = null;
+                try{
+                    fos = new FileOutputStream(file);
+                }catch(IOException e) {
+                    callback.onFailure(e);
+                }
+
+                InvoicePdf invoicePdf = new InvoicePdf(invoice, fos);
+                try{
+                    invoicePdf.generate();
+                }catch(Exception e) {
+                    callback.onFailure(e);
+                }
             }
         });
     }
@@ -35,27 +64,84 @@ public class PdfUtility {
     private static class InvoicePdf {
         
         private final Invoice invoice;
-        private final String filePath;
-        private final String fileName;
+        private final FileOutputStream fos;
 
-        public InvoicePdf(Invoice invoice, String filePath, String fileName) {
+        public InvoicePdf(Invoice invoice, FileOutputStream fos) {
             this.invoice = invoice;
-            this.filePath = filePath;
-            this.fileName = fileName.replaceAll("[:|?*<\">+\\[\\]/']", "_");
+            this.fos = fos;
         }
 
-        public void generate() throws FileNotFoundException, IOException {
-            File file = FileHelper.createEmptyFile(filePath, fileName);
+        public void generate() throws Exception {
+            Document document = new Document(PageSize.A7);
 
-            FileOutputStream fos = new FileOutputStream(file);
+            final PdfWriter writer = PdfWriter.getInstance(document, fos);
+            writer.setPageEvent(new PdfPageEventListener());
 
-            final PdfWriter writer = new PdfWriter(fileName);
+            document.open();
 
-            PdfDocument pdfDocument = new PdfDocument(writer);
+            Rectangle headerRect = new Rectangle(
+                1.f,
+                document.getPageSize().getHeight() - 121.f,
+                document.getPageSize().getWidth() - 1.f,
+                document.getPageSize().getWidth() - 1.f
+            );
+            headerRect.setBorder(Rectangle.BOX);
+            headerRect.setBorderWidth(1.f);
+            headerRect.setBorderColor(BaseColor.BLACK);
+            document.add(headerRect);
 
-            Document document = new Document(pdfDocument);
+            Image logoImg = resourceToImage("logo.png");
+            logoImg.setAlignment(0);
+            logoImg.scaleAbsoluteHeight(50.f);
+            logoImg.scaleAbsoluteWidth(50.f);
+            logoImg.scalePercent(10.f);
+            logoImg.setAbsolutePosition(0.f, document.getPageSize().getHeight() - 110.f);
+            document.add(logoImg);
 
+            BaseFont titleBaseFont = BaseFont.createFont(BaseFont.HELVETICA_BOLD, "Cp1252", false);
+            BaseFont contentBaseFont = BaseFont.createFont(BaseFont.HELVETICA, "Cp1252", false);
 
+            PdfContentByte organizationTitle = writer.getDirectContent();
+            organizationTitle.saveState();
+            organizationTitle.beginText();
+            organizationTitle.moveText(0, 0);
+            organizationTitle.setFontAndSize(titleBaseFont, 16.f);
+            organizationTitle.showText("Organization Title");
+            organizationTitle.endText();
+            organizationTitle.restoreState();
+
+            PdfContentByte
+        }
+
+        private Image resourceToImage(String name) throws Exception {
+            byte[] bytes = compress(name, 60.f);
+
+            return Image.getInstance(bytes);
+        }
+
+        private byte[] compress(String name, float quality) throws Exception {
+            InputStream is = getClass().getResourceAsStream(name);
+            if(is == null)
+                throw new Exception("Resource not found: " + name );
+
+            BufferedImage bufferedImage = ImageIO.read(is);
+            if(bufferedImage == null)
+                throw new Exception("Failed to read image: " + name);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+            jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            jpgWriteParam.setCompressionQuality(quality);
+
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            jpgWriter.setOutput(ios);
+            jpgWriter.write(null, new IIOImage(bufferedImage, null, null), jpgWriteParam);
+
+            jpgWriter.dispose();
+
+            return baos.toByteArray();
         }
 
         private static class PdfPageEventListener extends PdfPageEventHelper {
