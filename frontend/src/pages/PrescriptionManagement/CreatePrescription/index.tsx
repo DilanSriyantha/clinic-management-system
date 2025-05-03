@@ -1,7 +1,7 @@
 import { Card, Container, Box, Typography, Button, Grid2, ListItem, ListItemText, Stack, TextField, IconButton, Tooltip, useTheme, Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { useLocation, useNavigate } from "react-router";
-import { Patient, PrescriptionCreateRequest, PrescriptionDto, PrescriptionLineDto } from "../../../types";
+import { Patient, PrescriptionCreateRequest, PrescriptionLineDto } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { ChangeEvent, KeyboardEvent, SyntheticEvent, useCallback, useReducer } from "react";
@@ -47,7 +47,7 @@ const reducer = (state: CreatePrescriptionState, action: { type: ActionType, pay
         case ActionType.ADD_PRESCRIPTION_LINE:
             return { ...state, prescriptionLines: [...state.prescriptionLines, action.payload], drug: "", dose: "", frequency: "" };
         case ActionType.REMOVE_PRESCRIPTION_LINE:
-            return { ...state, prescriptionLines: state.prescriptionLines.filter((pl, idx) => idx !== action.payload) };
+            return { ...state, prescriptionLines: state.prescriptionLines.filter((_pl, idx) => idx !== action.payload) };
         case ActionType.SET_LOADING:
             return { ...state, isLoading: action.payload };
         default:
@@ -132,7 +132,7 @@ function CreatePrescription() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: event.target.name, value: event.target.value } });
     }, [state.drug, state.dose, state.frequency]);
 
-    const handleTimeChange = useCallback((event: SyntheticEvent<Element, Event>, value: TimeOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<TimeOption> | undefined): void => {
+    const handleTimeChange = useCallback((_event: SyntheticEvent<Element, Event>, value: TimeOption | null, _reason: AutocompleteChangeReason, _details?: AutocompleteChangeDetails<TimeOption> | undefined): void => {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "time", value: value?.value } });
     }, [state.time]);
 

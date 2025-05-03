@@ -1,21 +1,29 @@
-import { Button, Card, Divider, Grid2, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, Grid2, Stack, TextField, Typography } from "@mui/material";
 import InvoiceTable from "../../../components/InvoiceTable";
 import moment from "moment";
 import { Add, Send } from "@mui/icons-material";
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer, useState } from "react";
 import { useAlert } from "../../../hooks/useAlert";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
-import { CreateInvoiceRequest, InvoiceRecord, CreateInvoiceRecordRequest, ItemDto, PageResponse } from "../../../types";
+import { CreateInvoiceRequest, InvoiceRecord, CreateInvoiceRecordRequest, ItemDto, PageResponse, Invoice } from "../../../types";
 import MultipleItemsDialog from "../../../components/MultipleItemsDialog";
 import { useAuth } from "../../../hooks/useAuth";
+import PaymentConfirmation from "../../../components/PaymentConfirmation";
+import { useLocation, useNavigate } from "react-router";
+import { For } from "../../../enums/For";
 
-interface CreateInvoiceState {
+export interface CreateInvoiceState {
     invoiceNumber: number;
     rows: InvoiceRecord[];
     matchingItems: ItemDto[];
     itemCode: number;
     quantity: number;
     subtotal: number;
+    discount: number;
+    paidAmount: number;
+    balance: number;
+    patientId: number;
+    patientName: string;
     loading: boolean;
 };
 
@@ -28,6 +36,10 @@ enum ActionType {
     START_LOADING,
     STOP_LOADING,
     SET_INVOICE_NUMBER,
+    SET_PAYMENT_INFO,
+    SET_PAID_AMOUNT,
+    SET_PATIENT,
+    RESTORE_CACHED_STATE,
     RESET
 };
 
@@ -38,6 +50,11 @@ const initialState: CreateInvoiceState = {
     itemCode: 0,
     quantity: 0,
     subtotal: 0,
+    discount: 0,
+    paidAmount: 0,
+    balance: 0,
+    patientId: -1,
+    patientName: "",
     loading: false
 };
 
@@ -58,7 +75,13 @@ const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload:
         case ActionType.STOP_LOADING:
             return { ...state, loading: false };
         case ActionType.SET_INVOICE_NUMBER:
-            return { ...state, invoiceNumber: action.payload }
+            return { ...state, invoiceNumber: action.payload };
+        case ActionType.SET_PAID_AMOUNT: 
+            return { ...state, paidAmount: action.payload, balance: action.payload-state.subtotal };
+        case ActionType.SET_PATIENT:
+            return { ...state, patientId: action.payload.id, patientName: action.payload.name };
+        case ActionType.RESTORE_CACHED_STATE:
+            return action.payload;
         case ActionType.RESET:
             return { ...initialState }
         default:
@@ -69,14 +92,34 @@ const reducer = (state: CreateInvoiceState, action: { type: ActionType, payload:
 function CreateInvoice() {
 
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [paymentConfirmationOpen, setPaymentConfirmationOpen] = useState<boolean>(false);
 
     const api = useApi();
     const alert = useAlert();
     const [user] = useAuth();
+    const navigate = useNavigate();
+
+    const location = useLocation();
 
     useEffect(() => {
+        populateWithCachedState();
+        setPatient();
         fetchNextInvoiceNumber();
     }, []);
+
+    const populateWithCachedState = useCallback(() => {
+        let cachedState = localStorage.getItem("invoiceState");
+        if(!cachedState) return;
+        cachedState = JSON.parse(cachedState);
+        localStorage.removeItem("invoiceState");
+        dispatch({ type: ActionType.RESTORE_CACHED_STATE, payload: cachedState });
+    }, []);
+
+    const setPatient = useCallback(() => {
+        if(!(location.state && location.state.patient)) return;
+
+        dispatch({ type: ActionType.SET_PATIENT, payload: location.state.patient });
+    }, []); 
 
     const fetchNextInvoiceNumber = useCallback(async () => {
         try{
@@ -139,33 +182,90 @@ function CreateInvoice() {
         fetchItems();
     }, [state.itemCode]);
 
-    const onSubmit = useCallback(async () => {
+    const handlePaymentConfirmationClose = () => {
+        setPaymentConfirmationOpen(false);
+    };
+
+    const handlePaidAmountChange = useCallback((paidAmount: number) => {
+        dispatch({ type: ActionType.SET_PAID_AMOUNT, payload: paidAmount });
+    }, [state.paidAmount, state.balance]);
+
+    const onSubmit = async () => {
+        setPaymentConfirmationOpen(true);
+    };
+
+    const handleAddPatient = useCallback(() => {
+        localStorage.setItem("invoiceState", JSON.stringify(state));
+        navigate("/patient-management/list", { state: {...state, for: For.SELECTING_PATIENT_FOR_INVOICE} });
+    }, [state]);
+
+    const handlePaymentConfirmed = () => {
+        setPaymentConfirmationOpen(false);
+        createInvoice();
+    };
+
+    const createInvoice = async () => {
         dispatch({ type: ActionType.START_LOADING, payload: null });
         try{
             const res = await api.post<CreateInvoiceRequest, BasicResultSet>("/invoice/create", {
                 number: state.invoiceNumber,
                 date: moment(Date.now()).format("YYYY-MM-DD"),
-                subTotal: state.subtotal,
+                subtotal: state.subtotal,
+                discount: state.discount,
+                paidAmount: state.paidAmount,
+                balance: state.balance,
                 pharmacistId: user!.user.id,
-                records: state.rows.map(r => {
+                patientId: state.patientId,
+                records: state.rows.map(row => {
                     return {
-                        itemId: r.itemId,
-                        quantity: Number(r.quantity),
-                        total: r.total
+                        invoiceId: state.invoiceNumber,
+                        invoiceNumber: state.invoiceNumber,
+                        itemId: row.itemId,
+                        quantity: row!.quantity,
+                        total: row!.total
                     } as CreateInvoiceRecordRequest;
-                }),
+                })
             });
-            if(res) {
-                dispatch({ type: ActionType.RESET, payload: null });
-                alert.setSuccess(res.message);
-                fetchNextInvoiceNumber();
-            }
+
+            if(!res) return;
+            
+            generateInvoicePdf();
         } catch(err) {
             console.log(err);
             dispatch({ type: ActionType.STOP_LOADING, payload: null });
             alert.setError(err instanceof Error ? err.message : "Unknown error.");
         }
-    }, [state]);
+    };
+
+    const generateInvoicePdf = useCallback(() => {
+        const invoice: Invoice = {
+            id: state.invoiceNumber,
+            number: state.invoiceNumber,
+            date: Date.now(),
+            subTotal: state.subtotal,
+            pharmacistName: user!.user.name,
+            patientName: state.patientName,
+            records: state.rows,
+            paidAmount: 5000,
+            createdAt: moment(Date.now()),
+            updatedAt: moment(Date.now()),
+        };
+
+        try{
+            const res = window.InvoiceGenerator.generateInvoicePdf(JSON.stringify(invoice));
+            if(!res) return;
+
+            console.log(res);
+
+            dispatch({ type: ActionType.RESET, payload: null });
+            alert.setSuccess("Invoice created successfully.");
+            fetchNextInvoiceNumber();
+        }catch(err) {
+            console.log(err);
+            dispatch({ type: ActionType.STOP_LOADING, payload: null });
+            alert.setError(err instanceof Error ? err.message : "Unknown error.");
+        }
+    }, [state, user]);
 
     return (
         <>
@@ -189,21 +289,30 @@ function CreateInvoice() {
                                 <Card sx={{ p: 1, height: "100%" }}>
                                     <Typography variant="h6">Date</Typography>
                                     <Divider />
-                                    <Typography pt={2} variant="h3">{moment(Date.now()).format("YYYY/MM/DD")}</Typography>
+                                    <Typography pt={1} variant="h5">{moment(Date.now()).format("YYYY/MM/DD")}</Typography>
+                                </Card>
+                            </Grid2>
+                            <Grid2 size={12}>
+                                <Card sx={{ p: 1, height: "100%" }}>
+                                    <Typography variant="h6">Patient</Typography>
+                                    <Divider />
+                                    <Box pt={1}>
+                                        <a style={{ cursor: "pointer" }} onClick={handleAddPatient}>{state.patientName ? state.patientName : "(+) Select"}</a>
+                                    </Box>
                                 </Card>
                             </Grid2>
                             <Grid2 size={12}>
                                 <Card sx={{ p: 1, height: "100%" }}>
                                     <Typography variant="h6">Invoice</Typography>
                                     <Divider />
-                                    <Typography pt={2} variant="h3">{state.invoiceNumber}</Typography>
+                                    <Typography pt={1} variant="h5">{state.invoiceNumber}</Typography>
                                 </Card>
                             </Grid2>
                             <Grid2 size={12}>
                                 <Card sx={{ p: 1, height: "100%" }}>
                                     <Typography variant="h6">Subtotal</Typography>
                                     <Divider />
-                                    <Typography pt={2} variant="h3">{`LKR ${state.subtotal.toFixed(2)}`}</Typography>
+                                    <Typography pt={1} variant="h5">{`LKR ${state.subtotal.toFixed(2)}`}</Typography>
                                 </Card>
                             </Grid2>
                             <Grid2 size={12}>
@@ -226,7 +335,10 @@ function CreateInvoice() {
                     </Grid2>
                 </Grid2>
             </Stack>
+
             <MultipleItemsDialog rows={state.matchingItems} open={state.matchingItems.length > 0} onClose={closeItemsDialog} />
+
+            <PaymentConfirmation open={paymentConfirmationOpen} onClose={handlePaymentConfirmationClose} onPaidAmountChange={handlePaidAmountChange} onConfirm={handlePaymentConfirmed} invoice={state} />
         </>
     );
 }

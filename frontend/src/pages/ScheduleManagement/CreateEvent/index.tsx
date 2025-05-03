@@ -145,7 +145,7 @@ function CreateEvent() {
     }, []);
 
 
-    function handleEventVisibilityChanged(event: SyntheticEvent<Element, Event>, value: EventVisibilityOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<EventVisibilityOption> | undefined): void {
+    function handleEventVisibilityChanged(_event: SyntheticEvent<Element, Event>, value: EventVisibilityOption | null, _reason: AutocompleteChangeReason, _details?: AutocompleteChangeDetails<EventVisibilityOption> | undefined): void {
         if(value === null) return;
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "visibility", value: value.value } });
     }

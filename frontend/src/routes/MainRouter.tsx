@@ -148,8 +148,32 @@ const MainRoutes: RouteObject[] = [
             },
             // reporting
             {
-                path: "reporting",
-                element: <><Typography variant='h1'>Reporting & Analyzis</Typography></>
+                path: "reporting-and-analysis/user-report",
+                element: <><Typography variant="h1">User Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/patient-report",
+                element: <><Typography variant="h1">Patient Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/prescription-report",
+                element: <><Typography variant="h1">Prescription Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/clinic-report",
+                element: <><Typography variant="h1">CLinic Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/appointment-report",
+                element: <><Typography variant="h1">Appointment Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/pharmacy-sales-report",
+                element: <><Typography variant="h1">Pharmacy Sales Report</Typography></>
+            },
+            {
+                path: "reporting-and-analysis/pharmacy-stocks-report",
+                element: <><Typography variant="h1">Pharmacy Stocks Report</Typography></>
             },
             // backup
             {

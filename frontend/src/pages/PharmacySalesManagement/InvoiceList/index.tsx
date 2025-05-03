@@ -64,8 +64,9 @@ const reducer = (state: InvoiceListState, action: { type: ActionType, payload: a
 
 const columns: GridColDef[] = [
     { field: "number", headerName: "Inv.#" },
-    { field: "subTotal", headerName: "Sub Total" },
+    { field: "subtotal", headerName: "Sub Total" },
     { field: "pharmacistName", headerName: "Pharmacist" },
+    { field: "patientName", headerName: "Patient" },
     { field: "createdAt", headerName: "Created At" },
     { field: "updatedAt", headerName: "Updated At" }
 ];
@@ -124,7 +125,7 @@ function InvoiceList() {
     const deleteInvoice = useCallback(async () => {
         dispatch({ type: ActionType.START_LOADING, payload: null });
         try {
-            const res = await api.delete<Set<GridRowId>, BasicResultSet>("/incoice/deleteBatch", undefined, state.selectedIds);
+            const res = await api.delete<Set<GridRowId>, BasicResultSet>("/invoice/deleteBatch", undefined, state.selectedIds);
             if (res) {
                 dispatch({ type: ActionType.STOP_LOADING, payload: null });
                 alert.setError(res.message);

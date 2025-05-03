@@ -20,7 +20,7 @@ interface CreatePatientState {
     telephone: string;
     allergiesNote: string;
     loading: boolean;
-};
+};  
 
 const initialState: CreatePatientState = {
     name: "",
@@ -99,8 +99,8 @@ function CreatePatient() {
                 console.log(res);
                 alert.setSuccess("Patient created successfully");
                 
-                if(location.state && location.state.for === For.CREATING_PATIENT_ON_THE_FLY)
-                    navigate("/patient-management/list", { state: {...location.state, for: For.SELECTING_PATIENT} });
+                if(location.state && (location.state.for === For.SELECTING_PATIENT || location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT || location.state.for === For.SELECTING_PATIENT_FOR_INVOICE))
+                    navigate("/patient-management/list", { state: {...location.state} });
             }
         }catch(err){
             console.log(err);
@@ -146,7 +146,7 @@ function CreatePatient() {
         <>
             <PageTitle
                 subTitle="Patient Management"
-                title={location.state && location.state.for !== For.CREATING_PATIENT_ON_THE_FLY ? "Update Patient" : "Create Patient"}
+                title={location.state && (location.state.for !== For.SELECTING_PATIENT || location.state.for !== For.SELECTING_PATIENT_FOR_APPOINTMENT || location.state.for === For.SELECTING_PATIENT_FOR_INVOICE) ? "Update Patient" : "Create Patient"}
                 backButton={location.state ? true : false}
             />
             <Card>

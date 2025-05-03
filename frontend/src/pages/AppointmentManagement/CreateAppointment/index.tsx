@@ -1,6 +1,6 @@
 import { Card, Container, Box, Typography, Button, Stack } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, MouseEvent, useReducer, useCallback, useEffect } from "react";
+import { KeyboardEvent, useReducer, useCallback, useEffect } from "react";
 import { AppointmentCreateRequest, Clinic } from "../../../types";
 import { useLocation, useNavigate } from "react-router";
 import { For } from "../../../enums/For";
@@ -82,7 +82,7 @@ function CreateAppointment() {
         }
     }, [state.appointment.queuePosition]);
 
-    async function handleSubmit(event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): Promise<void> {
+    async function handleSubmit(): Promise<void> {
         try{
             const res = await api.post<AppointmentCreateRequest, BasicResultSet>("/appointment-management/create", state.appointment);
             if(res){
@@ -99,7 +99,7 @@ function CreateAppointment() {
             handleSubmit();
     }
 
-    const handleClear = useCallback((event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>): void => {
+    const handleClear = useCallback((): void => {
         window.location.reload();
     }, []);
 

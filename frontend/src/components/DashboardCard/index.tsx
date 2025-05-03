@@ -4,10 +4,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
+import { CurrencyFormatter } from '../../utils/CurrencyFormatter';
 
 interface DashboardCardProps {
     title: string;
     number: number;
+    currency?: boolean;
     icon: string;
     bgColor: string;
     loading?: boolean;
@@ -44,7 +46,7 @@ const DashboardCard: React.FC<DashboardCardProps> = (props) => {
                         :
                             <>
                                 <Typography component="div" variant="h1">
-                                    { props.number }
+                                    { props.currency ? CurrencyFormatter.format(props.number) : props.number }
                                 </Typography>
                                 <Typography
                                     variant="h4"

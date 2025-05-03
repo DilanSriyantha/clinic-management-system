@@ -1,7 +1,8 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn, exec } = require("child_process");
 const fs = require("fs");
+const InvoiceGenerator = require("./packages/InvoiceGenerator/api");
 
 var win = null;
 
@@ -51,8 +52,9 @@ function createWindow() {
         width: 1200,
         height: 800,
         webPreferences: {
+            preload: path.join(__dirname, "preload.js"),
             nodeIntegration: true,
-            contextIsolation: false,
+            contextIsolation: true,
         }
     });
 
@@ -93,10 +95,29 @@ app.whenReady().then(() => {
             loadFrontend();
         }
     });
+
+    ipcMain.on("generateInvoice", async (event, invoiceJson) => {
+        InvoiceGenerator.initInvoiceGenerator();
+        try{
+            const res = await InvoiceGenerator.generatePdf(invoiceJson);
+            if(!res) return;
+
+            console.log(res);
+
+            event.reply("onSuccess", res);
+        }catch(err) {
+            console.log(err);
+            
+            event.reply("onError", err);
+        }
+        InvoiceGenerator.killInvoiceGeneratorProcess();
+    });
 });
 
 app.on('window-all-closed', () => {
     app.quit();
+
+    if(!javaProcess) return;
     javaProcess.stdin.write("exit");
     javaProcess.stdin.end();
 });

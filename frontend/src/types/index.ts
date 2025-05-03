@@ -344,11 +344,35 @@ export interface InvoiceDto {
     id: number;
     number: number;
     date: string;
-    subTotal: number;
+    subtotal: number;
+    balance: number;
     pharmacistId: number;
     pharmacistName: string;
+    patientId: number;
+    patientName: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
+};
+
+export interface Invoice {
+    id: number;
+    number: number;
+    date: number;
+    subTotal: number;
+    pharmacistName: string;
+    patientName: string;
+    records: InvoiceRecord[];
+    paidAmount: number;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
+};
+
+export interface InvRecord {
+    id: number;
+    itemCaption: string;
+    itemSellingPrice: number;
+    quantity: number;
+    total: number;
 };
 
 export interface InvoiceRecordDto {
@@ -367,8 +391,12 @@ export interface InvoiceRecordDto {
 export interface CreateInvoiceRequest {
     number: number;
     date: string;
-    subTotal: number;
+    subtotal: number;
+    discount: number;
+    paidAmount: number;
+    balance: number;
     pharmacistId: number;
+    patientId: number;
     records: CreateInvoiceRecordRequest[];
 };
 

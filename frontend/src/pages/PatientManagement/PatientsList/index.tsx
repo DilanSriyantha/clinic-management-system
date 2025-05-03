@@ -160,7 +160,7 @@ function PatientsList() {
     }, []);
 
     const handleAddClick = useCallback(() => {
-        navigate("/patient-management/create", { state: { ...location.state, for: For.CREATING_PATIENT_ON_THE_FLY } });
+        navigate("/patient-management/create", { state: { ...location.state } });
     }, []);
 
     function onPaginationModelChange(model: GridPaginationModel): void {
@@ -220,6 +220,11 @@ function PatientsList() {
             navigate("/appointment-management/create", { state: { ...location.state, patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
             return;
         }
+
+        if(location.state && location.state.for && location.state.for === For.SELECTING_PATIENT_FOR_INVOICE) {
+            navigate("/pharmacy-sales-management/create", { state: { ...location.state, patient: state.list.filter(p => state.selectedIds.has(p.id as GridRowId))[0] } });
+            return;
+        }
     }, [state.list, state.selectedIds]);
 
     const handleFilterSubmit = useCallback((option: FilterOption, searchKey: string): void | Promise<void> => {
@@ -265,7 +270,7 @@ function PatientsList() {
                         <Button variant="contained" startIcon={<Add />} onClick={props.onAssign}>Assign</Button>
                     </Tooltip>
                     :
-                    (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for && For.SELECTING_PATIENT_FOR_APPOINTMENT)
+                    (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for && For.SELECTING_PATIENT_FOR_APPOINTMENT || (location.state && location.state.for && location.state.for == For.SELECTING_PATIENT_FOR_INVOICE))
                     ?
                     <Tooltip title="Assign">
                         <Button variant="contained" startIcon={<Check />} onClick={props.onSelect}>Select</Button>
@@ -293,9 +298,29 @@ function PatientsList() {
     return (
         <>
             <PageTitle
-                subTitle={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) ? "Assign a Patient" : (location.state && location.state.for === For.SELECTING_PATIENT || location.state && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? "Select a patient" : "Patients"}
+                subTitle={
+                    (location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) 
+                    ? "Assign a Patient" 
+                    : (
+                        location.state && (
+                            location.state.for === For.SELECTING_PATIENT || 
+                            location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT ||
+                            location.state.for === For.SELECTING_PATIENT_FOR_INVOICE
+                        )
+                    )
+                        ? "Select a patient" 
+                        : "Patients"
+                }
                 title={"Patients List"}
-                backButton={(location.state && location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC) || (location.state && location.state.for === For.SELECTING_PATIENT) || (location.state && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT) ? true : false}
+                backButton={
+                    location.state && 
+                    (
+                        location.state.for === For.ASSIGN_PATIENTS_TO_CLINIC || 
+                        location.state.for === For.SELECTING_PATIENT || 
+                        location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT || 
+                        location.state.for === For.SELECTING_PATIENT_FOR_INVOICE
+                    )
+                }
             />
             <Card>
                 <Container sx={{

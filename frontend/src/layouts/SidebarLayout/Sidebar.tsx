@@ -185,8 +185,44 @@ const menuOptions = [
     },
     {
         caption: "Reporting & Analysis",
-        to: "reporting",
-        icon: <img src={ReportingIcon} />
+        icon: <img src={ReportingIcon} />,
+        children: [
+            {
+                caption: "User Report",
+                to: "reporting-and-analysis/user-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Patient Report",
+                to: "reporting-and-analysis/patient-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Prescription Report",
+                to: "reporting-and-analysis/prescription-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Clinic Report",
+                to: "reporting-and-analysis/clinic-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Appointment Report",
+                to: "reporting-and-analysis/appointment-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Pharmacy Sales Reports",
+                to: "reporting-and-analysis/pharmacy-sales-report",
+                icon: <InsertDriveFileTwoTone />
+            },
+            {
+                caption: "Pharmacy Stocks Report",
+                to: "reporting-and-analysis/pharmacy-stocks-report",
+                icon: <InsertDriveFileTwoTone />
+            }
+        ]
     },
     {
         caption: "Backup & Restore",

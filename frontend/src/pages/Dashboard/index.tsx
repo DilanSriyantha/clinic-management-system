@@ -123,7 +123,7 @@ function Dashboard() {
                     </Grid2>
                     <Grid2 size={8}>
                         <Box >
-                            <DashboardCard icon={CashIcon} title="Total Payment(s) Today" number={state.todayIncomeCount} bgColor={theme.colors.success.dark} loading={state.loading} />
+                            <DashboardCard icon={CashIcon} title="Total Payment(s) Today" number={state.todayIncomeCount} currency bgColor={theme.colors.success.dark} loading={state.loading} />
                         </Box>
                     </Grid2>
                 </Grid2>

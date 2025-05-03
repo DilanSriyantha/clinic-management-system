@@ -1,0 +1,11 @@
+{
+  "name": "cms-invoice-generator",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "T.D.Dilan Sriyantha",
+  "license": "MIT",
+  "description": ""
+}

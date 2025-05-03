@@ -32,7 +32,7 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const handleSelectRow = React.useCallback((rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails<any>): void => {
+    const handleSelectRow = React.useCallback((rowSelectionModel: GridRowSelectionModel, _details: GridCallbackDetails<any>): void => {
         const selectedIds = new Set<GridRowId>(rowSelectionModel);
         const item = rows.find(item => selectedIds.has(item.id));
 
@@ -41,7 +41,7 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
         setSelectedItem({ itemId: item.id, itemCode: item.itemCode, description: item.caption, unitPrice: item.unitSellingPrice, quantity: 0, total: 0  });
     }, [rows, selectedItem]);
 
-    const handlePaginationModelChange = React.useCallback((model: GridPaginationModel, details: GridCallbackDetails<'pagination'>): void => {
+    const handlePaginationModelChange = React.useCallback((model: GridPaginationModel, _details: GridCallbackDetails<'pagination'>): void => {
         if(model.page == page) return;
         setPage(model.page);
     }, [page]);
