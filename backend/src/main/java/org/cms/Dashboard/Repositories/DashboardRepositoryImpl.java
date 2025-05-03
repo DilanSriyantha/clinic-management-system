@@ -21,7 +21,11 @@ public class DashboardRepositoryImpl {
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'DOCTOR') AS doctor_count,
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'RECEPTIONIST') AS receptionist_count,
                 (SELECT COUNT(*) FROM `user` WHERE `role` = 'PHARMACIST') AS pharmacist_count,
-                (SELECT COUNT(*) FROM `patient`) AS patient_count
+                (SELECT COUNT(*) FROM `patient`) AS patient_count,
+                (SELECT COUNT(*) FROM `appointment` WHERE DATE(created_at) = CURDATE()) AS appointments_today,
+                (SELECT COUNT(*) FROM `invoice` WHERE DATE(`date`) = CURDATE()) AS invoices_today,
+                (SELECT COUNT(*) FROM `item` i WHERE i.current_qty < 20) AS low_stocks_meds,
+                (SELECT SUM(subtotal) FROM `invoice` WHERE DATE(`date`) = CURDATE()) AS payments_today
             """);
 
         Object[] result = (Object[]) query.getSingleResult();
@@ -41,6 +45,9 @@ public class DashboardRepositoryImpl {
                 field.set(dashboardReport, 0);
                 continue;
             }
+
+            if(result[i] == null)
+                result[i] = 0;
 
             field.set(dashboardReport, ((Number)result[i]).intValue());
             i++;

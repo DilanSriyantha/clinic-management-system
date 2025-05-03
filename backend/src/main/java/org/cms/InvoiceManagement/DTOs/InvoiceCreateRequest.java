@@ -20,9 +20,17 @@ public class InvoiceCreateRequest {
 
     private Date date;
 
-    private Float subTotal;
+    private Float subtotal;
+
+    private Float discount;
+
+    private Float paidAmount;
+
+    private Float balance;
 
     private Integer pharmacistId;
+
+    private Integer patientId;
 
     private List<InvoiceRecordCreateRequest> records;
 }

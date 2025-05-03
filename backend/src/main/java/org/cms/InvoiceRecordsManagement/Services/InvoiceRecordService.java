@@ -48,6 +48,8 @@ public class InvoiceRecordService {
         var item = itemRepository.findById(request.getItemId())
             .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
+        item.setCurrentQty(item.getCurrentQty() - request.getQuantity());
+
         invoiceRecord.setInvoice(invoice);
         invoiceRecord.setItem(item);
 

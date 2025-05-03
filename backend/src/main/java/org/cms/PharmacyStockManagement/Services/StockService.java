@@ -59,7 +59,7 @@ public class StockService {
     public Page<ItemDto> getItemsByCode(int page, int pageSize, String itemCode) {
         var pageable = PageRequest.of(page, pageSize);
 
-        return itemRepository.findAllByItemCode(pageable, itemCode).map(itemRowMapper);
+        return itemRepository.searchItemByCaptionOrCode(pageable, itemCode).map(itemRowMapper);
     }
 
     public Page<ItemDto> searchItemByCaption(int page, int pageSize, String caption) {

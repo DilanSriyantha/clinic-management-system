@@ -20,11 +20,17 @@ public class InvoiceDto {
 
     private Date date;
 
-    private Float subTotal;
+    private Float subtotal;
+
+    private Float balance;
 
     private Integer pharmacistId;
 
     private String pharmacistName;
+
+    private Integer patientId;
+
+    private String patientName;
 
     private Timestamp createdAt;
 

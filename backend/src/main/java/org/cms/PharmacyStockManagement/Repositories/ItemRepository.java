@@ -13,6 +13,9 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Page<Item> findAllByStockId(PageRequest pageable, int stockId);
     Page<Item> findAllByItemCode(PageRequest pageable, String itemCode);
 
+    @Query(value = "SELECT * FROM (SELECT * FROM item i WHERE i.current_qty > 0) AS i WHERE i.caption LIKE :searchKey OR i.item_code = :searchKey", nativeQuery = true)
+    Page<Item> searchItemByCaptionOrCode(Pageable pageable, @Param("searchKey") String searchKey);
+
     @Query(value = "SELECT * FROM item AS i WHERE i.caption LIKE :caption", nativeQuery = true)
     Page<Item> searchItemByCaption(Pageable pageable, @Param("caption") String caption);
 

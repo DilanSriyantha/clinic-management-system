@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cms.InvoiceRecordsManagement.Models.InvoiceRecord;
+import org.cms.PatientMangement.Models.Patient;
 import org.cms.Users.Models.User;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,10 +37,15 @@ public class Invoice {
 
     private Date date;
 
-    private Float subTotal;
+    private Float subtotal;
+
+    private Float balance;
 
     @ManyToOne
     private User pharmacist;
+
+    @ManyToOne
+    private Patient patient;
 
     @OneToMany
     private List<InvoiceRecord> records = new ArrayList<>();

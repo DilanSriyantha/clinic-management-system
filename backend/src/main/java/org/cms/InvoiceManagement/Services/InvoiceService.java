@@ -11,6 +11,7 @@ import org.cms.InvoiceManagement.Models.Invoice;
 import org.cms.InvoiceManagement.Repositories.InvoiceRepository;
 import org.cms.InvoiceRecordsManagement.Models.InvoiceRecord;
 import org.cms.InvoiceRecordsManagement.Repositories.InvoiceRecordRepository;
+import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.PharmacyStockManagement.Repositories.ItemRepository;
 import org.cms.Users.Repositories.UserRepository;
 import org.cms.Utils.BasicResultSet;
@@ -34,11 +35,15 @@ public class InvoiceService {
 
     private final ItemRepository itemRepository;
 
+    private final PatientRepository patientRepository;
+
     private final Function<Invoice, InvoiceDto> rowMapper = (invoice) -> {
         var i = ModelMapper.getInstance().map(invoice, InvoiceDto.class);
 
         i.setPharmacistId(invoice.getPharmacist().getId());
         i.setPharmacistName(invoice.getPharmacist().getName());
+        i.setPatientId(invoice.getPatient().getId());
+        i.setPatientName(invoice.getPatient().getName());
 
         return i;
     };
@@ -75,12 +80,17 @@ public class InvoiceService {
         var invoice = new Invoice();
 
         var pharmacist = userRepository.findById(request.getPharmacistId())
-            .orElseThrow(() -> new EntityNotFoundException("Pharmacist not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Pharmacist not found."));
+
+        var patient = patientRepository.findById(request.getPatientId())
+            .orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
         invoice.setDate(request.getDate());
         invoice.setNumber(request.getNumber());
-        invoice.setSubTotal(request.getSubTotal());
+        invoice.setSubtotal(request.getSubtotal());
+        invoice.setBalance(request.getBalance());
         invoice.setPharmacist(pharmacist);
+        invoice.setPatient(patient);
 
         invoiceRepository.save(invoice);
 
@@ -95,6 +105,8 @@ public class InvoiceService {
             
             var item = itemRepository.findById(rec.getItemId())
                 .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+            item.setCurrentQty(item.getCurrentQty() - rec.getQuantity());
 
             record.setItem(item);
 
