@@ -1,7 +1,12 @@
 package org.cms.InvoiceManagement.Controllers;
 
+import java.util.List;
+
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
 import org.cms.InvoiceManagement.DTOs.InvoiceDto;
+import org.cms.InvoiceManagement.DTOs.SalesSummary;
+import org.cms.InvoiceManagement.DTOs.SalesTrendDto;
+import org.cms.InvoiceManagement.DTOs.TopSaleDto;
 import org.cms.InvoiceManagement.Services.InvoiceService;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
@@ -63,5 +68,20 @@ public class InvoiceController {
     @DeleteMapping("/deleteBatch")
     public @ResponseBody ResponseEntity<BasicResultSet> handleDeletebatch(@RequestBody int[] selectedIds) {
         return ResponseEntity.ok(invoiceService.deleteBatch(selectedIds));
+    }
+
+    @GetMapping("/getSalesTrend")
+    public @ResponseBody ResponseEntity<List<SalesTrendDto>> handleGetSalesTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(invoiceService.getSalesTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getTop5Sales")
+    public @ResponseBody ResponseEntity<List<TopSaleDto>> handleGetTop5Sales(@RequestParam String startDate, @RequestParam String endDate){
+        return ResponseEntity.ok(invoiceService.getTopSalesUpto5(startDate, endDate));
+    }
+
+    @GetMapping("/getSalesSummary")
+    public @ResponseBody ResponseEntity<SalesSummary> handleGetSalesSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(invoiceService.getSalesSummary(startDate, endDate));
     }
 }

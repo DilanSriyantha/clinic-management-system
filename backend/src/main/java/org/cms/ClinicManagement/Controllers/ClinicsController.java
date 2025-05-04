@@ -3,9 +3,14 @@ package org.cms.ClinicManagement.Controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.DTOs.AssignPatientDto;
+import org.cms.ClinicManagement.DTOs.ClinicAppointmentDistributionDto;
 import org.cms.ClinicManagement.DTOs.ClinicDto;
+import org.cms.ClinicManagement.DTOs.ClinicPatientRegTrendDto;
+import org.cms.ClinicManagement.DTOs.ClinicSummaryDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Services.ClinicService;
 import org.cms.Users.Models.User;
@@ -97,5 +102,20 @@ public class ClinicsController {
     @DeleteMapping("/delete")
     public @ResponseBody ResponseEntity<BasicResultSet> delete(@RequestParam int id) {
         return ResponseEntity.ok(clinicService.delete(id));
+    }
+
+    @GetMapping("/getClinicAppointmentDistribution")
+    public @ResponseBody ResponseEntity<List<ClinicAppointmentDistributionDto>> handleGetClinicAppointmentDistribution(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(clinicService.getClinicAppointmentDistribution(startDate, endDate));
+    }
+
+    @GetMapping("/getClinicPatientRegTrend")
+    public @ResponseBody ResponseEntity<List<ClinicPatientRegTrendDto>> handleGetClinicPatientRegTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(clinicService.getClinicPatientRegTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getClinicSummary")
+    public @ResponseBody ResponseEntity<ClinicSummaryDto> handleGetClinicSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(clinicService.getClinicSummary(startDate, endDate));
     }
 }

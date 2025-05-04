@@ -1,10 +1,13 @@
 package org.cms.AppointmentManagement.Services;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import org.cms.AppointmentManagement.DTOs.AppointmentCreateRequest;
 import org.cms.AppointmentManagement.DTOs.AppointmentDto;
+import org.cms.AppointmentManagement.DTOs.AppointmentSummaryDto;
+import org.cms.AppointmentManagement.DTOs.AppointmentTrendDto;
 import org.cms.AppointmentManagement.Models.Appointment;
 import org.cms.AppointmentManagement.Repositories.AppointmentRepository;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
@@ -165,6 +168,14 @@ public class AppointmentService {
             .status(200)
             .message("Batch deleted successfuly.")
             .build();
+    }
+
+    public List<AppointmentTrendDto> getAppointmentTrend(String startDate, String endDate) {
+        return appointmentRepository.getAppointmentTrend(startDate, endDate);
+    }
+
+    public AppointmentSummaryDto getAppointmentSummary(String startDate, String endDate) {
+        return appointmentRepository.getAppointmentSummary(startDate, endDate);
     }
 
     private Iterable<Integer> intsToIterable(int[] arr) {

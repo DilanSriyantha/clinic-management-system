@@ -1,9 +1,14 @@
 package org.cms.PharmacyStockManagement.Controllers;
 
+import java.util.List;
+
 import org.cms.PharmacyStockManagement.DTOs.ItemCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.ItemDto;
+import org.cms.PharmacyStockManagement.DTOs.StockArrivalTrendDto;
 import org.cms.PharmacyStockManagement.DTOs.StockCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.StockDto;
+import org.cms.PharmacyStockManagement.DTOs.StockSummaryDto;
+import org.cms.PharmacyStockManagement.DTOs.VendorWiseStockDistDto;
 import org.cms.PharmacyStockManagement.Services.StockService;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
@@ -121,5 +126,20 @@ public class StockController {
     @DeleteMapping("/stocks/deleteBatch")
     public @ResponseBody ResponseEntity<BasicResultSet> handleDeleteStocksBatch(@RequestBody int[] ids) {
         return ResponseEntity.ok(stockService.deleteStocksBatch(ids));
+    }
+
+    @GetMapping("/stocks/getVendorWiseStockDistribution")
+    public @ResponseBody ResponseEntity<List<VendorWiseStockDistDto>> handleGetVendorWiseStockDistribution(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(stockService.getVendorWiseStockDistribution(startDate, endDate));
+    }
+
+    @GetMapping("/stocks/getStockArrivalTrend")
+    public @ResponseBody ResponseEntity<List<StockArrivalTrendDto>> handleGetStockArrivalTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(stockService.getStockArrivalTrend(startDate, endDate));
+    }
+
+    @GetMapping("/stocks/getStockSummary")
+    public @ResponseBody ResponseEntity<StockSummaryDto> handleGetStockSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(stockService.getStockSummary(startDate, endDate));
     }
 }

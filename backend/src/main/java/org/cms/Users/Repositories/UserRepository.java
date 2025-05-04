@@ -1,6 +1,9 @@
 package org.cms.Users.Repositories;
 
 import org.cms.Enums.Role;
+import org.cms.Users.DTOs.UserAccountCreateTrendDto;
+import org.cms.Users.DTOs.UserAccountsSummaryDto;
+import org.cms.Users.DTOs.UserDistributionDto;
 import org.cms.Users.Models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,4 +41,20 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     @Query(value = "SELECT * FROM user AS u WHERE u.role = :role AND u.telephone LIKE :telephone", nativeQuery = true)
     Page<User> searchByTelephone(Pageable pageable, @Param("role") String role, @Param("telephone") String telephone);
+
+    @Query(value = "SELECT COUNT(*) AS count, role FROM user GROUP BY role", nativeQuery = true)
+    List<UserDistributionDto> getUserDistributionByRole();
+
+    @Query(value = "SELECT DATE(created_at) AS creationDate, COUNT(*) AS accountsCreated FROM user WHERE created_at BETWEEN :startDate AND :endDate GROUP BY DATE(created_at) ORDER BY creationDate ASC", nativeQuery = true)
+    List<UserAccountCreateTrendDto> getUserAccountCreateTrend(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    @Query(value = """
+            SELECT
+                (SELECT COUNT(*) FROM user) AS total,
+                (SELECT COUNT(*) FROM user WHERE role='ADMIN') AS adminCount,
+                (SELECT COUNT(*) FROM user WHERE role='DOCTOR') AS doctorCount,
+                (SELECT COUNT(*) FROM user WHERE role='RECEPTIONIST') AS receptionistCount,
+                (SELECT COUNT(*) FROM user WHERE role='PHARMACIST') AS pharmacistCount
+            """, nativeQuery = true)
+    UserAccountsSummaryDto getUserAccountsSummary();
 }

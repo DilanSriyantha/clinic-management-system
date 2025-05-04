@@ -1,6 +1,11 @@
 package org.cms.PatientMangement.Controllers;
 
+import java.util.List;
+
+import org.cms.PatientMangement.DTOs.PatientAgeDistributionTrendDto;
 import org.cms.PatientMangement.DTOs.PatientDto;
+import org.cms.PatientMangement.DTOs.PatientRegistrationSummaryDto;
+import org.cms.PatientMangement.DTOs.PatientRegistrationTrendDto;
 import org.cms.PatientMangement.Services.PatientService;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
@@ -73,5 +78,20 @@ public class PatientController {
     @PostMapping("/addPrescription")
     public ResponseEntity<BasicResult> addPrescription(@RequestBody PrescriptionDto prescription) {
         return ResponseEntity.ok(patientService.addPrescription(prescription));
+    }
+
+    @GetMapping("/getPatientRegistrationTrend")
+    public @ResponseBody ResponseEntity<List<PatientRegistrationTrendDto>> handleGetPatientRegistrationTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(patientService.getPatientRegistrationTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getPatientAgeDistributionTrend")
+    public @ResponseBody ResponseEntity<List<PatientAgeDistributionTrendDto>> handleGetPatientAgeDistributionTrend() {
+        return ResponseEntity.ok(patientService.getPatientAgeDistributionTrend());
+    }
+
+    @GetMapping("/getPatientRegistrationSummary")
+    public @ResponseBody ResponseEntity<PatientRegistrationSummaryDto> handleGetPatientRegistrationSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(patientService.getPatientRegistrationSummary(startDate, endDate));
     }
 }

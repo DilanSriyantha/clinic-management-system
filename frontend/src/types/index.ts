@@ -407,3 +407,137 @@ export interface CreateInvoiceRecordRequest {
     quantity: number;
     total: number;
 };
+
+export interface UserDistributionByRoleType {
+    count: number;
+    role: string;
+};
+
+export interface AccountCreationTrendType {
+    creationDate: string;
+    accountsCreated: number;
+};
+
+export type UserAccountCreationTrendType = AccountCreationTrendType;
+
+export type PatientRegistrationTrendType = AccountCreationTrendType;
+
+export interface PatientAgeDistributionTrendType {
+    ageGroup: string;
+    totalPatients: number;
+};
+
+export interface UserAccountsSummaryType {
+    total: number;
+    adminCount: number;
+    doctorCount: number;
+    receptionistCount: number;
+    pharmacistCount: number;
+};
+
+export interface PatientRegistrationSummaryType {
+    totalPatients: number;
+    newPatientsInPeriod: number;
+    age50Plus: number;
+    age25To49: number;
+    age18To24: number;
+    age10To17: number;
+    ageBelow10: number;
+};
+
+export interface PrescriptionIssueDistributionType {
+    doctorId: number;
+    doctorRefId: string;
+    doctorName: string;
+    prescriptionCount: number;
+    percentageOfTotal: number;
+};
+
+export interface PrescriptionIssueTrendType {
+    prescriptionDate: string;
+    totalPrescriptions: number;
+}
+
+export interface PrescriptionSummaryType {
+    totalPrescriptions: number;
+    prescriptionsInPeriod: number;
+    avgItemsPerPrescription: number;
+}
+
+export interface ClinicAppointmentDistributionType {
+    clinicId: number;
+    clinicName: string;
+    appointmentCount: number;
+    appointmentPercentage: number;
+}
+
+export interface ClinicPatientRegTrendType {
+    clinicId: number;
+    clinicName: string;
+    patientCount: number;
+}
+
+export interface ClinicSummaryType {
+    totalClinics: number;
+    clinicWithHighestAvgPatients: number;
+    highestAvgPatientsPercentage: number;
+    clinicWithHighestAvgAppointments: number;
+    highestAvgAppointmentsPercentage: number;
+    busiestDayOfWeek: string;
+};
+
+export interface AppointmentTrendType {
+    appointmentDate: string;
+    appointmentCount: number;
+};
+
+export interface AppointmentSummaryType {
+    totalAppointments: number;
+    averageAppointmentsPerDay: number;
+    dateWithHighestAppointments: string;
+    topPatientName: string;
+    totalAppointmentsForTopPatient: number;
+};
+
+export interface VendorWiseStockDistributionType {
+    vendorName: string;
+    totalStockItems: number;
+    stockPercentage: number;
+};
+
+export interface StockArrivalTrendType {
+    stockDate: string;
+    newStockCount: number;
+}
+
+export interface StockSummaryType {
+    topVendorName: string;
+    topVendorStockCount: number;
+    fastestMovingItemName: string;
+    fastestMovingItemQty: number;
+    slowestMovingItemName: string;
+    slowestMovingItemQty: number;
+    lowStockItemCount: number;
+};
+
+export interface SalesTrendType {
+    saleDate: string;
+    totalSales: number;
+};
+
+export interface TopSaleType {
+    itemName: string;
+    qtySold: number;
+    percentage: number;
+}
+
+export interface SaleSummaryType {
+    totalRevenue: number;
+    totalItemsSold: number;
+    totalInvoicesIssued: number;
+    patientWithHighestRevenue: string;
+    highestRevenue: number;
+    patientWithLowestRevenue: string;
+    lowestRevenue: number;
+    avgRevenuePerPatient: number;
+};  

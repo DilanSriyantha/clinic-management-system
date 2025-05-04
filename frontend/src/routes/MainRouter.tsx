@@ -37,6 +37,14 @@ const CreateInvoice = RouteLoader(lazy(() => import("../pages/PharmacySalesManag
 const InvoiceList = RouteLoader(lazy(() => import("../pages/PharmacySalesManagement/InvoiceList")));
 const InvoiceRecordsList = RouteLoader(lazy(() => import("../pages/PharmacySalesManagement/InvoiceRecordsList")));
 
+const UserReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/UserReports")));
+const PatientReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/PatientReports")));
+const PrescriptionReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/PrescriptionReports")));
+const ClinicReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/ClinicReport")));
+const AppointmentReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/AppointmentsReport")));
+const StocksReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/StockReports")));
+const SalesReports = RouteLoader(lazy(() => import("../pages/ReportsAndAnalysis/SalesReports")));
+
 const MainRoutes: RouteObject[] = [
     {
         path: "/",
@@ -149,31 +157,31 @@ const MainRoutes: RouteObject[] = [
             // reporting
             {
                 path: "reporting-and-analysis/user-report",
-                element: <><Typography variant="h1">User Report</Typography></>
+                element: <UserReports />
             },
             {
                 path: "reporting-and-analysis/patient-report",
-                element: <><Typography variant="h1">Patient Report</Typography></>
+                element: <PatientReports />
             },
             {
                 path: "reporting-and-analysis/prescription-report",
-                element: <><Typography variant="h1">Prescription Report</Typography></>
+                element: <PrescriptionReports />
             },
             {
                 path: "reporting-and-analysis/clinic-report",
-                element: <><Typography variant="h1">CLinic Report</Typography></>
+                element: <ClinicReports />
             },
             {
                 path: "reporting-and-analysis/appointment-report",
-                element: <><Typography variant="h1">Appointment Report</Typography></>
+                element: <AppointmentReports />
             },
             {
                 path: "reporting-and-analysis/pharmacy-sales-report",
-                element: <><Typography variant="h1">Pharmacy Sales Report</Typography></>
+                element: <SalesReports />
             },
             {
                 path: "reporting-and-analysis/pharmacy-stocks-report",
-                element: <><Typography variant="h1">Pharmacy Stocks Report</Typography></>
+                element: <StocksReports />
             },
             // backup
             {

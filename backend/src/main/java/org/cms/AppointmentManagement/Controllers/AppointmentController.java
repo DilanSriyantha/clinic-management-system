@@ -1,7 +1,11 @@
 package org.cms.AppointmentManagement.Controllers;
 
+import java.util.List;
+
 import org.cms.AppointmentManagement.DTOs.AppointmentCreateRequest;
 import org.cms.AppointmentManagement.DTOs.AppointmentDto;
+import org.cms.AppointmentManagement.DTOs.AppointmentSummaryDto;
+import org.cms.AppointmentManagement.DTOs.AppointmentTrendDto;
 import org.cms.AppointmentManagement.Services.AppointmentService;
 import org.cms.Types.BasicResult;
 import org.cms.Utils.BasicResultSet;
@@ -91,5 +95,15 @@ public class AppointmentController {
     @DeleteMapping("/deleteBatch")
     public @ResponseBody ResponseEntity<BasicResult> handleDeleteBatch(@RequestBody int[] ids) {
         return ResponseEntity.ok(appointmentService.deleteBatch(ids));
+    }
+
+    @GetMapping("/getAppointmentTrend")
+    public @ResponseBody ResponseEntity<List<AppointmentTrendDto>> handleGetAppointmentTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(appointmentService.getAppointmentTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getAppointmentSummary")
+    public @ResponseBody ResponseEntity<AppointmentSummaryDto> handleGetAppointmentSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(appointmentService.getAppointmentSummary(startDate, endDate));
     }
 }

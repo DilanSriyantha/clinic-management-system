@@ -6,6 +6,9 @@ import java.util.List;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionCreateRequest;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionIssueDistributionDto;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionIssueTrend;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionSummaryDto;
 import org.cms.PrescriptionManagement.Models.Prescription;
 import org.cms.PrescriptionManagement.Models.PrescriptionLine;
 import org.cms.PrescriptionManagement.Repositories.PrescriptionLinesRepository;
@@ -107,5 +110,17 @@ public class PrescriptionService {
             .resultCode(200)
             .message("Prescription deleted successfully")
             .build();
+    }
+
+    public List<PrescriptionIssueDistributionDto> getPrescriptionIssueDistribution() {
+        return prescriptionRepository.getPrescriptionIssueDistribution();
+    }
+
+    public List<PrescriptionIssueTrend> getPrescriptionIssueTrend(String startDate, String endDate) {
+        return prescriptionRepository.getPrescriptionIssueTrends(startDate, endDate);
+    }
+
+    public PrescriptionSummaryDto getPrescriptionSummary(String startDate, String endDate) {
+        return prescriptionRepository.getPrescriptionSummary(startDate, endDate);
     }
 }

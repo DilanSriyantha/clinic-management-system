@@ -3,6 +3,9 @@ package org.cms.Users.Services;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.Enums.Role;
+import org.cms.Users.DTOs.UserAccountCreateTrendDto;
+import org.cms.Users.DTOs.UserAccountsSummaryDto;
+import org.cms.Users.DTOs.UserDistributionDto;
 import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
@@ -21,7 +24,6 @@ import javax.security.auth.login.CredentialException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,6 +160,18 @@ public class UserService {
         Iterable<User> admins = userRepository.findAllByRole(Role.ADMIN);
 
         return admins.iterator().hasNext();
+    }
+
+    public List<UserDistributionDto> getUserDistributionByRole() {
+        return userRepository.getUserDistributionByRole();
+    }
+
+    public List<UserAccountCreateTrendDto> getUserAccountCreateTrend(String startDate, String endDate) {
+        return userRepository.getUserAccountCreateTrend(startDate, endDate);
+    }
+
+    public UserAccountsSummaryDto getUserAccountsSummary() {
+        return userRepository.getUserAccountsSummary();
     }
 
     private String generateReferenceId(int lastId, Role role) {

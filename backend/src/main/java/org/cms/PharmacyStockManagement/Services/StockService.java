@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 
 import org.cms.PharmacyStockManagement.DTOs.ItemCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.ItemDto;
+import org.cms.PharmacyStockManagement.DTOs.StockArrivalTrendDto;
 import org.cms.PharmacyStockManagement.DTOs.StockCreateRequest;
 import org.cms.PharmacyStockManagement.DTOs.StockDto;
+import org.cms.PharmacyStockManagement.DTOs.StockSummaryDto;
+import org.cms.PharmacyStockManagement.DTOs.VendorWiseStockDistDto;
 import org.cms.PharmacyStockManagement.Models.Item;
 import org.cms.PharmacyStockManagement.Models.Stock;
 import org.cms.PharmacyStockManagement.Repositories.ItemRepository;
@@ -233,6 +236,18 @@ public class StockService {
             .resultCode(200)
             .message("Stocks deleted successfully.")
             .build();
+    }
+
+    public List<VendorWiseStockDistDto> getVendorWiseStockDistribution(String startDate, String endDate) {
+        return stockRepository.getVendorWiseStockDistribution(startDate, endDate);
+    }
+
+    public List<StockArrivalTrendDto> getStockArrivalTrend(String startDate, String endDate) {
+        return stockRepository.getStockArrivalTrend(startDate, endDate);
+    }
+
+    public StockSummaryDto getStockSummary(String startDate, String endDate) {
+        return stockRepository.getStockSummary(startDate, endDate);
     }
 
     private Iterable<Integer> intsToIterable(int[] arr) {

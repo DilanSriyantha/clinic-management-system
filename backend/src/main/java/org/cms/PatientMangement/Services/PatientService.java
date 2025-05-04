@@ -1,9 +1,13 @@
 package org.cms.PatientMangement.Services;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
+import org.cms.PatientMangement.DTOs.PatientAgeDistributionTrendDto;
 import org.cms.PatientMangement.DTOs.PatientDto;
+import org.cms.PatientMangement.DTOs.PatientRegistrationSummaryDto;
+import org.cms.PatientMangement.DTOs.PatientRegistrationTrendDto;
 import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
@@ -120,6 +124,18 @@ public class PatientService {
             .status(200)
             .message("Prescription added successfully.")
             .build();
+    }
+
+    public List<PatientRegistrationTrendDto> getPatientRegistrationTrend(String startDate, String endDate) {
+        return patientRepository.getPatientRegistrationTrend(startDate, endDate);
+    }
+
+    public List<PatientAgeDistributionTrendDto> getPatientAgeDistributionTrend() {
+        return patientRepository.getPatientAgeDistributionTrend();
+    }
+
+    public PatientRegistrationSummaryDto getPatientRegistrationSummary(String startDate, String endDate) {
+        return patientRepository.getPatientRegistrationSummary(startDate, endDate);
     }
 
     private Iterable<Integer> intsToIterable(int[] arr) {

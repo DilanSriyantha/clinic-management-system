@@ -1,5 +1,9 @@
 package org.cms.AppointmentManagement.Repositories;
 
+import java.util.List;
+
+import org.cms.AppointmentManagement.DTOs.AppointmentSummaryDto;
+import org.cms.AppointmentManagement.DTOs.AppointmentTrendDto;
 import org.cms.AppointmentManagement.Models.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -211,4 +215,63 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
         """, nativeQuery = true)
     Page<Appointment> searchByDate(PageRequest pageable, @Param("date") String date);
+
+    @Query(value = """
+        SELECT 
+            DATE(created_at) AS appointmentDate,
+            COUNT(*) AS appointmentCount
+        FROM 
+            appointment
+        WHERE 
+            created_at BETWEEN :startDate AND :endDate
+        GROUP BY 
+            DATE(created_at)
+        ORDER BY 
+            appointmentDate
+    """, nativeQuery = true)
+    List<AppointmentTrendDto> getAppointmentTrend(@Param("startDate") String appointmentDate, @Param("endDate") String endDate);
+
+    @Query(value = """
+        SELECT
+            COUNT(*) AS totalAppointments,
+
+            (SELECT AVG(daily_count)
+            FROM (
+                SELECT DATE(created_at) AS day, COUNT(*) AS daily_count
+                FROM appointment
+                WHERE created_at BETWEEN :startDate AND :endDate
+                GROUP BY DATE(created_at)
+            ) AS dailyStats) AS averageAppointmentsPerDay,
+
+            (SELECT DATE(created_at)
+            FROM appointment
+            WHERE created_at BETWEEN :startDate AND :endDate
+            GROUP BY DATE(created_at)
+            ORDER BY COUNT(*) DESC
+            LIMIT 1) AS dateWithHighestAppointments,
+
+            (SELECT p.name
+            FROM appointment a
+            JOIN patient p ON a.patient_id = p.id
+            WHERE a.created_at BETWEEN :startDate AND :endDate
+            GROUP BY p.id, p.name
+            ORDER BY COUNT(*) DESC
+            LIMIT 1) AS topPatientName,
+
+            (SELECT COUNT(*)
+            FROM appointment
+            WHERE patient_id = (
+                SELECT p.id
+                FROM appointment a
+                JOIN patient p ON a.patient_id = p.id
+                WHERE a.created_at BETWEEN :startDate AND :endDate
+                GROUP BY p.id
+                ORDER BY COUNT(*) DESC
+                LIMIT 1
+            )
+            AND created_at BETWEEN :startDate AND :endDate) AS totalAppointmentsForTopPatient
+        FROM appointment
+        WHERE created_at BETWEEN :startDate AND :endDate   
+    """, nativeQuery = true)
+    AppointmentSummaryDto getAppointmentSummary(@Param("startDate") String startDate, @Param("endDate") String endDate);
 }

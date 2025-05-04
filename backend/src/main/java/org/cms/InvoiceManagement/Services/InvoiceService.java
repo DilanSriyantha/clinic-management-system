@@ -7,6 +7,9 @@ import java.util.function.Function;
 
 import org.cms.InvoiceManagement.DTOs.InvoiceCreateRequest;
 import org.cms.InvoiceManagement.DTOs.InvoiceDto;
+import org.cms.InvoiceManagement.DTOs.SalesSummary;
+import org.cms.InvoiceManagement.DTOs.SalesTrendDto;
+import org.cms.InvoiceManagement.DTOs.TopSaleDto;
 import org.cms.InvoiceManagement.Models.Invoice;
 import org.cms.InvoiceManagement.Repositories.InvoiceRepository;
 import org.cms.InvoiceRecordsManagement.Models.InvoiceRecord;
@@ -142,6 +145,19 @@ public class InvoiceService {
             .resultCode(200)
             .message("Invoices are deleted successfully")
             .build();
+    }
+
+    public List<SalesTrendDto> getSalesTrend(String startDate, String endDate) {
+        return invoiceRepository.getSalesTrend(startDate, endDate);
+    }
+
+    public List<TopSaleDto> getTopSalesUpto5(String startDate, String endDate) {
+        return invoiceRepository.getTopSalesUpto5(startDate, endDate);
+    }
+
+    public SalesSummary getSalesSummary(String startDate, String endDate) {
+        return invoiceRepository.getSalesSummary(startDate, endDate
+        );
     }
 
     private Iterable<Integer> intsToIterable(int[] ints) {

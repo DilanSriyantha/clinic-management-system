@@ -1,7 +1,12 @@
 package org.cms.PrescriptionManagement.Controllers;
 
+import java.util.List;
+
 import org.cms.PrescriptionManagement.DTOs.PrescriptionCreateRequest;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionIssueDistributionDto;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionIssueTrend;
+import org.cms.PrescriptionManagement.DTOs.PrescriptionSummaryDto;
 import org.cms.PrescriptionManagement.Services.PrescriptionService;
 import org.cms.Utils.BasicResultSet;
 import org.springframework.data.domain.Page;
@@ -45,4 +50,19 @@ public class PrescriptionController {
     public @ResponseBody ResponseEntity<BasicResultSet> handleDeletePrescription(@RequestParam int prescriptionId) {
         return ResponseEntity.ok(prescriptionService.delete(prescriptionId));
     }
+
+    @GetMapping("/getPrescriptionIssueDistribution")
+    public @ResponseBody ResponseEntity<List<PrescriptionIssueDistributionDto>> handleGetPrescriptionIssueDistribution() {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionIssueDistribution());
+    }
+
+    @GetMapping("/getPrescriptionIssueTrend")
+    public @ResponseBody ResponseEntity<List<PrescriptionIssueTrend>> handleGetPrescriptionIssueTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionIssueTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getPrescriptionSummary")
+    public @ResponseBody ResponseEntity<PrescriptionSummaryDto> handleGetPrescriptionSummary(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionSummary(startDate, endDate));
+    } 
 }

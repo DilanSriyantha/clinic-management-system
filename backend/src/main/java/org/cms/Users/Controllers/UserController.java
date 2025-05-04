@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.cms.Users.Models.User;
+import org.cms.Users.DTOs.UserAccountCreateTrendDto;
+import org.cms.Users.DTOs.UserAccountsSummaryDto;
+import org.cms.Users.DTOs.UserDistributionDto;
 import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.HardPasswordResetRequest;
 import org.cms.Users.Models.SoftPasswordResetRequest;
@@ -90,5 +93,20 @@ public class UserController {
     @PutMapping("/hardResetPassword")
     public @ResponseBody ResponseEntity<BasicResultSet> hardResetPassword(@RequestBody HardPasswordResetRequest request, @RequestParam int userId) {
         return ResponseEntity.ok(userService.hardPasswordReset(userId, request));
+    }
+
+    @GetMapping("/getUserDistributionByRole")
+    public @ResponseBody ResponseEntity<List<UserDistributionDto>> handleGetUserDistributionByRole() {
+        return ResponseEntity.ok(userService.getUserDistributionByRole());
+    }
+
+    @GetMapping("/getUserAccountCreateTrend")
+    public @ResponseBody ResponseEntity<List<UserAccountCreateTrendDto>> handleGetUserAccountCreateTrend(@RequestParam String startDate, @RequestParam String endDate) {
+        return ResponseEntity.ok(userService.getUserAccountCreateTrend(startDate, endDate));
+    }
+
+    @GetMapping("/getUserAccountsSummary")
+    public @ResponseBody ResponseEntity<UserAccountsSummaryDto> handleGetUserAccountsSummary() {
+        return ResponseEntity.ok(userService.getUserAccountsSummary());
     }
 }

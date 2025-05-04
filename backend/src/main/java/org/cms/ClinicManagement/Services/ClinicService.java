@@ -5,14 +5,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.cms.ClinicManagement.DTOs.AssignDoctorDto;
 import org.cms.ClinicManagement.DTOs.AssignPatientDto;
+import org.cms.ClinicManagement.DTOs.ClinicAppointmentDistributionDto;
 import org.cms.ClinicManagement.DTOs.ClinicDto;
+import org.cms.ClinicManagement.DTOs.ClinicPatientRegTrendDto;
+import org.cms.ClinicManagement.DTOs.ClinicSummaryDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.Enums.Status;
@@ -25,7 +28,6 @@ import org.cms.Utils.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 @Service
 @RequiredArgsConstructor
@@ -189,4 +191,16 @@ public class ClinicService {
                 .message("Clinic deleted successfully")
                 .build();
     }
+
+    public List<ClinicAppointmentDistributionDto> getClinicAppointmentDistribution(String startDate, String endDate) {
+        return clinicRepository.getClinicAppointmentDistribution(startDate, endDate);
+    }
+
+    public List<ClinicPatientRegTrendDto> getClinicPatientRegTrend(String startDate, String endDate) {
+        return clinicRepository.getClinicPatientRegTrend(startDate, endDate);
+    }
+
+    public ClinicSummaryDto getClinicSummary(String startDate, String endDate) {
+        return clinicRepository.getClinicSummary(startDate, endDate);
+    } 
 }
