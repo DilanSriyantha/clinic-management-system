@@ -246,7 +246,7 @@ function CreateInvoice() {
             pharmacistName: user!.user.name,
             patientName: state.patientName,
             records: state.rows,
-            paidAmount: 5000,
+            paidAmount: state.paidAmount,
             createdAt: moment(Date.now()),
             updatedAt: moment(Date.now()),
         };

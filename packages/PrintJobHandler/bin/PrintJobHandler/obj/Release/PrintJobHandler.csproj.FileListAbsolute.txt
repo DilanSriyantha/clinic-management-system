@@ -1,0 +1,14 @@
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\x86\pdfium.dll
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\x64\pdfium.dll
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\PrintJobHandler.exe.config
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\PrintJobHandler.exe
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\PrintJobHandler.pdb
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\PdfiumViewer.dll
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\PdfiumViewer.xml
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\bin\Release\nl\PdfiumViewer.resources.dll
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.csproj.AssemblyReference.cache
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.csproj.SuggestedBindingRedirects.cache
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.csproj.CoreCompileInputs.cache
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.csproj.CopyComplete
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.exe
+D:\Projects\clinic-management-system\packages\PrintJobHandler\bin\PrintJobHandler\obj\Release\PrintJobHandler.pdb

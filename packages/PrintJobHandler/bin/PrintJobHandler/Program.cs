@@ -1,11 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing.Printing;
-using Patagames.Pdf.Net;
-using Patagames.Pdf.Net.Controls.WinForms;
+using PdfiumViewer;
 
 namespace PrintJobHandler
 {
@@ -13,34 +14,52 @@ namespace PrintJobHandler
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
+            while (true)
             {
-                Console.WriteLine("Please provide the path to the PDF file as an argument.");
+                string input = Console.ReadLine();
+                ProcessInput(input);
+            }
+        }
+
+        private static void ProcessInput(string input)
+        {
+            if(input == null)
+            {
+                Console.WriteLine("invalid input");
                 return;
             }
 
-            string pdfFilePath = args[0];
-            string printMode = args[1];
-
-            if (!File.Exists(pdfFilePath))
+            if(input.Contains(','))
             {
-                Console.WriteLine($"File not found: {pdfFilePath}");
+                string[] tokens = input.Split(',');
+
+                if(!File.Exists(tokens[0].Trim()))
+                {
+                    Console.WriteLine("invalid file path");
+                    return;
+                }
+                PrintPdf(tokens[0].Trim(), tokens[1].Trim());
                 return;
             }
 
-            PrintPdf(pdfFilePath, printMode);
+            if (input.Equals("exit"))
+                System.Environment.Exit(0);
         }
 
         private static void PrintPdf(string pdfFilePath, string mode)
         {
             switch (mode)
             {
-                case "default_printer":
+                case "use_default_printer":
                     PrintPdf_DefaultPrinter(pdfFilePath);
                     break;
 
-                case "default_print_dialog":
+                case "use_default_print_dialog":
                     PrintPdf_DefaultPrintDialog(pdfFilePath);
+                    break;
+
+                case "use_default_local_pdf_viewer":
+                    PrintPdf_DefaultPdfViewer(pdfFilePath);
                     break;
 
                 default:
@@ -49,20 +68,36 @@ namespace PrintJobHandler
             }
         }
 
+        private static void PrintPdf_DefaultPdfViewer(string pdfFilePath)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo()
+            {
+                FileName = pdfFilePath,
+                Verb = "print",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+
+            Process.Start(psi);
+            Console.WriteLine("printer launched");
+        }
+
         private static void PrintPdf_DefaultPrinter(string pdfFilePath)
         {
-            var doc = PdfDocument.Load(pdfFilePath);
-            var printDoc = new PdfPrintDocument(doc);
+            var pdf = PdfDocument.Load(pdfFilePath);
+            var printDoc = pdf.CreatePrintDocument();
             printDoc.Print();
+            Console.WriteLine("printer launched");
         }
 
         private static void PrintPdf_DefaultPrintDialog(string pdfFilePath)
         {
-            var doc = PdfDocument.Load(pdfFilePath);
-            var printDoc = new PdfPrintDocument(doc);
+            var pdf = PdfDocument.Load(pdfFilePath);
+            var printDoc = pdf.CreatePrintDocument();
             PrintController printController = new StandardPrintController();
             printDoc.PrintController = printController;
             printDoc.Print();
+            Console.WriteLine("printer launched");
         }
     }
 }

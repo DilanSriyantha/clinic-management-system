@@ -37,7 +37,7 @@ public class PdfUtility {
     public PdfUtility() {
     }
 
-    public void generateInvoicePdf(Invoice invoice, String filePath, String fileName, Callback<Boolean> callback) {
+    public void generateInvoicePdf(Invoice invoice, String filePath, String fileName, Callback<String> callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -53,7 +53,17 @@ public class PdfUtility {
                 }
 
                 InvoicePdf invoicePdf = new InvoicePdf(invoice, fos);
-                invoicePdf.generate(callback);
+                invoicePdf.generate(new Callback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean data) {
+                        callback.onSuccess(file.getAbsolutePath());    
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
             }
         }).start();
     }

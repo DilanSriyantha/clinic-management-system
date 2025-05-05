@@ -1,6 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\PrintJobHandler"
   ],
+  "SelectedNode": "\\PrintJobHandler\\Program.cs",
   "PreviewInSolutionExplorer": false
 }

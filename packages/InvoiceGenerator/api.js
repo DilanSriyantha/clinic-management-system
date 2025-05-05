@@ -2,28 +2,24 @@ const { startJavaApp } = require("./run-java");
 
 let javaProc = null;
 
-function initInvoiceGenerator() {
-    javaProc = startJavaApp((data) => {
-        console.log("[Java Output]: ", data);
-    }, (error) => {
-        console.log("[Java Error]: ", error);
-    });
+function initInvoiceGenerator(onDataCallback, onErrorCallback) {
+    javaProc = startJavaApp(onDataCallback, onErrorCallback);
 }
 
 async function sendToInvoiceGenerator(input) {
     return new Promise((resolve, reject) => {
+        initInvoiceGenerator((data) => {
+            resolve(data);
+            killInvoiceGeneratorProcess();
+        }, (error) => {
+            reject(error);
+            killInvoiceGeneratorProcess();
+        });
+        
         if(!javaProc)
             reject(new Error("invoice_manager.jar has not initialized"));
 
         javaProc.stdin.write(input + "\n");
-
-        javaProc.stdout.on("data", (data) => {
-            resolve(data.toString());
-        });
-
-        javaProc.stderr.on("data", (data) => {
-            reject(data.toString());
-        });
     });
 }
 
@@ -36,7 +32,5 @@ function killInvoiceGeneratorProcess() {
 }
 
 module.exports = {
-    initInvoiceGenerator,
-    generatePdf,
-    killInvoiceGeneratorProcess,
+    generatePdf
 };

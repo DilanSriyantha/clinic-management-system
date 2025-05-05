@@ -3,6 +3,7 @@ const path = require('path');
 const { spawn, exec } = require("child_process");
 const fs = require("fs");
 const InvoiceGenerator = require("./packages/InvoiceGenerator/api");
+const Printer = require("./packages/PrintJobHandler/api");
 
 var win = null;
 
@@ -97,20 +98,21 @@ app.whenReady().then(() => {
     });
 
     ipcMain.on("generateInvoice", async (event, invoiceJson) => {
-        InvoiceGenerator.initInvoiceGenerator();
-        try{
-            const res = await InvoiceGenerator.generatePdf(invoiceJson);
-            if(!res) return;
-
-            console.log(res);
-
-            event.reply("onSuccess", res);
-        }catch(err) {
-            console.log(err);
-            
-            event.reply("onError", err);
-        }
-        InvoiceGenerator.killInvoiceGeneratorProcess();
+        InvoiceGenerator.generatePdf(invoiceJson)
+            .then((res) => {
+                console.log(res);
+                Printer.printPdf(res, Printer.USE_DEFAULT_PRINT_DIALOG)
+                    .then((r) => {
+                        console.log(r);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                event.reply("onSuccess", res);
+            })
+            .catch((err) => {
+                event.reply("onError", err);
+            });
     });
 });
 

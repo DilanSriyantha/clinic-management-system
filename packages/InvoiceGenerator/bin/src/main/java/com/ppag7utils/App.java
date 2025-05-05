@@ -13,7 +13,6 @@ import com.ppag7utils.Utils.PdfUtility;
 public class App {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("invoice_generator started. waiting for commands.");
 
         while (sc.hasNextLine()) {
             String input = sc.nextLine();
@@ -41,21 +40,20 @@ public class App {
         }
 
         Path path = Paths.get("").toAbsolutePath();
-        System.out.println("path : " + path.toString());
 
         PdfUtility pdfUtility = new PdfUtility();
         pdfUtility.generateInvoicePdf(
             invoice, path.toString() + "\\InvoiceFiles",
-            "/" + new Date(System.currentTimeMillis()) + ".pdf", 
-            new Callback<Boolean>() {
+            "/" + new Date(System.currentTimeMillis()).getTime() + ".pdf", 
+            new Callback<String>() {
                 @Override
-                public void onSuccess(Boolean data) {
-                    System.out.println("file created successfullly");
+                public void onSuccess(String data) {
+                    System.out.println(data);
                 }
 
                 @Override
                 public void onFailure(Exception e) {
-                    System.err.println("Error occurred while generating pdf file.");
+                    System.err.println("Error occurred while generating pdf file." + e.getMessage());
                 }
             }
         );
