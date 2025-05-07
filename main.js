@@ -129,6 +129,7 @@ app.whenReady().then(() => {
 
         InvoiceGenerator.generateReportPdf(cacheFilePath)
             .then((res) => {
+                fs.unlinkSync(cacheFilePath);
                 event.reply("onSuccess", res);
             })
             .catch((err) => {
