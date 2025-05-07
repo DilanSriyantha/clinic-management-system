@@ -6,6 +6,7 @@ declare global {
     interface Window {
         InvoiceGenerator: {
             generateInvoicePdf: (invoiceJson: string) => Promise<any>;
+            generateReportPdf: (imagePath: string) => Promise<any>;
         };
     }
 }

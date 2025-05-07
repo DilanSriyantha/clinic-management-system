@@ -10,7 +10,7 @@ var win = null;
 const logFilePath = path.join(process.cwd(), "app.log");
 const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
 
-console.log = function(...args) {
+console.log = function (...args) {
     const message = args.map(arg => (typeof arg === "object" ? JSON.stringify(arg) : arg)).join(" ");
     logStream.write(`${new Date().toISOString()} - ${message}\n`);
 
@@ -66,19 +66,19 @@ function createWindow() {
 }
 
 function handleExit(data) {
-    if(data.trim() == "exit_code: 0")
-        if(process.platform !== "darwin")
+    if (data.trim() == "exit_code: 0")
+        if (process.platform !== "darwin")
             app.quit();
 }
 
 function handleServerStarted(data) {
-    if(data.trim().includes("Tomcat started")){
+    if (data.trim().includes("Tomcat started")) {
         loadFrontend();
     }
 }
 
 function loadFrontend() {
-    if(app.isPackaged)
+    if (app.isPackaged)
         win.loadFile(path.join(__dirname, "renderer/index.html"));
     else
         win.loadURL("http://localhost:5173/");
@@ -98,7 +98,7 @@ app.whenReady().then(() => {
     });
 
     ipcMain.on("generateInvoice", async (event, invoiceJson) => {
-        InvoiceGenerator.generatePdf(invoiceJson)
+        InvoiceGenerator.generateInvoicePdf(invoiceJson)
             .then((res) => {
                 console.log(res);
                 Printer.printPdf(res, Printer.USE_DEFAULT_PRINT_DIALOG)
@@ -114,12 +114,34 @@ app.whenReady().then(() => {
                 event.reply("onError", err);
             });
     });
+
+    ipcMain.on("generateReport", async (event, imageBase64) => {
+        const cacheDir = path.join(__dirname, "cache");
+
+        if (!fs.existsSync(cacheDir))
+            fs.mkdirSync(cacheDir);
+
+        const cacheFilePath = path.join(__dirname, "cache", `cap_${Date.now()}.png`);
+
+        const cleanBase64 = imageBase64.replace(/^data:image\/png;base64,/, '');
+
+        fs.writeFileSync(cacheFilePath, cleanBase64, "base64");
+
+        InvoiceGenerator.generateReportPdf(cacheFilePath)
+            .then((res) => {
+                event.reply("onSuccess", res);
+            })
+            .catch((err) => {
+                event.reply("onError", err);
+            });
+
+    });
 });
 
 app.on('window-all-closed', () => {
     app.quit();
 
-    if(!javaProcess) return;
+    if (!javaProcess) return;
     javaProcess.stdin.write("exit");
     javaProcess.stdin.end();
 });

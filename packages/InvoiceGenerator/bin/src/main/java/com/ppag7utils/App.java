@@ -28,6 +28,12 @@ public class App {
             generateInvoice(json);
             return;
         }
+
+        if (input.startsWith("generateReport")) {
+            String imagePath = input.replace("generateReport:", "").trim();
+            generateReport(imagePath);
+            return;
+        }
     }
 
     private static void generateInvoice(String json) {
@@ -58,4 +64,24 @@ public class App {
             }
         );
     }
-}
+
+    private static void generateReport(String imagePath) {
+        Path path = Paths.get("").toAbsolutePath();
+
+        String filePath = path.toString() + "\\ReportFiles";
+        String fileName = "/" + new Date(System.currentTimeMillis()).getTime() + ".pdf";
+
+        PdfUtility pdfUtility = new PdfUtility();
+        pdfUtility.generateReportPdf(imagePath, filePath, fileName, new Callback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                System.out.println(data);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.err.println("Error occurred while generating pdf file. " + e.getMessage());
+            }
+        });
+    }
+} 

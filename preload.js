@@ -5,8 +5,17 @@ contextBridge.exposeInMainWorld("InvoiceGenerator", {
         return new Promise((resolve, reject) => {
             ipcRenderer.send("generateInvoice", invoiceJson);
 
-            ipcRenderer.on("onSuccess", (event, data) => resolve(data));
-            ipcRenderer.on("onError", (event, data) => reject(data));
+            ipcRenderer.on("onSuccess", (_event, data) => resolve(data));
+            ipcRenderer.on("onError", (_event, data) => reject(data));
+        });
+    },
+
+    generateReportPdf: (imagePath) => {
+        return new Promise((resolve, reject) => {
+            ipcRenderer.send("generateReport", imagePath);
+
+            ipcRenderer.on("onSuccess", (_event, data) => resolve(data));
+            ipcRenderer.on("onError", (_event, data) => reject(data));
         });
     },
 });

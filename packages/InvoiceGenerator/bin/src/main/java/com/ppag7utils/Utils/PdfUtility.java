@@ -2,6 +2,7 @@ package com.ppag7utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,11 +13,13 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 import java.awt.image.BufferedImage;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
@@ -38,33 +41,61 @@ public class PdfUtility {
     }
 
     public void generateInvoicePdf(Invoice invoice, String filePath, String fileName, Callback<String> callback) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String validFilename = fileName.replaceAll("[:|?*<\">+\\[\\]/']", "_");
+        new Thread(() -> {
+            String validFilename = fileName.replaceAll("[:|?*<\">+\\[\\]/']", "_");
 
-                File file = FileHelper.createEmptyFile(filePath, validFilename);
+            File file = FileHelper.createEmptyFile(filePath, validFilename);
 
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(file);
-                } catch (IOException e) {
-                    callback.onFailure(e);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+            } catch (IOException e) {
+                callback.onFailure(e);
+            }
+
+            InvoicePdf invoicePdf = new InvoicePdf(invoice, fos);
+            invoicePdf.generate(new Callback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean data) {
+                    callback.onSuccess(file.getAbsolutePath());    
                 }
 
-                InvoicePdf invoicePdf = new InvoicePdf(invoice, fos);
-                invoicePdf.generate(new Callback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean data) {
-                        callback.onSuccess(file.getAbsolutePath());    
-                    }
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+                }
+            });
+        }).start();
+    }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        callback.onFailure(e);
-                    }
-                });
+    public void generateReportPdf(String imagePath, String filePath, String fileName, Callback<String> callback) {
+        new Thread(() -> {
+            File file = FileHelper.createEmptyFile(filePath, fileName);
+
+            FileOutputStream fos = null;
+            try{
+                fos = new FileOutputStream(file);
+            }catch(IOException e) {
+                callback.onFailure(e);
             }
+
+            if(fos == null) {
+                callback.onFailure(new Exception("Could not create FileOutputStream"));
+                return;
+            }
+
+            ReportPdf reportPdf = new ReportPdf(imagePath, fos);
+            reportPdf.generate(new Callback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean data) {
+                    callback.onSuccess(file.getAbsolutePath());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+                }
+            });
         }).start();
     }
 
@@ -373,6 +404,122 @@ public class PdfUtility {
             jpgWriter.write(null, new IIOImage(bufferedImage, null, null), jpgWriteParam);
 
             jpgWriter.dispose();
+
+            return baos.toByteArray();
+        }
+
+        private static class PdfPageEventListener extends PdfPageEventHelper {
+            Font font = new Font(Font.FontFamily.UNDEFINED, 5.f, 1);
+
+            public PdfPageEventListener() {
+            }
+
+            @Override
+            public void onEndPage(PdfWriter writer, Document document) {
+                PdfContentByte cb = writer.getDirectContent();
+                Phrase footer = new Phrase("POWERED BY PPAG7", font);
+                ColumnText.showTextAligned(cb, 1, footer, document.leftMargin() + ((document.right() - document
+                        .left()) / 2.f), document.bottom() - 10.f, 0.f);
+            }
+        }
+    }
+
+    private static class ReportPdf {
+        private final String imagePath;
+        private final FileOutputStream fos;
+
+        public ReportPdf(String imagePath, FileOutputStream fos) {
+            this.imagePath = imagePath;
+            this.fos = fos;
+        }
+
+        public void generate(Callback<Boolean> callback) {
+            Image img = null;
+            try{
+                img = toImage(imagePath);
+            }catch(Exception e) {
+                e.printStackTrace();
+                callback.onFailure(e);
+            }
+
+            Document document = new Document(PageSize.A4, 5.f, 5.f, 5.f, 5.f);
+
+            PdfWriter writer = null;
+            
+            try {
+                writer = PdfWriter.getInstance(document, fos);
+            } catch (DocumentException e) {
+                e.printStackTrace();
+                callback.onFailure(e);
+            }
+
+            if(writer == null) {
+                callback.onFailure(new Exception("Could not create pdfWriter"));
+                return;
+            }
+
+            writer.setPageEvent(new PdfPageEventListener());
+
+            document.open();
+
+            if(img == null){
+                callback.onFailure(new Exception("Image not found."));
+                return;
+            }
+
+            img.setAbsolutePosition(0, 0);
+            img.scaleAbsoluteWidth(document.getPageSize().getWidth());    
+            img.scaleAbsoluteHeight(document.getPageSize().getHeight()); 
+            
+            try {
+                document.add(img);
+            } catch (DocumentException e) {
+                e.printStackTrace();
+                callback.onFailure(e);
+            }
+
+            document.close();
+            
+            try{
+                fos.close();
+            }catch(IOException e) {
+                e.printStackTrace();
+                callback.onFailure(e);
+            }
+
+            callback.onSuccess(true);
+        }
+
+        private Image toImage(String imagePath) throws Exception {
+            byte[] bytes = compress(imagePath, .6f);
+
+            return Image.getInstance(bytes);
+        }
+
+        private byte[] compress(String imagePath, float quality) throws Exception {
+            InputStream is = new FileInputStream(imagePath);
+            ImageInputStream iis = ImageIO.createImageInputStream(is);
+
+            if(iis == null)
+                throw new Exception("Image not found " + imagePath);
+
+            BufferedImage bufferedImage = ImageIO.read(iis);
+
+            if(bufferedImage == null)
+                throw new Exception("Failed to read image " + imagePath);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
+            ImageWriteParam writeParam = writer.getDefaultWriteParam();
+            writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            writeParam.setCompressionQuality(quality);
+
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            writer.setOutput(ios);
+            writer.write(null, new IIOImage(bufferedImage, null, null), writeParam);
+
+            writer.dispose();
 
             return baos.toByteArray();
         }

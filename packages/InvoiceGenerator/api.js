@@ -23,14 +23,19 @@ async function sendToInvoiceGenerator(input) {
     });
 }
 
-async function generatePdf(invoiceJson) {
+async function generateInvoicePdf(invoiceJson) {
     return sendToInvoiceGenerator("generateInvoice:" + invoiceJson);
 } 
+
+async function generateReportPdf(imagePath) {
+    return sendToInvoiceGenerator("generateReport: " + imagePath);
+}
 
 function killInvoiceGeneratorProcess() {
     javaProc.kill();
 }
 
 module.exports = {
-    generatePdf
+    generateInvoicePdf,
+    generateReportPdf
 };
