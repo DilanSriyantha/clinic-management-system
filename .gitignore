@@ -5,6 +5,7 @@ frontend/dist/
 
 InvoiceFiles/
 ReportFiles/
+cache/
 
 #env
 .env
