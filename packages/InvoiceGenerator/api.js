@@ -31,11 +31,21 @@ async function generateReportPdf(imagePath) {
     return sendToInvoiceGenerator("generateReport: " + imagePath);
 }
 
+async function generatePrescriptionPdf(prescriptionJson) {
+    return sendToInvoiceGenerator("generatePrescription: " + prescriptionJson);
+}
+
+async function generateAppointmentPdf(appointmentJson) {
+    return sendToInvoiceGenerator("generateAppointment: " + appointmentJson);
+}
+
 function killInvoiceGeneratorProcess() {
     javaProc.kill();
 }
 
 module.exports = {
     generateInvoicePdf,
-    generateReportPdf
+    generateReportPdf,
+    generatePrescriptionPdf,
+    generateAppointmentPdf
 };

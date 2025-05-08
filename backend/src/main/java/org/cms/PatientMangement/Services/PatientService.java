@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.PatientMangement.DTOs.PatientAgeDistributionTrendDto;
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.DTOs.PatientRegistrationSummaryDto;
 import org.cms.PatientMangement.DTOs.PatientRegistrationTrendDto;
+import org.cms.PatientMangement.DTOs.UpdatePatientRequest;
 import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
@@ -27,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class PatientService {
 
     private final PatientRepository patientRepository;
+
+    private final ClinicRepository clinicRepository;
 
     private final Function<Patient, PatientDto> rowMapper = (patient) -> ModelMapper.getInstance().map(patient, PatientDto.class);
 
@@ -74,18 +78,15 @@ public class PatientService {
             .build();
     }
 
-    public BasicResult update(int id, PatientDto latestPatientDetails) {
+    public BasicResult update(int id, UpdatePatientRequest latestPatientDetails) throws Exception {
         var patient = patientRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
-        try{
-            patient.update(latestPatientDetails);
-            patientRepository.save(patient);
-        }catch(Exception ex){
-            throw new InternalError(ex);
-        }
+        patient = ModelMapper.getInstance().fill(latestPatientDetails, patient);
 
         System.out.println(patient.toString());
+        
+        patientRepository.save(patient);
 
         return BasicResult.builder()
             .status(200)
@@ -93,9 +94,14 @@ public class PatientService {
             .build();
     }
 
+    @Transactional
     public BasicResult delete(int id) {
         var patient = patientRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
+        patient.getAppointments().clear();
+        patient.getPrescriptions().clear();
+        patient.getClinics().clear();
 
         patientRepository.delete(patient);
 
@@ -107,9 +113,20 @@ public class PatientService {
 
     @Transactional
     public BasicResult deleteBatch(int[] ids) {
-        Iterable<Integer> batch = intsToIterable(ids);
+        for(int i = 0; i < ids.length; i++){
+            var patient = patientRepository.findById(ids[i])
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
-        patientRepository.deleteAllByIdInBatch(batch);
+            patient.getAppointments().clear();
+            patient.getPrescriptions().clear();
+            patient.getClinics().forEach(clinic -> {
+                clinic.getPatients().removeIf(pat -> pat.getId() == patient.getId());
+                clinicRepository.save(clinic);
+            });
+            patient.getClinics().clear();
+
+            patientRepository.delete(patient);
+        }
 
         return BasicResult.builder()
             .status(200)

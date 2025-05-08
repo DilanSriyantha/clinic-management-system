@@ -160,9 +160,19 @@ public class AppointmentService {
 
     @Transactional
     public BasicResult deleteBatch(int[] ids) {
-        Iterable<Integer> batch = intsToIterable(ids);
+        for(int i = 0; i < ids.length; i++) {
+            var appointment = appointmentRepository.findById(ids[i])
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
 
-        patientRepository.deleteAllByIdInBatch(batch);
+            var patient = patientRepository.findById(appointment.getPatient().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
+            patient.getAppointments().removeIf(ap -> ap.getId() == appointment.getId());
+
+            patientRepository.save(patient);
+
+            appointmentRepository.delete(appointment);
+        }
 
         return BasicResult.builder()
             .status(200)

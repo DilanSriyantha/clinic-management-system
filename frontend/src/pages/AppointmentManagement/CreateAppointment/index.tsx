@@ -17,6 +17,7 @@ enum ActionType {
     SET_CLINIC_PROPERTIES,
     SET_PATIENT_PROPERTIES,
     SET_LOADING,
+    RESET_FIELDS
 };
 
 const initialState: CreateAppointmentState = {
@@ -39,6 +40,8 @@ const reducer = (state: CreateAppointmentState, action: { type: ActionType, payl
             return { ...state, appointment: { ...state.appointment, patientId: action.payload.id } };
         case ActionType.SET_LOADING:
             return { ...state, isLoading: action.payload };
+        case ActionType.RESET_FIELDS:
+            return initialState;
         default:
             return state;
     }
@@ -88,6 +91,7 @@ function CreateAppointment() {
             if(res){
                 console.log(res);
                 alert.setSuccess(res.message);
+                handleClear();
             }
         }catch(err) {
             alert.setError(err instanceof Error ? err.message : "Unknown error");
@@ -100,7 +104,8 @@ function CreateAppointment() {
     }
 
     const handleClear = useCallback((): void => {
-        window.location.reload();
+        location.state = {};
+        dispatch({ type: ActionType.RESET_FIELDS, payload: null });
     }, []);
 
     return (

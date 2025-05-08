@@ -1,13 +1,27 @@
 import { Autocomplete, Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
 import { ChangeEvent, KeyboardEvent, useCallback, useReducer, useRef } from "react";
-import { TimePicker } from "@mui/x-date-pickers";
+import { PickerChangeHandlerContext, TimePicker, TimeValidationError } from "@mui/x-date-pickers";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
-import { Clinic } from "../../../types/Clinic";
-import moment from "moment";
-import { CreateClinicState } from "../../../types/CreateClinicState";
+import moment, { Moment } from "moment";
 import { isValid } from "../../../utils/Validator";
 import { useAlert } from "../../../hooks/useAlert";
+import { CreateClinicState, CreateClinicRequest } from "../../../types";
+
+interface DayOfWeekOption {
+    label: string;
+    value: number;
+};
+
+const DayOfWeekOptions: DayOfWeekOption[] = [
+    { label: "Sunday", value: 0 },
+    { label: "Monday", value: 1 },
+    { label: "Tuesday", value: 2 },
+    { label: "Wednesday", value: 3 },
+    { label: "Thursday", value: 4 },
+    { label: "Friday", value: 5 },
+    { label: "Saturday", value: 6 }
+];
 
 const initialState: CreateClinicState = {
     caption: "",
@@ -20,6 +34,7 @@ const initialState: CreateClinicState = {
 enum ActionType {
     SET_FIELD,
     SET_LOADING,
+    RESET_FIELDS,
 };
 
 const reducer = (state: CreateClinicState, action: { type: ActionType, payload: any }): CreateClinicState => {
@@ -28,6 +43,8 @@ const reducer = (state: CreateClinicState, action: { type: ActionType, payload: 
             return {...state, [action.payload.name]: action.payload.value};
         case ActionType.SET_LOADING:
             return {...state, loading: action.payload};
+        case ActionType.RESET_FIELDS:
+            return initialState;
         default: 
             return state;
     }
@@ -58,10 +75,12 @@ function CreateClinic() {
 
     const createClinicAsync = useCallback(async () => {
         try{
-            const res = await api.post<Clinic, BasicResultSet>("/clinic-management/create", state as Clinic);
+            const res = await api.post<CreateClinicRequest, BasicResultSet>("/clinic-management/create", state as CreateClinicRequest);
             if(res){
                 console.log(res);
                 alert.setSuccess("Clinic created successfully");
+
+                dispatch({ type: ActionType.RESET_FIELDS, payload: null });
             }
         }catch(err){
             console.log(err);
@@ -82,11 +101,8 @@ function CreateClinic() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
-    const handleTimePickerChange = useCallback(() => {
-        if(!timePickerInputRef.current)
-            return;
-
-        dispatch({ type: ActionType.SET_FIELD, payload: { name: "time", value: timePickerInputRef.current.value } });
+    const handleTimePickerChange = useCallback((value: Moment | null, _context: PickerChangeHandlerContext<TimeValidationError>) => {
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "time", value: value?.format("hh:mm a") } });
     }, []);
 
     return (
@@ -119,21 +135,14 @@ function CreateClinic() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField onChange={handleTextFieldChange} name="caption" label="Caption" type="text" />
-                            <TextField onChange={handleTextFieldChange} name="description" label="Description" type="text" />
+                            <TextField onChange={handleTextFieldChange} name="caption" label="Caption" type="text" value={state.caption} focused={state.caption.match("") ? false : true} />
+                            <TextField onChange={handleTextFieldChange} name="description" label="Description" type="text" value={state.description} focused={state.description.match("") ? false : true} />
                             <Autocomplete
                                 // disablePortal
-                                options={[
-                                    { label: "Sunday", value: 0 },
-                                    { label: "Monday", value: 1 },
-                                    { label: "Tuesday", value: 2 },
-                                    { label: "Wednesday", value: 3 },
-                                    { label: "Thursday", value: 4 },
-                                    { label: "Friday", value: 5 },
-                                    { label: "Saturday", value: 6 }
-                                ]}
+                                options={DayOfWeekOptions}
                                 onChange={(e, v) => dispatch({ type: ActionType.SET_FIELD, payload: { name: "dayOfWeek", value: v?.label } })}
-                                renderInput={(params) => <TextField {...params} name="dayOfWeek" label="Day of week" />}
+                                renderInput={(params) => <TextField {...params} name="dayOfWeek" label="Day of week" value={state.dayOfWeek} focused={state.caption.match("") ? false : true} />}
+                                value={DayOfWeekOptions.filter(op => op.label == state.dayOfWeek)[0]}
                             />
                             <TimePicker onChange={handleTimePickerChange} inputRef={timePickerInputRef} name="time" label="Time" defaultValue={moment(new Date)} />
                         </Box>

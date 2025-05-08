@@ -137,6 +137,46 @@ app.whenReady().then(() => {
             });
 
     });
+
+    ipcMain.on("generateAppointment", async (event, appointmentJson) => {
+        InvoiceGenerator.generateAppointmentPdf(appointmentJson)
+            .then((res) => {
+                console.log(res);
+                
+                Printer.printPdf(res, Printer.USE_DEFAULT_PRINT_DIALOG)
+                    .then((r) => {
+                        console.log(r);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                
+                event.reply("onSuccess", res);
+            })
+            .catch((err) => {
+                event.reply("onError", err);
+            });
+    });
+
+    ipcMain.on("generatePrescription", async (event, prescriptionJson) => {
+        InvoiceGenerator.generatePrescriptionPdf(prescriptionJson)
+            .then((res) => {
+                console.log(res);
+                
+                Printer.printPdf(res, Printer.USE_DEFAULT_PRINT_DIALOG)
+                    .then((r) => {
+                        console.log(r);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                
+                event.reply("onSuccess", res);
+            })
+            .catch((err) => {
+                event.reply("onError", err);
+            });
+    });
 });
 
 app.on('window-all-closed', () => {

@@ -5,6 +5,8 @@ frontend/dist/
 
 InvoiceFiles/
 ReportFiles/
+AppointmentFiles/
+PrescriptionFiles/
 cache/
 
 #env

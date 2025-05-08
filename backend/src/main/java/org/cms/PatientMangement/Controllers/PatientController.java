@@ -6,6 +6,7 @@ import org.cms.PatientMangement.DTOs.PatientAgeDistributionTrendDto;
 import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PatientMangement.DTOs.PatientRegistrationSummaryDto;
 import org.cms.PatientMangement.DTOs.PatientRegistrationTrendDto;
+import org.cms.PatientMangement.DTOs.UpdatePatientRequest;
 import org.cms.PatientMangement.Services.PatientService;
 import org.cms.PrescriptionManagement.DTOs.PrescriptionDto;
 import org.cms.Types.BasicResult;
@@ -61,7 +62,7 @@ public class PatientController {
     }
 
     @PutMapping("/update")
-    public @ResponseBody ResponseEntity<BasicResult> update(@RequestParam int id, @RequestBody PatientDto latestPatientDetails) {
+    public @ResponseBody ResponseEntity<BasicResult> update(@RequestParam int id, @RequestBody UpdatePatientRequest latestPatientDetails) throws Exception {
         return ResponseEntity.ok(patientService.update(id, latestPatientDetails));
     }
 

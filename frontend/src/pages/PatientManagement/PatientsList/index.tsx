@@ -190,9 +190,9 @@ function PatientsList() {
     }, [state.list, state.selectedIds]);
 
     const handleAssign = useCallback(async (): Promise<void> => {
-        const doctorId: GridRowId | undefined = state.selectedIds.values().next().value;
+        const patientId: GridRowId | undefined = state.selectedIds.values().next().value;
 
-        if (!doctorId) return;
+        if (!patientId) return;
 
         try {
             const res = await api.post<AssignPatientsDto, BasicResultSet>("/clinic-management/assignPatients", {

@@ -19,6 +19,8 @@ import org.cms.ClinicManagement.DTOs.ClinicSummaryDto;
 import org.cms.ClinicManagement.Models.Clinic;
 import org.cms.ClinicManagement.Repositories.ClinicRepository;
 import org.cms.Enums.Status;
+import org.cms.PatientMangement.DTOs.PatientDto;
+import org.cms.PatientMangement.Models.Patient;
 import org.cms.PatientMangement.Repositories.PatientRepository;
 import org.cms.Users.DTOs.UserDto;
 import org.cms.Users.Models.User;
@@ -43,8 +45,11 @@ public class ClinicService {
         var c = ModelMapper.getInstance().map(clinic, ClinicDto.class);
 
         var doctorDtos = StreamSupport.stream(getDoctorsByClinic(clinic.getId()).spliterator(), false).collect(Collectors.toList()).stream().map((doc) -> ModelMapper.getInstance().map(doc, UserDto.class)).collect(Collectors.toList());
+        
+        var patients = StreamSupport.stream(getPatientsByClinic(clinic.getId()).spliterator(), false).collect(Collectors.toList()).stream().map((pat) -> ModelMapper.getInstance().map(pat, PatientDto.class)).collect(Collectors.toList());
 
         c.setDoctors(doctorDtos);
+        c.setPatients(patients);
 
         return c;
     };
@@ -68,6 +73,13 @@ public class ClinicService {
                 .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
 
         return clinic.getDoctors();
+    }
+
+    public Iterable<Patient> getPatientsByClinic(int clinicId) {
+        var clinic = clinicRepository.findById(clinicId)
+            .orElseThrow(() -> new EntityNotFoundException("Clinic not found"));
+
+        return clinic.getPatients();
     }
 
     public Page<ClinicDto> getPage(int page, int pageSize, HttpServletResponse response) {

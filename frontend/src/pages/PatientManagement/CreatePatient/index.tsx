@@ -1,6 +1,6 @@
 import { Box, Button, Card, Container, TextField, Typography } from "@mui/material";
 import PageTitle from "../../../components/PageTitle";
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useReducer, useRef } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import moment from "moment";
@@ -10,7 +10,6 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router";
 import { PatientDto } from "../../../DTOs";
 import { For } from "../../../enums/For";
-import { instanceOf } from "../../../utils/TypeChecker";
 
 interface CreatePatientState {
     name: string;
@@ -20,7 +19,7 @@ interface CreatePatientState {
     telephone: string;
     allergiesNote: string;
     loading: boolean;
-};  
+};
 
 const initialState: CreatePatientState = {
     name: "",
@@ -36,6 +35,7 @@ enum ActionType {
     SET_FIELD,
     SET_ALL_FIELDS,
     SET_LOADING,
+    RESET_FIELDS
 };
 
 const reducer = (state: CreatePatientState, action: { type: ActionType, payload: any }): CreatePatientState => {
@@ -46,14 +46,18 @@ const reducer = (state: CreatePatientState, action: { type: ActionType, payload:
             return { ...state, name: action.payload.name, birthday: action.payload.birthday, address: action.payload.address, email: action.payload.email, telephone: action.payload.telephone, allergiesNote: action.payload.allergiesNote, loading: false };
         case ActionType.SET_LOADING:
             return {...state, loading: action.payload};
+        case ActionType.RESET_FIELDS:
+            return initialState;
         default: 
             return state;
     }
 };
 
 function CreatePatient() {
-    const [user] = useAuth();
+    const [_user] = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
+
+    const allergiesNoteRef = useRef<HTMLInputElement | null>(null);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -61,17 +65,18 @@ function CreatePatient() {
     const api = useApi();
     const alert = useAlert();
 
+    const FOR_UPDATING = location.state && location.state.patient;
+    const FOR_SELECTING = location.state && location.state.for && location.state.for === For.SELECTING_PATIENT;
+    const FOR_SELECTING_PATIENT_FOR_APPOINTMENT = location.state && location.state.for && location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT;
+    const FOR_SELECTING_FOR_INVOICE = location.state && location.state.for && location.state.for === For.SELECTING_PATIENT_FOR_INVOICE;
+
     useEffect(() => {
         if(!location.state) return;
 
-        if(!instanceOf(location.state, Object.keys(PatientDto))) return;
+        if(!location.state.patient) return;
 
         dispatch({ type: ActionType.SET_ALL_FIELDS, payload: location.state });
     }, []);
-
-    useEffect(() => {
-        console.log(state);
-    }, [state]);
 
     const handleSubmit = useCallback(async () => {
         try{
@@ -80,7 +85,7 @@ function CreatePatient() {
                 return;
             }
 
-            if(location.state && instanceOf(location.state, Object.keys(PatientDto))){
+            if(FOR_UPDATING){
                 updatePatientAsync();
                 return;
             }
@@ -98,8 +103,10 @@ function CreatePatient() {
             if(res){
                 console.log(res);
                 alert.setSuccess("Patient created successfully");
-                
-                if(location.state && (location.state.for === For.SELECTING_PATIENT || location.state.for === For.SELECTING_PATIENT_FOR_APPOINTMENT || location.state.for === For.SELECTING_PATIENT_FOR_INVOICE))
+
+                dispatch({ type: ActionType.RESET_FIELDS, payload: null });
+
+                if(FOR_SELECTING || !FOR_SELECTING_PATIENT_FOR_APPOINTMENT || !FOR_SELECTING_FOR_INVOICE)
                     navigate("/patient-management/list", { state: {...location.state} });
             }
         }catch(err){
@@ -118,6 +125,8 @@ function CreatePatient() {
             if(res){
                 console.log(res);
                 alert.setSuccess("Patient updated successfully.");
+                
+                dispatch({ type: ActionType.RESET_FIELDS, payload: null });
             }
         }catch(err){
             console.log(err);
@@ -130,8 +139,19 @@ function CreatePatient() {
     }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
-        if(e.key.match("Enter"))
+        const target = e.target as HTMLElement;
+
+        if(e.key.match("Enter")){
+            if(allergiesNoteRef.current && allergiesNoteRef.current.contains(target)){
+                if(e.ctrlKey && e.key.match("Enter")){
+                    e.preventDefault();
+                    handleSubmit();
+                }
+                return;
+            }
+
             handleSubmit();
+        }
     }
 
     const handleTextFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -146,7 +166,10 @@ function CreatePatient() {
         <>
             <PageTitle
                 subTitle="Patient Management"
-                title={location.state && (location.state.for !== For.SELECTING_PATIENT || location.state.for !== For.SELECTING_PATIENT_FOR_APPOINTMENT || location.state.for === For.SELECTING_PATIENT_FOR_INVOICE) ? "Update Patient" : "Create Patient"}
+                title={
+                    FOR_UPDATING
+                    ? "Update Patient" : "Create Patient"
+                }
                 backButton={location.state ? true : false}
             />
             <Card>
@@ -173,12 +196,12 @@ function CreatePatient() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField onChange={handleTextFieldChange} name="name" label="Name" type="text" value={state.name} />
+                            <TextField onChange={handleTextFieldChange} name="name" label="Name" type="text" value={state.name} focused={state.name.match("") ? false : true} />
                             <DatePicker onChange={handleDatePickerChange} name="birthday" label="Birthday" format="YYYY-MM-DD" value={moment(Date.parse(state.birthday))} />
-                            <TextField onChange={handleTextFieldChange} name="address" label="Address" type="text" value={state.address} />
-                            <TextField onChange={handleTextFieldChange} name="email" label="Email" type="text" value={state.email} />
-                            <TextField onChange={handleTextFieldChange} name="telephone" label="Telephone" type="text" value={state.telephone} />
-                            <TextField onChange={handleTextFieldChange} name="allergiesNote" label="Allergies Note" type="text" multiline minRows={4} value={state.allergiesNote} />
+                            <TextField onChange={handleTextFieldChange} name="address" label="Address" type="text" value={state.address} focused={state.name.match("") ? false : true} />
+                            <TextField onChange={handleTextFieldChange} name="email" label="Email" type="text" value={state.email} focused={state.name.match("") ? false : true} />
+                            <TextField onChange={handleTextFieldChange} name="telephone" label="Telephone" type="text" value={state.telephone} focused={state.name.match("") ? false : true} />
+                            <TextField onChange={handleTextFieldChange} name="allergiesNote" label="Allergies Note" type="text" multiline minRows={4} value={state.allergiesNote} focused={state.name.match("") ? false : true} onKeyDown={handleEnterKeyPress} ref={allergiesNoteRef} />
                         </Box>
                     </form>
                     <Box sx={{

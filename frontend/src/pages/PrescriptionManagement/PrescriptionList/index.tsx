@@ -1,9 +1,9 @@
-import { Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Delete, Print, ReplayOutlined } from "@mui/icons-material";
 import { Card, Container, Stack, Box, Tooltip, IconButton, alpha, Toolbar, Typography, Grid2, ListItem, ListItemText } from "@mui/material";
 import { DataGrid, GridCallbackDetails, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import PageTitle from "../../../components/PageTitle";
 import { MouseEvent, useCallback, useEffect, useReducer } from "react";
-import { PageResponse, PrescriptionDto, PrescriptionLineDto } from "../../../types";
+import { PageResponse, PrescriptionDto, PrescriptionLineDto, PrescriptionPrintObject } from "../../../types";
 import { BasicResultSet, useApi } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { useNavigate } from "react-router";
@@ -14,21 +14,11 @@ const columns: GridColDef[] = [
         field: "number",
         headerName: "#",
         width: 150,
-        valueGetter: (val, row, col, api) => `Prescription ${api.current.getRowId(row)}`
+        valueGetter: (_val, row, _col, api) => `Prescription ${api.current.getRowId(row)}`
     },
     { field: "patientName", headerName: "Patient", width: 200 },
     { field: "doctorName", headerName: "Doctor", width: 200 },
     { field: "updatedAt", headerName: "Updated At", width: 100 },
-];
-
-const linesColumns: GridColDef[] = [
-    {
-        field: "number",
-        headerName: "#",
-        width: 150,
-        valueGetter: (val, row, col, api) => api.current.getRowId(row)
-    },
-    { field: "description", headerName: "Description", width: 200 }
 ];
 
 interface PrescriptionListState {
@@ -116,7 +106,7 @@ function PrescriptionList() {
         fetchPrescriptions();
     }, []);
 
-    console.log(state.list.filter((line, idx) => state.selectedIds.has(line.id))[0]);
+    console.log(state.list.filter((line, _idx) => state.selectedIds.has(line.id))[0]);
     console.log(state.selectedIds)
 
     const fetchPrescriptions = useCallback(async () => {
@@ -157,7 +147,7 @@ function PrescriptionList() {
         dispatch({ type: ActionType.SET_SELECTED_IDS, payload: new Set<GridRowId>(ids) });
     }, [state.selectedIds]);
 
-    const onPaginationModelChange = useCallback((model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void => {
+    const onPaginationModelChange = useCallback((model: GridPaginationModel, _details: GridCallbackDetails<"pagination">): void => {
         dispatch({
             type: ActionType.SET_PAGINATION_INFO, payload: {
                 page: model.page,
@@ -171,10 +161,38 @@ function PrescriptionList() {
         navigate("/prescription-management/create", { state: patient });
     }, [state.list, state.selectedIds]);
 
+    async function handlePrint() {
+        try{
+            const selectedPrescription = state.list.filter(p => state.selectedIds.has(p.id))[0];
+
+            const prescriptionPrintObject: PrescriptionPrintObject = {
+                id: selectedPrescription.id,
+                patientName: selectedPrescription.patientName,
+                doctorName: selectedPrescription.doctorName,
+                prescriptionLines: state.linesList.map(l => {
+                    return {
+                        id: Math.random(),
+                        description: l.description
+                    }
+                }),
+                updatedAt: selectedPrescription.updatedAt
+            };
+
+            const res = await window.InvoiceGenerator.generatePrescriptionPdf(JSON.stringify(prescriptionPrintObject));
+
+            if(!res) return;
+
+            alert.setSuccess("Print successfull");
+        }catch(err) {
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    }
+
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onPrint: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     }
 
     function TableToolbar(props: TableToolbarProps) {
@@ -202,13 +220,13 @@ function PrescriptionList() {
                 >
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
-                {/* {props.numSelected == 1 && (
-                    <Tooltip title="Edit">
-                        <IconButton onClick={props.onEdit}>
-                            <Edit color="primary" />
+                {props.numSelected == 1 && (
+                    <Tooltip title="Print">
+                        <IconButton onClick={props.onPrint}>
+                            <Print color="primary" />
                         </IconButton>
                     </Tooltip>
-                )} */}
+                )}
                 <Tooltip title="Delete">
                     <IconButton onClick={props.onDelete}>
                         <Delete color="error" />
@@ -255,7 +273,7 @@ function PrescriptionList() {
                                     </Tooltip>
                                 </Box>
                             </Stack>
-                            <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
+                            <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onPrint={handlePrint} />
                             <DataGrid
                                 rows={state.list}
                                 columns={columns}

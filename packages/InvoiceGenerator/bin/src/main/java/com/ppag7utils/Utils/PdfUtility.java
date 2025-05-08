@@ -24,6 +24,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
@@ -33,7 +34,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.ppag7utils.Helpers.FileHelper;
+import com.ppag7utils.Models.Appointment;
 import com.ppag7utils.Models.Invoice;
+import com.ppag7utils.Models.Prescription;
 
 public class PdfUtility {
 
@@ -99,6 +102,68 @@ public class PdfUtility {
         }).start();
     }
 
+    public void generatePrescriptionPdf(Prescription prescription, String filePath, String fileName, Callback<String> callback) {
+        new Thread(() -> {
+            File file = FileHelper.createEmptyFile(filePath, fileName);
+
+            FileOutputStream fos = null;
+            try{
+                fos = new FileOutputStream(file);
+            }catch(IOException e){
+                callback.onFailure(e);
+            }
+
+            if(fos == null) {
+                callback.onFailure(new Exception("Could not create FileOutpuStream"));
+                return;
+            }
+
+            PrescriptionPdf prescriptionPdf = new PrescriptionPdf(fos, prescription);
+            prescriptionPdf.generate(new Callback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean data) {
+                    callback.onSuccess(file.getAbsolutePath());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+                }
+            });
+        }).start();
+    }
+    
+    public void generateAppointmentPdf(Appointment appointment, String filePath, String fileName, Callback<String> callback) {
+        new Thread(() -> {
+            File file = FileHelper.createEmptyFile(filePath, fileName);
+            
+            FileOutputStream fos = null;
+            try{
+                fos = new FileOutputStream(file);
+            }catch(Exception e) {
+                callback.onFailure(e);
+            }
+
+            if(fos == null) {
+                callback.onFailure(new Exception("Could not create FileOutputStream"));
+                return;
+            }
+
+            AppointmentPdf appointmentPdf = new AppointmentPdf(fos, appointment);
+            appointmentPdf.generate(new Callback<Boolean>() {
+                @Override
+                public void onSuccess(Boolean data) {
+                    callback.onSuccess(file.getAbsolutePath());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    callback.onFailure(e);
+                }
+            });
+        }).start();
+    }
+
     private static class InvoicePdf {
 
         private final Invoice invoice;
@@ -114,7 +179,7 @@ public class PdfUtility {
                 Document document = new Document(PageSize.A7, 0.f, 0.f, 5.f, 5.f);
     
                 final PdfWriter writer = PdfWriter.getInstance(document, fos);
-                writer.setPageEvent(new PdfPageEventListener());
+                writer.setPageEvent(new InvoicePdf.PdfPageEventListener());
     
                 document.open();
     
@@ -458,7 +523,7 @@ public class PdfUtility {
                 return;
             }
 
-            writer.setPageEvent(new PdfPageEventListener());
+            writer.setPageEvent(new ReportPdf.PdfPageEventListener());
 
             document.open();
 
@@ -520,6 +585,406 @@ public class PdfUtility {
             writer.write(null, new IIOImage(bufferedImage, null, null), writeParam);
 
             writer.dispose();
+
+            return baos.toByteArray();
+        }
+
+        private static class PdfPageEventListener extends PdfPageEventHelper {
+            Font font = new Font(Font.FontFamily.UNDEFINED, 5.f, 1);
+
+            public PdfPageEventListener() {
+            }
+
+            @Override
+            public void onEndPage(PdfWriter writer, Document document) {
+                PdfContentByte cb = writer.getDirectContent();
+                Phrase footer = new Phrase("POWERED BY PPAG7", font);
+                ColumnText.showTextAligned(cb, 1, footer, document.leftMargin() + ((document.right() - document
+                        .left()) / 2.f), document.bottom() - 10.f, 0.f);
+            }
+        }
+    }
+
+    private static class PrescriptionPdf {
+        private final FileOutputStream fos;
+        private final Prescription prescription;
+
+        public PrescriptionPdf(FileOutputStream fos, Prescription prescription) {
+            this.fos = fos;
+            this.prescription = prescription;
+        }
+
+        public void generate(Callback<Boolean> callback) {
+            try{
+                Document document = new Document(PageSize.A7, 0.f, 0.f, 5.f, 5.f);
+    
+                final PdfWriter pdfWriter = PdfWriter.getInstance(document, fos);
+                
+                if(pdfWriter == null){
+                    callback.onFailure(new Exception("Could not create PdfWriter"));
+                    return;
+                }
+                
+                pdfWriter.setPageEvent(new PrescriptionPdf.PdfPageEventListener());
+    
+                document.open();
+    
+                BaseFont titleBaseFont = BaseFont.createFont(BaseFont.HELVETICA_BOLD, "Cp1252", false);
+                BaseFont contentBaseFont = BaseFont.createFont(BaseFont.HELVETICA, "Cp1252", false);
+
+                Font contentFont = new Font(contentBaseFont, 8.f);
+                Font titleFont = new Font(titleBaseFont);
+
+                PdfPTable titleTable = new PdfPTable(1);
+                titleTable.setWidthPercentage(90.f);
+                titleTable.setWidths(new float[] { 90.f });
+
+                Phrase titlePhrase = new Phrase("Prescription", titleFont);
+
+                PdfPCell titleCell = new PdfPCell(titlePhrase);
+                titleCell.setBorderWidthTop(0);
+                titleCell.setBorderWidthLeft(0);
+                titleCell.setBorderWidthRight(0);
+                titleCell.setHorizontalAlignment(1);
+
+                titleTable.addCell(titleCell);
+
+                document.add(titleTable);
+
+                PdfPTable infoTable = new PdfPTable(2);
+                infoTable.setSpacingBefore(10.f);
+                infoTable.setWidthPercentage(90.f);
+                infoTable.setWidths(new float[]{ 45.f, 45.f });
+
+                Phrase prescriptionNumberKey = new Phrase("Prescription No.", contentFont);
+                Phrase patientNameKey = new Phrase("Patient", contentFont);
+                Phrase doctorNameKey = new Phrase("Doctor", contentFont);
+                Phrase dateTimeKey = new Phrase("Date & Time", contentFont);
+
+                Phrase prescriptionNumberValue = new Phrase(String.valueOf(prescription.getId()), contentFont);
+                Phrase patientNameValue = new Phrase(prescription.getPatientName(), contentFont);
+                Phrase doctorNameValue = new Phrase(prescription.getDoctorName(), contentFont);
+                Phrase dateTimeValue = new Phrase(new SimpleDateFormat("yyyy/MM/dd h:mm a").format(new Date(prescription.getUpdatedAt().getTime())), contentFont);
+
+                PdfPCell prescriptionNumberKeyCell = new PdfPCell(prescriptionNumberKey);
+                prescriptionNumberKeyCell.setBorderWidthTop(0);
+                prescriptionNumberKeyCell.setBorderWidthLeft(0);
+                prescriptionNumberKeyCell.setBorderWidthRight(0);
+                prescriptionNumberKeyCell.setBorderWidthBottom(0);
+                prescriptionNumberKeyCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                PdfPCell patientNameKeyCell = new PdfPCell(patientNameKey);
+                patientNameKeyCell.setBorderWidthTop(0);
+                patientNameKeyCell.setBorderWidthLeft(0);
+                patientNameKeyCell.setBorderWidthRight(0);
+                patientNameKeyCell.setBorderWidthBottom(0);
+                patientNameKeyCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                PdfPCell doctorNameKeyCell = new PdfPCell(doctorNameKey);
+                doctorNameKeyCell.setBorderWidthTop(0);
+                doctorNameKeyCell.setBorderWidthLeft(0);
+                doctorNameKeyCell.setBorderWidthRight(0);
+                doctorNameKeyCell.setBorderWidthBottom(0);
+                doctorNameKeyCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                PdfPCell dateTimeKeyCell = new PdfPCell(dateTimeKey);
+                dateTimeKeyCell.setBorderWidthTop(0);
+                dateTimeKeyCell.setBorderWidthLeft(0);
+                dateTimeKeyCell.setBorderWidthRight(0);
+                dateTimeKeyCell.setBorderWidthBottom(0);
+                dateTimeKeyCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                PdfPCell prescriptionNumberValueCell = new PdfPCell(prescriptionNumberValue);
+                prescriptionNumberValueCell.setBorderWidthTop(0);
+                prescriptionNumberValueCell.setBorderWidthLeft(0);
+                prescriptionNumberValueCell.setBorderWidthRight(0);
+                prescriptionNumberValueCell.setBorderWidthBottom(0);
+                prescriptionNumberValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+                PdfPCell patientNameValueCell = new PdfPCell(patientNameValue);
+                patientNameValueCell.setBorderWidthTop(0);
+                patientNameValueCell.setBorderWidthLeft(0);
+                patientNameValueCell.setBorderWidthRight(0);
+                patientNameValueCell.setBorderWidthBottom(0);
+                patientNameValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+                PdfPCell doctorNameValueCell = new PdfPCell(doctorNameValue);
+                doctorNameValueCell.setBorderWidthTop(0);
+                doctorNameValueCell.setBorderWidthLeft(0);
+                doctorNameValueCell.setBorderWidthRight(0);
+                doctorNameValueCell.setBorderWidthBottom(0);
+                doctorNameValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+                PdfPCell dateTimeValueCell = new PdfPCell(dateTimeValue);
+                dateTimeValueCell.setBorderWidthTop(0);
+                dateTimeValueCell.setBorderWidthLeft(0);
+                dateTimeValueCell.setBorderWidthRight(0);
+                dateTimeValueCell.setBorderWidthBottom(0);
+                dateTimeValueCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+
+                infoTable.addCell(prescriptionNumberKeyCell);
+                infoTable.addCell(prescriptionNumberValueCell);
+                infoTable.addCell(doctorNameKeyCell);
+                infoTable.addCell(doctorNameValueCell);
+                infoTable.addCell(patientNameKeyCell);
+                infoTable.addCell(patientNameValueCell);
+                infoTable.addCell(dateTimeKeyCell);
+                infoTable.addCell(dateTimeValueCell);
+
+                document.add(infoTable);
+
+                PdfContentByte canvas = pdfWriter.getDirectContent();
+                canvas.setLineWidth(.5f);
+                canvas.moveTo(document.left() + 10.f, document.top() - 75.f);
+                canvas.lineTo(document.right() - 10.f, document.top() - 75.f);
+                canvas.stroke();
+
+                PdfPTable prescriptionLinesTable = new PdfPTable(1);
+                prescriptionLinesTable.setSpacingBefore(5.f);
+                prescriptionLinesTable.setWidthPercentage(90.f);
+                prescriptionLinesTable.setWidths(new float[] { 90.f });
+
+                for(int i = 0; i < prescription.getPrescriptionLines().size(); i++) {
+                    Phrase linePhrase = new Phrase((i+1) + " " + prescription.getPrescriptionLines().get(i).getDescription(), contentFont);
+
+                    PdfPCell lineCell = new PdfPCell(linePhrase);
+                    lineCell.setBorderWidthTop(0);
+                    lineCell.setBorderWidthBottom(0);
+                    lineCell.setBorderWidthLeft(0);
+                    lineCell.setBorderWidthRight(0);
+                    lineCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+                    prescriptionLinesTable.addCell(lineCell);
+                }
+
+                document.add(prescriptionLinesTable);
+
+                document.close();
+                fos.close();
+
+                callback.onSuccess(true);
+            }catch(Exception e){
+                callback.onFailure(e);
+            }
+        }
+
+        private static class PdfPageEventListener extends PdfPageEventHelper {
+            Font font = new Font(Font.FontFamily.UNDEFINED, 5.f, 1);
+
+            public PdfPageEventListener() {
+            }
+
+            @Override
+            public void onEndPage(PdfWriter writer, Document document) {
+                PdfContentByte cb = writer.getDirectContent();
+                Phrase footer = new Phrase("POWERED BY PPAG7", font);
+                ColumnText.showTextAligned(cb, 1, footer, document.leftMargin() + ((document.right() - document
+                        .left()) / 2.f), document.bottom() - 10.f, 0.f);
+            }
+        }
+    }
+
+    private static class AppointmentPdf {
+        private final FileOutputStream fos;
+        private final Appointment appointment;
+
+        public AppointmentPdf(FileOutputStream fos, Appointment appointment) {
+            this.fos = fos;
+            this.appointment = appointment;
+        }
+
+        public void generate(Callback<Boolean> callback) {
+            try{
+                Document document = new Document(PageSize.A7, 0.f, 0.f, 5.f, 5.f);
+
+                final PdfWriter pdfWriter = PdfWriter.getInstance(document, fos);
+                pdfWriter.setPageEvent(new AppointmentPdf.PdfPageEventListener());
+    
+                document.open();
+    
+                BaseFont titleBaseFont = BaseFont.createFont(BaseFont.HELVETICA_BOLD, "Cp1252", false);
+                BaseFont contentBaseFont = BaseFont.createFont(BaseFont.HELVETICA, "Cp1252", false);
+    
+                Font contentFont = new Font(contentBaseFont, 8.f);
+    
+                PdfPTable titleTable = new PdfPTable(2);
+                titleTable.setWidthPercentage(90.f);
+                titleTable.setWidths(new float[] { 30.f, 60.f });
+    
+                Image logoImg = resourceToImage("logo.png");
+                logoImg.setAlignment(0);
+                logoImg.scaleAbsoluteHeight(50.f);
+                logoImg.scaleAbsoluteWidth(50.f);
+                logoImg.scalePercent(10.f);
+                logoImg.setAbsolutePosition(0.f, document.getPageSize().getHeight() - 110.f);
+    
+                Phrase title = new Phrase("Organization ABC");
+                title.setFont(new Font(titleBaseFont));
+    
+                Phrase contactInfo = new Phrase("Telephone: +94 76 488 6903\nAddress: No:1/3, Grove st., LA");
+                contactInfo.setFont(contentFont);
+    
+                PdfPCell logoCell = new PdfPCell(logoImg);
+                logoCell.setBorderWidthLeft(0);
+                logoCell.setBorderWidthRight(0);
+                logoCell.setVerticalAlignment(Element.ALIGN_CENTER);
+                logoCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+    
+                PdfPCell titleCell = new PdfPCell();
+                titleCell.setBorderWidthLeft(0);
+                titleCell.setBorderWidthRight(0);
+                titleCell.addElement(title);
+                titleCell.addElement(contactInfo);
+                titleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                titleCell.setVerticalAlignment(Element.ALIGN_CENTER);
+    
+                titleTable.addCell(logoCell);
+                titleTable.addCell(titleCell);
+    
+                document.add(titleTable);
+
+                PdfPTable infoTable = new PdfPTable(2);
+                infoTable.setSpacingBefore(5.f);
+                infoTable.setWidthPercentage(90.f);
+                infoTable.setWidths(new float[]{ 45.f, 45.f });
+
+                Phrase referenceIdKey = new Phrase("Reference ID", contentFont);
+                Phrase patientKey = new Phrase("Patient", contentFont);
+                Phrase clinicKey = new Phrase("Clinic", contentFont);
+                Phrase doctorKey = new Phrase("Doctor", contentFont);
+                Phrase queuePositionKey = new Phrase("Queue Position", contentFont);
+                Phrase dateTimeKey = new Phrase("Date & Time", contentFont);
+
+                Phrase referenceIdVal = new Phrase(appointment.getReferenceId(), contentFont);
+                Phrase patientVal = new Phrase(appointment.getPatientName(), contentFont);
+                Phrase clinicVal = new Phrase(appointment.getClinicName(), contentFont);
+                Phrase doctorVal = new Phrase(appointment.getDoctorName(), contentFont);
+                Phrase queuePositionVal = new Phrase(String.valueOf(appointment.getQueuePosition()), contentFont);
+                Phrase dateTimeVal = new Phrase(new SimpleDateFormat("yyyy/MM/dd h:mm a").format(new Date(appointment.getUpdatedAt().getTime())), contentFont);
+
+                PdfPCell referenceIdKeyCell = new PdfPCell(referenceIdKey);
+                referenceIdKeyCell.setBorderWidthTop(0);
+                referenceIdKeyCell.setBorderWidthBottom(0);
+                referenceIdKeyCell.setBorderWidthLeft(0);
+                referenceIdKeyCell.setBorderWidthRight(0);
+
+                PdfPCell referenceIdValCell = new PdfPCell(referenceIdVal);
+                referenceIdValCell.setBorderWidthTop(0);
+                referenceIdValCell.setBorderWidthBottom(0);
+                referenceIdValCell.setBorderWidthLeft(0);
+                referenceIdValCell.setBorderWidthRight(0);
+                
+                PdfPCell patientKeyCell = new PdfPCell(patientKey);
+                patientKeyCell.setBorderWidthTop(0);
+                patientKeyCell.setBorderWidthBottom(0);
+                patientKeyCell.setBorderWidthLeft(0);
+                patientKeyCell.setBorderWidthRight(0);
+
+                PdfPCell patientValCell = new PdfPCell(patientVal);
+                patientValCell.setBorderWidthTop(0);
+                patientValCell.setBorderWidthBottom(0);
+                patientValCell.setBorderWidthLeft(0);
+                patientValCell.setBorderWidthRight(0);
+
+                PdfPCell doctorKeyCell = new PdfPCell(doctorKey);
+                doctorKeyCell.setBorderWidthTop(0);
+                doctorKeyCell.setBorderWidthBottom(0);
+                doctorKeyCell.setBorderWidthLeft(0);
+                doctorKeyCell.setBorderWidthRight(0);
+
+                PdfPCell doctorValCell = new PdfPCell(doctorVal);
+                doctorValCell.setBorderWidthTop(0);
+                doctorValCell.setBorderWidthBottom(0);
+                doctorValCell.setBorderWidthLeft(0);
+                doctorValCell.setBorderWidthRight(0);
+
+                PdfPCell clinicKeyCell = new PdfPCell(clinicKey);
+                clinicKeyCell.setBorderWidthTop(0);
+                clinicKeyCell.setBorderWidthBottom(0);
+                clinicKeyCell.setBorderWidthLeft(0);
+                clinicKeyCell.setBorderWidthRight(0);
+
+                PdfPCell clinicValCell = new PdfPCell(clinicVal);
+                clinicValCell.setBorderWidthTop(0);
+                clinicValCell.setBorderWidthBottom(0);
+                clinicValCell.setBorderWidthLeft(0);
+                clinicValCell.setBorderWidthRight(0);
+
+                PdfPCell queuePositionKeyCell = new PdfPCell(queuePositionKey);
+                queuePositionKeyCell.setBorderWidthTop(0);
+                queuePositionKeyCell.setBorderWidthBottom(0);
+                queuePositionKeyCell.setBorderWidthLeft(0);
+                queuePositionKeyCell.setBorderWidthRight(0);
+
+                PdfPCell queuePositionValCell = new PdfPCell(queuePositionVal);
+                queuePositionValCell.setBorderWidthTop(0);
+                queuePositionValCell.setBorderWidthBottom(0);
+                queuePositionValCell.setBorderWidthLeft(0);
+                queuePositionValCell.setBorderWidthRight(0);
+
+                PdfPCell dateTimeKeyCell = new PdfPCell(dateTimeKey);
+                dateTimeKeyCell.setBorderWidthTop(0);
+                dateTimeKeyCell.setBorderWidthBottom(0);
+                dateTimeKeyCell.setBorderWidthLeft(0);
+                dateTimeKeyCell.setBorderWidthRight(0);
+
+                PdfPCell dateTimeValCell = new PdfPCell(dateTimeVal);
+                dateTimeValCell.setBorderWidthTop(0);
+                dateTimeValCell.setBorderWidthBottom(0);
+                dateTimeValCell.setBorderWidthLeft(0);
+                dateTimeValCell.setBorderWidthRight(0);
+
+                infoTable.addCell(referenceIdKeyCell);
+                infoTable.addCell(referenceIdValCell);
+                infoTable.addCell(patientKeyCell);
+                infoTable.addCell(patientValCell);
+                infoTable.addCell(doctorKeyCell);
+                infoTable.addCell(doctorValCell);
+                infoTable.addCell(clinicKeyCell);
+                infoTable.addCell(clinicValCell);
+                infoTable.addCell(queuePositionKeyCell);
+                infoTable.addCell(queuePositionValCell);
+                infoTable.addCell(dateTimeKeyCell);
+                infoTable.addCell(dateTimeValCell);
+                
+                document.add(infoTable);
+
+                document.close();
+                fos.close();
+
+                callback.onSuccess(true);
+            }catch(Exception e) {
+                callback.onFailure(e);
+            }
+        }
+
+        private Image resourceToImage(String name) throws Exception {
+            byte[] bytes = compress(name, .6f);
+
+            return Image.getInstance(bytes);
+        }
+
+        private byte[] compress(String name, float quality) throws Exception {
+            InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+            if (is == null)
+                throw new Exception("Resource not found: " + name);
+
+            BufferedImage bufferedImage = ImageIO.read(is);
+            if (bufferedImage == null)
+                throw new Exception("Failed to read image: " + name);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("png").next();
+            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+            jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            jpgWriteParam.setCompressionQuality(quality);
+
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            jpgWriter.setOutput(ios);
+            jpgWriter.write(null, new IIOImage(bufferedImage, null, null), jpgWriteParam);
+
+            jpgWriter.dispose();
 
             return baos.toByteArray();
         }

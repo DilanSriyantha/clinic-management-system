@@ -1,12 +1,10 @@
 package org.cms.PatientMangement.Models;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.List;
 
 import org.cms.AppointmentManagement.Models.Appointment;
 import org.cms.ClinicManagement.Models.Clinic;
-import org.cms.PatientMangement.DTOs.PatientDto;
 import org.cms.PrescriptionManagement.Models.Prescription;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Formula;
@@ -83,21 +81,6 @@ public class Patient {
 
     @UpdateTimestamp
     private Timestamp updatedAt;
-
-    public void update(PatientDto patientDto) throws Exception {
-        Field[] currentFields = this.getClass().getDeclaredFields();
-        Field[] newFields = patientDto.getClass().getDeclaredFields();
-
-        for(var newField : newFields) {
-            for(var currentField : currentFields) {
-                if(!currentField.getName().equals(newField.getName())) continue;
-
-                currentField.setAccessible(true);
-                newField.setAccessible(true);
-                currentField.set(this, newField.get(patientDto));
-            }
-        }
-    }
 
     @Override
     public String toString() {

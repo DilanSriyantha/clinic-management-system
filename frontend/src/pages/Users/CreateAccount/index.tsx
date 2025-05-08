@@ -11,24 +11,30 @@ import { useAuthManager } from "../../../hooks/useApi";
 import { useAlert } from "../../../hooks/useAlert";
 import { RoleItem } from "../../../types";
 import { SpecializationOption } from "../../../types";
+import moment from "moment";
 
 const initialState: RegisterFormData = {
-    name: null,
-    birthday: null,
-    address: null,
-    email: null,
-    password: null,
-    telephone: null,
-    specialization: null,
+    name: "",
+    birthday: moment(Date.now()).format("YYYY-MM-DD"),
+    address: "",
+    email: "",
+    password: "",
+    telephone: "",
+    specialization: "",
     percentage: 0,
     role: Role.DOCTOR,
 };
 
-const reducer = (state: RegisterFormData, action: { type: string, payload?: any }) => {
+enum ActionType {
+    SET_FIELD,
+    RESET_FORM
+};
+
+const reducer = (state: RegisterFormData, action: { type: ActionType, payload?: any }) => {
     switch(action.type) {
-        case "SET_FIELD":
+        case ActionType.SET_FIELD:
             return {...state, [action.payload.name]: action.payload.value};
-        case "RESET_FORM":
+        case ActionType.RESET_FORM:
             return initialState;
         default:
             return state;
@@ -56,7 +62,7 @@ function CreateAccount() {
         console.log(formData);
     }, [formData]);
 
-    const handleSubmit = useCallback(async (e?: FormEvent) => {
+    const handleSubmit = useCallback(async (_e?: FormEvent) => {
         setLoading(true);
 
         console.log(formData);
@@ -74,6 +80,7 @@ function CreateAccount() {
             if(res){
                 console.log(res);
                 alert.setSuccess("New user registered successfuly.");
+                dispatch({ type: ActionType.RESET_FORM });
             }
         }catch(err){
             console.log(err);
@@ -89,29 +96,29 @@ function CreateAccount() {
     }, [formData]);
  
     const handleInput = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        dispatch({ type: "SET_FIELD", payload: { name: e.target.name, value: e.target.value } });
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
-    const handleTimeInput = useCallback((value: moment.Moment | null, context: PickerChangeHandlerContext<DateValidationError>) => {
-        dispatch({ type: "SET_FIELD", payload: { name: "birthday", value: value?.format("YYYY-MM-DD") } });
+    const handleTimeInput = useCallback((value: moment.Moment | null, _context: PickerChangeHandlerContext<DateValidationError>) => {
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "birthday", value: value?.format("YYYY-MM-DD") } });
     }, []);
 
     const handleRoleChange = useCallback((item: RoleItem) => {
-        dispatch({ type: "SET_FIELD", payload: { name: "role", value: item.value } });
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "role", value: item.value } });
     }, []);
 
-    const handleSpecializationChange = useCallback((event: React.SyntheticEvent, value: SpecializationOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<any> | undefined) => {
+    const handleSpecializationChange = useCallback((_event: React.SyntheticEvent, value: SpecializationOption | null, _reason: AutocompleteChangeReason, _details?: AutocompleteChangeDetails<any> | undefined) => {
         if (!value)
             return;
 
         if (formData.specialization === value.label)
             return;
 
-        dispatch({ type: "SET_FIELD", payload: { name: "specialization", value: value.label } });
+        dispatch({ type: ActionType.SET_FIELD, payload: { name: "specialization", value: value.label } });
     }, [formData.specialization]);
 
-    const handleClear = useCallback((e: FormEvent) => {
-        window.location.reload();
+    const handleClear = useCallback((_e: FormEvent) => {
+        dispatch({ type: ActionType.RESET_FORM});
     }, []);
 
     return (
@@ -163,11 +170,11 @@ function CreateAccount() {
                             paddingBottom: 2,
                             width: "100%"
                         }}>
-                            <TextField name="name" label="Name" type="text" onChange={handleInput} />
-                            <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} />
-                            <TextField name="address" label="Address" type="text" onChange={handleInput} />
-                            <TextField name="email" label="E-mail" type="email" onChange={handleInput} />
-                            <TextField name="telephone" label="Telephone" type="tel" onChange={handleInput} />
+                            <TextField name="name" label="Name" type="text" onChange={handleInput} value={formData.name} focused={formData.name.match("") ? false : true} />
+                            <DatePicker name="birthday" label="Birthday" format="YYYY-MM-DD" onChange={handleTimeInput} value={moment(Date.parse(formData.birthday))} />
+                            <TextField name="address" label="Address" type="text" onChange={handleInput} value={formData.address} />
+                            <TextField name="email" label="E-mail" type="email" onChange={handleInput} value={formData.email} />
+                            <TextField name="telephone" label="Telephone" type="tel" onChange={handleInput} value={formData.telephone} />
                             {
                                 (formData.role == Role.DOCTOR) &&
                                 <>
@@ -176,15 +183,16 @@ function CreateAccount() {
                                         options={specializationOptions}
                                         renderInput={(params) => <TextField {...params} name="specialization" label="Specialization" />}
                                         onChange={handleSpecializationChange}
+                                        value={formData.specialization}
                                     />
                                     <TextField name="percentage" label="Profit Percentage" type="number" slotProps={{
                                         input: {
                                             endAdornment: <InputAdornment position="end">%</InputAdornment>
                                         }
-                                    }} onChange={handleInput} />
+                                    }} onChange={handleInput} value={formData.percentage} focused={formData.percentage > 0 ? true : false} />
                                 </>
                             }
-                            <PasswordInputField onChange={handleInput} />
+                            <PasswordInputField onChange={handleInput} value={formData.password} />
                         </Box>
                     </form>
                     <Box sx={{

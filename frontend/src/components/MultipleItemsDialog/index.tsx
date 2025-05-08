@@ -22,10 +22,11 @@ const paginationModel = { page: 0, pageSize: 10 };
 export interface MultipleItemsDialogProps {
     rows: ItemDto[];
     open: boolean;
-    onClose: (item: InvoiceRecord | undefined) => void;
+    onClose: () => void;
+    onConfirm: (item: InvoiceRecord | undefined) => void;
 };
 
-export default function MultipleItemsDialog({ rows, open, onClose }: MultipleItemsDialogProps) {
+export default function MultipleItemsDialog({ rows, open, onClose, onConfirm }: MultipleItemsDialogProps) {
     const [page, setPage] = React.useState<number>(0);
     const [selectedItem, setSelectedItem] = React.useState<InvoiceRecord>();
 
@@ -46,9 +47,13 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
         setPage(model.page);
     }, [page]);
 
-    const handleClose = React.useCallback(() => {
-        onClose(selectedItem);
+    const handleConfirm = React.useCallback(() => {
+        onConfirm(selectedItem);
     }, [selectedItem]);
+
+    const handleClose = React.useCallback(() => {
+        onClose();
+    }, []); 
 
     return (
         <React.Fragment>
@@ -80,7 +85,7 @@ export default function MultipleItemsDialog({ rows, open, onClose }: MultipleIte
                     <Button variant="outlined" autoFocus onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button variant="contained" onClick={handleClose} autoFocus>
+                    <Button variant="contained" onClick={handleConfirm} autoFocus>
                         Confirm
                     </Button>
                 </DialogActions>

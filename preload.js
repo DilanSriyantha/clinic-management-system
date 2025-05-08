@@ -18,4 +18,22 @@ contextBridge.exposeInMainWorld("InvoiceGenerator", {
             ipcRenderer.on("onError", (_event, data) => reject(data));
         });
     },
+
+    generateAppointmentPdf: (appointmentJson) => {
+        return new Promise((resolve, reject) => {
+            ipcRenderer.send("generateAppointment", appointmentJson);
+
+            ipcRenderer.on("onSuccess", (_event, data) => resolve(data));
+            ipcRenderer.on("onError", (_event, data) => reject(data));
+        });
+    },
+
+    generatePrescriptionPdf: (prescriptionJson) => {
+        return new Promise((resolve, reject) => {
+            ipcRenderer.send("generatePrescription", prescriptionJson);
+
+            ipcRenderer.on("onSuccess", (_event, data) => resolve(data));
+            ipcRenderer.on("onError", (_event, data) => reject(data));
+        });
+    },
 });

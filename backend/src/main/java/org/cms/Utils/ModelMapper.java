@@ -29,6 +29,7 @@ public class ModelMapper {
                     destField.setAccessible(true);
 
                     destField.set(destInstance, srcField.get(src));
+                    break;
                 }
             }
 
@@ -46,12 +47,14 @@ public class ModelMapper {
 
             for(var srcField : srcFields) {
                 for(var destField : destFields) {
-                    if(!destField.getName().equals(srcField.getName())) continue;
-
-                    srcField.setAccessible(true);
-                    destField.setAccessible(true);
-
-                    destField.set(dest, srcField.get(src));
+                    if(destField.getName().equals(srcField.getName())){
+                        srcField.setAccessible(true);
+                        destField.setAccessible(true);
+    
+                        destField.set(dest, srcField.get(src));
+                        
+                        break;
+                    }
                 }
             }
 

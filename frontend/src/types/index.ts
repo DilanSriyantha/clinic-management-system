@@ -50,6 +50,8 @@ export interface CreateClinicState {
     loading: boolean;
 };
 
+export type CreateClinicRequest = CreateClinicState;
+
 export interface CreateEventState {
     title: string;
     description: string;
@@ -143,15 +145,15 @@ export interface PageResponse <T> {
 };
 
 export interface RegisterFormData {
-    name: string | null;
-    birthday: string | null;
-    address: string | null;
-    email: string | null;
-    password: string | null;
-    telephone: string | null;
-    specialization: string | null;
-    percentage: number | null;
-    role: Role | null;
+    name: string;
+    birthday: string;
+    address: string;
+    email: string;
+    password: string;
+    telephone: string;
+    specialization: string;
+    percentage: number;
+    role: Role;
 };
 
 export const isRegisterFormData = (object: any): object is RegisterFormData => {
@@ -245,6 +247,7 @@ export interface PrescriptionDto {
     doctorId: number;
     doctorName: string;
     doctorReferenceId: string;
+    updatedAt: Timestamp;
 };
 
 export interface PrescriptionCreateRequest {
@@ -462,6 +465,19 @@ export interface PrescriptionSummaryType {
     totalPrescriptions: number;
     prescriptionsInPeriod: number;
     avgItemsPerPrescription: number;
+}
+
+export interface PrescriptionPrintObject {
+    id: number;
+    patientName: string;
+    doctorName: string;
+    prescriptionLines: PrescriptionLinePrintObject[];
+    updatedAt: Timestamp;
+}
+
+export interface PrescriptionLinePrintObject {
+    id: number;
+    description: string;
 }
 
 export interface ClinicAppointmentDistributionType {

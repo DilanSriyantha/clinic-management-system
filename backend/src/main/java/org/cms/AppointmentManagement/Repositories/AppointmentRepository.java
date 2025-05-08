@@ -16,7 +16,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query(value = """
                 SELECT COALESCE(MAX(queue_position), 0) + 1
                 FROM appointment
-                WHERE clinic_id = 1
+                WHERE clinic_id = :clinicId
                 AND DATE(created_at) = CURRENT_DATE
             """, nativeQuery = true)
     Integer findMaxQueuePosition(@Param("clinicId") int clinicId);

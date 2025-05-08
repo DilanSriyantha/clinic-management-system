@@ -1,4 +1,4 @@
-import { Delete, Edit, ReplayOutlined } from "@mui/icons-material";
+import { Delete, Edit, Print, ReplayOutlined } from "@mui/icons-material";
 import { Card, Container, Stack, Box, Tooltip, IconButton, Toolbar, alpha, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import PageTitle from "../../../components/PageTitle";
@@ -170,10 +170,26 @@ function AppointmentList() {
         }
     }
 
+    async function printAppointment() {
+        try{
+            const appointment = state.list.filter(ap => state.selectedIds.has(ap.id))[0];
+            
+            const res = await window.InvoiceGenerator.generateAppointmentPdf(JSON.stringify(appointment));
+
+            if(!res) return;
+
+            console.log(res);
+            alert.setSuccess("Print successfull");
+        }catch(err) {
+            alert.setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    }
+
     interface TableToolbarProps {
         numSelected?: number;
         onDelete: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
         onEdit: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+        onPrint: (event?: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
     };
 
     function TableToolbar(props: TableToolbarProps) {
@@ -202,11 +218,18 @@ function AppointmentList() {
                     {props.numSelected} {props.numSelected > 1 ? "rows" : "row"} selected
                 </Typography>
                 {props.numSelected == 1 && (
-                    <Tooltip title="Edit">
-                        <IconButton onClick={props.onEdit}>
-                            <Edit color="primary" />
-                        </IconButton>
-                    </Tooltip>
+                    <>
+                        <Tooltip title="Edit">
+                            <IconButton onClick={props.onEdit}>
+                                <Edit color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Print">
+                            <IconButton onClick={props.onPrint}>
+                                <Print color="primary" />
+                            </IconButton>
+                        </Tooltip>
+                    </>
                 )}
                 <Tooltip title="Delete">
                     <IconButton onClick={props.onDelete}>
@@ -253,7 +276,7 @@ function AppointmentList() {
                             </Tooltip>
                         </Box>
                     </Stack>
-                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} />
+                    <TableToolbar numSelected={state.selectedIds?.size} onDelete={handleDelete} onEdit={handleEdit} onPrint={printAppointment} />
                     <DataGrid
                         rows={state.list}
                         columns={columns}

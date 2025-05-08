@@ -17,6 +17,7 @@ interface CreatePrescriptionState {
     prescriptionLines: PrescriptionLineDto[];
     drug: string;
     dose: string;
+    suffix: string;
     frequency: string;
     time: string;
 };
@@ -34,6 +35,7 @@ const initialState: CreatePrescriptionState = {
     prescriptionLines: [],
     drug: "",
     dose: "",
+    suffix: "",
     frequency: "",
     time: "After"
 };
@@ -45,7 +47,7 @@ const reducer = (state: CreatePrescriptionState, action: { type: ActionType, pay
         case ActionType.CLEAR_FIELDS:
             return { ...state, drug: "", dose: "", frequency: "" };
         case ActionType.ADD_PRESCRIPTION_LINE:
-            return { ...state, prescriptionLines: [...state.prescriptionLines, action.payload], drug: "", dose: "", frequency: "" };
+            return { ...state, prescriptionLines: [...state.prescriptionLines, action.payload], drug: "", dose: "", suffix: "", frequency: "" };
         case ActionType.REMOVE_PRESCRIPTION_LINE:
             return { ...state, prescriptionLines: state.prescriptionLines.filter((_pl, idx) => idx !== action.payload) };
         case ActionType.SET_LOADING:
@@ -111,11 +113,11 @@ function CreatePrescription() {
             return;
         }
 
-        dispatch({ type: ActionType.ADD_PRESCRIPTION_LINE, payload: { description: generateRow(state.drug, state.dose, state.frequency, state.time) } });
+        dispatch({ type: ActionType.ADD_PRESCRIPTION_LINE, payload: { description: generateRow(state.drug, state.dose, state.suffix, state.frequency, state.time) } });
     }, [state]);
 
-    const generateRow = useCallback((drug: string, dose: string, freq: string, time: string) => {
-        return `${drug} x${dose}, ${time} meal, ${freq} times a day.`;
+    const generateRow = useCallback((drug: string, dose: string, suffix: string, freq: string, time: string) => {
+        return `${drug} x${dose} ${suffix}, ${time} meal, ${freq} times a day.`;
     }, []);
 
     const handleEnterKeyPress = useCallback((event: KeyboardEvent<HTMLFormElement>): void => {
@@ -229,6 +231,7 @@ function CreatePrescription() {
                                         <Stack direction={"column"} gap={1}>
                                             <TextField label="Drug" name="drug" value={state.drug} onChange={handleInputChange} />
                                             <TextField label="Dose" name="dose" type="number" value={state.dose} onChange={handleInputChange} />
+                                            <TextField label="Suffix" name="suffix" type="text" value={state.suffix} onChange={handleInputChange} />
                                             <TextField label="Frequency (per 24hrs)" name="frequency" value={state.frequency} onChange={handleInputChange} />
                                             <Autocomplete
                                                 // disablePortal

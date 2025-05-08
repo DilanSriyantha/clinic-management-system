@@ -16,7 +16,7 @@ export interface CreateInvoiceState {
     invoiceNumber: number;
     rows: InvoiceRecord[];
     matchingItems: ItemDto[];
-    itemCode: number;
+    itemCode: string;
     quantity: number;
     subtotal: number;
     discount: number;
@@ -47,7 +47,7 @@ const initialState: CreateInvoiceState = {
     invoiceNumber: -1,
     rows: [],
     matchingItems: [],
-    itemCode: 0,
+    itemCode: "",
     quantity: 0,
     subtotal: 0,
     discount: 0,
@@ -170,17 +170,34 @@ function CreateInvoice() {
 
     const handleKeyDown = useCallback((event: KeyboardEvent<HTMLFormElement>): void => {
         if(!event.key.match("Enter")) return;
-        fetchItems();
-    }, [state.itemCode]);
+        
+        onAdd();
+    }, [state.itemCode, state.quantity]);
 
-    const closeItemsDialog = useCallback((item: InvoiceRecord | undefined) => {
+    const closeItemsDialog = useCallback(() => {
+        dispatch({ type: ActionType.SET_MATCHING_ITEMS, payload: [] });
+    }, [state.matchingItems]);
+
+    const confirmItemsDialog = useCallback((item: InvoiceRecord | undefined) => {
         dispatch({ type: ActionType.SET_MATCHING_ITEMS, payload: [] });
         handleAddRecord(item);
-    }, [state.rows, state.matchingItems]);
+    }, [state.rows, state.matchingItems]);  
 
     const onAdd = useCallback(() => {
+        console.log(state.itemCode, state.quantity);
+
+        if(state.itemCode.length < 1) {
+            alert.setWarning("Enter ItemCode or Name to search.");
+            return;
+        }
+
+        if(state.quantity < 1){
+            alert.setWarning("Quantity should be more than 0.");
+            return;
+        }
+
         fetchItems();
-    }, [state.itemCode]);
+    }, [state.quantity, state.itemCode]);
 
     const handlePaymentConfirmationClose = () => {
         setPaymentConfirmationOpen(false);
@@ -336,7 +353,7 @@ function CreateInvoice() {
                 </Grid2>
             </Stack>
 
-            <MultipleItemsDialog rows={state.matchingItems} open={state.matchingItems.length > 0} onClose={closeItemsDialog} />
+            <MultipleItemsDialog rows={state.matchingItems} open={state.matchingItems.length > 0} onClose={closeItemsDialog} onConfirm={confirmItemsDialog} />
 
             <PaymentConfirmation open={paymentConfirmationOpen} onClose={handlePaymentConfirmationClose} onPaidAmountChange={handlePaidAmountChange} onConfirm={handlePaymentConfirmed} invoice={state} />
         </>

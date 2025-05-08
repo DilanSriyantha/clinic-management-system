@@ -91,7 +91,7 @@ function PatientsSection({ clinicId, patientsList }: PatientsSectionProps) {
         dispatch({ type: ActionType.SET_SELECTED_ID, payload: ids.at(0) });
     }, [state.selectedId]);
 
-    const onPaginationModelChange = useCallback((model: GridPaginationModel, details: GridCallbackDetails<"pagination">): void => {
+    const onPaginationModelChange = useCallback((model: GridPaginationModel, _details: GridCallbackDetails<"pagination">): void => {
         dispatch({
             type: ActionType.SET_PAGINATION_INFO, payload: {
                 page: model.page,

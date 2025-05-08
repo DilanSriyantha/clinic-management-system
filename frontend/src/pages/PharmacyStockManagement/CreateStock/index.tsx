@@ -27,6 +27,7 @@ enum ActionType {
     SET_FIELD,
     SET_ALL_FIELDS,
     SET_LOADING,
+    RESET_FIELDS
 };
 
 const reducer = (state: CreateStockState, action: { type: ActionType, payload: any }): CreateStockState => {
@@ -37,6 +38,8 @@ const reducer = (state: CreateStockState, action: { type: ActionType, payload: a
             return { ...state, stock: { caption: action.payload.caption, vendor: action.payload.vendor, date: action.payload.date } };
         case ActionType.SET_LOADING:
             return { ...state, isLoading: action.payload };
+        case ActionType.RESET_FIELDS:
+            return initialState;
         default:
             return state;
     }
@@ -89,6 +92,8 @@ function CreateStock() {
             if (res) {
                 console.log(res);
                 alert.setSuccess("Stock created successfully");
+
+                handleClear();
             }
         } catch (err) {
             console.log(err);
@@ -114,7 +119,7 @@ function CreateStock() {
     }, [state]);
 
     const handleClear = useCallback(() => {
-        window.location.reload();
+        dispatch({ type: ActionType.RESET_FIELDS, payload: null });
     }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
@@ -126,7 +131,7 @@ function CreateStock() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
-    const handleDatePickerChange = useCallback((value: Moment | null, context: PickerChangeHandlerContext<DateValidationError>): void => {
+    const handleDatePickerChange = useCallback((value: Moment | null, _context: PickerChangeHandlerContext<DateValidationError>): void => {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "date", value: value } });
     }, []);
 

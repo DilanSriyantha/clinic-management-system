@@ -34,6 +34,7 @@ enum ActionType {
     SET_FIELD,
     SET_ALL_FIELDS,
     SET_LOADING,
+    RESET_FIELDS
 };
 
 const reducer = (state: CreateItemState, action: { type: ActionType, payload: any }): CreateItemState => {
@@ -44,6 +45,8 @@ const reducer = (state: CreateItemState, action: { type: ActionType, payload: an
             return { ...state, item: { stockId: action.payload.stockId, caption: action.payload.caption, description: action.payload.description, category: action.payload.category, form: action.payload.form, strength: action.payload.strength, initialQty: action.payload.initialQty, currentQty: action.payload.currentQty, unitPurchasePrice: action.payload.unitPurchasePrice, unitSellingPrice: action.payload.unitSellingPrice } };
         case ActionType.SET_LOADING:
             return {...state, isLoading: action.payload};
+        case ActionType.RESET_FIELDS:
+            return { ...initialState, item: { ...initialState.item, stockId: state.item.stockId } };
         default: 
             return state;
     }
@@ -124,6 +127,8 @@ function CreateItem() {
             if(res){
                 console.log(res);
                 alert.setSuccess("Item created successfully");
+
+                handleClear();
             }
         }catch(err){
             console.log(err);
@@ -151,7 +156,7 @@ function CreateItem() {
     }, [state]);
 
     const handleClear = useCallback(() => {
-        window.location.reload();
+        dispatch({ type: ActionType.RESET_FIELDS, payload: null });
     }, []);
 
     const handleEnterKeyPress = (e: KeyboardEvent) => {
@@ -163,11 +168,11 @@ function CreateItem() {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: e.target.name, value: e.target.value } });
     }, []);
 
-    const handleCategoryChange = useCallback((event: SyntheticEvent<Element, Event>, value: DrugCategoryOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
+    const handleCategoryChange = useCallback((_event: SyntheticEvent<Element, Event>, _value: DrugCategoryOption | null, _reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "category", value: details?.option.id } });
     }, []);
 
-    const handleFormChange = useCallback((event: SyntheticEvent<Element, Event>, value: DrugCategoryOption | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
+    const handleFormChange = useCallback((_event: SyntheticEvent<Element, Event>, _value: DrugCategoryOption | null, _reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<DrugCategoryOption> | undefined): void => {
         dispatch({ type: ActionType.SET_FIELD, payload: { name: "form", value: details?.option.id } });
     }, []);
 
