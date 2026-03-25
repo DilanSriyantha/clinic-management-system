@@ -1,4 +1,4 @@
-<img width="1346" height="718" alt="image" src="https://github.com/user-attachments/assets/d5fe5abe-d9c4-4144-a0aa-f0066f6ed235" /># 🏥 Clinic Management System (CMS)
+# 🏥 Clinic Management System (CMS)
 
 A **user-friendly and efficient** Clinic Management System designed to **automate** and **streamline** the operations of a medical clinic in Sri Lanka. The system replaces manual paper-based workflows with a **digital solution** for managing **patients, doctors, appointments, billing, inventory, and reports**.
 
@@ -45,7 +45,6 @@ This project is licensed under the MIT License – see the [LICENSE](https://git
 
 ## 📷 Screenshots
 <div>
-    <img src="https://i.ibb.co/HTNB6bNZ/Screenshot-2026-03-25-135900.png" />
     <img src="https://i.ibb.co/TDXbdzLM/Screenshot-2026-03-25-135121.png" />
     <img src="https://i.ibb.co/F4sC8GQm/Screenshot-2026-03-25-135153.png" />
     <img src="https://i.ibb.co/Tq1f56LW/Screenshot-2026-03-25-135210.png" />
@@ -70,4 +69,5 @@ This project is licensed under the MIT License – see the [LICENSE](https://git
     <img src="https://i.ibb.co/HfxrPrQS/Screenshot-2026-03-25-135821.png" />
     <img src="https://i.ibb.co/8DpgtQqj/Screenshot-2026-03-25-135835.png" />
     <img src="https://i.ibb.co/93wr5B18/Screenshot-2026-03-25-135848.png" />
+    <img src="https://i.ibb.co/HTNB6bNZ/Screenshot-2026-03-25-135900.png" />
 </div>
